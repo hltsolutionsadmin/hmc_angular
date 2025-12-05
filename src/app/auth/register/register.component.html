@@ -1,0 +1,62 @@
+<div class="min-h-screen grid md:grid-cols-2 bg-background">
+  <div class="hidden md:flex items-center justify-center p-8 bg-gradient-to-br from-primary to-accent text-white">
+    <div class="max-w-md text-center">
+      <span class="material-icons text-6xl mb-4">diversity_3</span>
+      <h2 class="text-3xl font-semibold mb-2">Create your clinic</h2>
+      <p class="opacity-90">Register to start managing tests, orders and reports.</p>
+    </div>
+  </div>
+
+  <div class="flex items-center justify-center p-6 md:p-10">
+    <mat-card class="w-full max-w-md shadow-xl">
+      <mat-card-header>
+        <mat-card-title class="text-text">Register</mat-card-title>
+        <mat-card-subtitle>Set up your clinic</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <form #reg="ngForm" (ngSubmit)="onRegister()" class="mt-4 grid gap-4">
+          <mat-form-field appearance="outline" class="w-full">
+            <mat-label>Clinic Name</mat-label>
+            <input matInput name="clinic" [(ngModel)]="model.clinic" required />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="w-full">
+            <mat-label>Email</mat-label>
+            <input matInput name="email" [(ngModel)]="model.email" required email />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="w-full">
+            <mat-label>Password</mat-label>
+            <input matInput [type]="hide ? 'password' : 'text'" name="password" [(ngModel)]="model.password" required />
+            <button mat-icon-button matSuffix type="button" (click)="hide = !hide">
+              <mat-icon>{{ hide ? 'visibility' : 'visibility_off' }}</mat-icon>
+            </button>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="w-full">
+            <mat-label>Confirm Password</mat-label>
+            <input matInput [type]="hide2 ? 'password' : 'text'" name="confirm" [(ngModel)]="model.confirm" required />
+            <button mat-icon-button matSuffix type="button" (click)="hide2 = !hide2">
+              <mat-icon>{{ hide2 ? 'visibility' : 'visibility_off' }}</mat-icon>
+            </button>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="w-full">
+            <mat-label>Address</mat-label>
+            <textarea matInput name="address" [(ngModel)]="model.address" rows="2"></textarea>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="w-full">
+            <mat-label>Phone</mat-label>
+            <input matInput name="phone" [(ngModel)]="model.phone" />
+          </mat-form-field>
+
+          <button mat-raised-button color="primary" class="w-full !py-2 !text-white" type="submit">
+            Register
+          </button>
+          <a routerLink="/login" class="text-center text-primary hover:underline">Already have an account? Login</a>
+        </form>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

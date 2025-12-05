@@ -1,0 +1,49 @@
+<div
+  class="flex justify-between items-center bg-gradient-to-br from-white via-[#f6f7fb] to-[#e9ecf8]"
+  style="height: 500px;"
+>
+  <!-- LEFT SIDE -->
+  <div class="space-y-5" style="width: 40%; padding: 2rem;">
+    <h2
+      class="text-4xl md:text-5xl font-bold text-[#213abd] leading-tight mb-8"
+      style="line-height: 3.5rem;"
+    >
+      Real User Reviews <br />
+      <span class="text-gray-900">of Our HMC Plateform</span>
+    </h2>
+
+    <p class="text-gray-600 leading-relaxed max-w-xl">
+      Read what users who have experienced the power of our HMC platform have to say.
+    </p>
+  </div>
+
+  <!-- RIGHT SIDE -->
+  <div style="width: 55%;">
+    <div class="slider" style="--width: 200px; --height: 350px; --quantity: {{ quotes.length }};">
+      <div class="list mt-12">
+        <div
+          class="item"
+          *ngFor="let q of quotes; let i = index"
+          [style.--position]="i + 1"
+        >
+          <div class="card">
+            <div class="quote-img flex justify-center items-center">
+              <img [src]="q.quotes" alt="quote" />
+            </div>
+
+            <div class="avatar-img flex justify-center mt-2">
+              <img [src]="q.img" alt="avatar" class="rounded-full w-14 h-14 object-cover" style="border: 3px solid #213abd;" />
+            </div>
+
+            <p class="font-semibold mt-2 text-gray-800">{{ q.name }}</p>
+            <p class="text-sm text-gray-500">{{ q.Place }}</p>
+
+            <p class="text-gray-600 text-center px-3 mt-2">
+              {{ q.desc }}
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

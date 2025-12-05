@@ -1,0 +1,12 @@
+:host {
+  display: block;
+}
+
+.hidden {
+  transform: translateY(-100%);
+  opacity: 0;
+}
+
+a {
+    font-size: 15px;
+}

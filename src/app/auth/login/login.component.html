@@ -1,0 +1,85 @@
+<div class="min-h-screen flex bg-gray-50" [@pageFade]>
+
+  <!-- ==================== LEFT – CAROUSEL ==================== -->
+  <div class="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-indigo-600 to-indigo-800 relative overflow-hidden">
+    <div class="absolute inset-0 bg-black/20"></div>
+    <div class="relative z-10 flex flex-col justify-center items-center w-full px-12 text-white">
+      <ng-container *ngFor="let quote of quotes; let i = index">
+        <div *ngIf="i === currentIdx"
+          class="absolute inset-0 flex flex-col justify-center items-center text-center px-8" [@quoteFade]>
+          <h2 class="text-4xl md:text-5xl font-bold mb-6 leading-tight">
+            “{{ quote.text }}”
+          </h2>
+          <p class="text-lg opacity-90">- {{ quote.author }} -</p>
+        </div>
+      </ng-container>
+
+      <div class="absolute bottom-10 left-1/2 -translate-x-1/2 flex space-x-2">
+        <button *ngFor="let q of quotes; let i = index" (click)="currentIdx = i" [class]="'w-2 h-2 rounded-full transition-all duration-300 ' +
+                   (i === currentIdx ? 'bg-white w-8' : 'bg-white/50')"></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="flex-1 flex items-center justify-center p-6 lg:p-12" [@formSlide]>
+    <div class="w-full max-w-md">
+      <div class="text-center mb-8">
+        <h1 class="text-3xl font-bold text-indigo-700">Clinic Portal</h1>
+        <p class="text-sm text-gray-600 mt-1">Secure access for staff &amp; doctors</p>
+      </div>
+
+      <!-- Reactive Form -->
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="space-y-6">
+
+        <!-- Email -->
+        <label class="block text-sm font-medium text-gray-900">Email</label>
+        <div class="flex" style="margin-top: 10px !important;">
+          <span
+            class="inline-flex items-center px-3 text-sm bg-gray-200 border rounded-s-md"
+            [ngClass]="getInputState('email')">
+            <mat-icon [ngClass]="getInputState('email')">mail</mat-icon>
+          </span>
+          <input type="email" formControlName="email"
+            class="rounded-none rounded-e-lg bg-gray-50 border text-gray-900 block flex-1 min-w-0 w-full text-sm p-3.5"
+            [ngClass]="getInputState('email')"
+            placeholder="elonmusk@clinic.com">
+        </div>
+        <div *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched" class="text-red-500 text-xs mt-1" style="margin: 0 !important;">
+          <span *ngIf="loginForm.get('email')?.errors?.['required']">Email is required.</span>
+          <span *ngIf="loginForm.get('email')?.errors?.['email']">Invalid email format.</span>
+        </div>
+
+        <!-- Password -->
+        <label class="block text-sm font-medium text-gray-900">Password</label>
+        <div class="flex" style="margin-top: 10px !important;">
+          <span
+            class="inline-flex items-center px-3 text-sm bg-gray-200 border rounded-s-md"
+            [ngClass]="getInputState('password')">
+            <mat-icon [ngClass]="getInputState('password')">lock</mat-icon>
+          </span>
+          <input [type]="hidePassword ? 'password' : 'text'" formControlName="password"
+            class="rounded-none rounded-e-lg bg-gray-50 border text-gray-900 block flex-1 min-w-0 w-full text-sm p-3.5"
+            [ngClass]="getInputState('password')"
+            placeholder="Enter your password">
+        </div>
+        <div *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched" class="text-red-500 text-xs mt-1" style="margin: 0 !important;">
+          Password is required.
+        </div>
+
+        <div class="flex justify-between text-sm">
+          <a routerLink="/forgot" class="text-indigo-600 hover:underline">Forgot password?</a>
+          <a routerLink="/signup" class="text-indigo-600 hover:underline" routerLink="/register">Sign up</a>
+        </div>
+
+        <button mat-raised-button color="primary" type="submit"
+          class="w-full h-12 text-lg font-medium transition-transform">
+          Log In
+        </button>
+      </form>
+
+      <p class="mt-6 text-center text-xs text-gray-500">
+        Copyright {{ getYear() }} Clinic Solutions. All rights reserved.
+      </p>
+    </div>
+  </div>
+</div>

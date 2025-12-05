@@ -1,0 +1,32 @@
+<h2 mat-dialog-title>Book / Edit Test</h2>
+<div mat-dialog-content>
+  <form #of="ngForm" class="grid gap-4">
+    <mat-form-field appearance="outline" class="w-full">
+      <mat-label>Patient Name</mat-label>
+      <input matInput name="patientName" [(ngModel)]="model.patientName" required />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w-full">
+      <mat-label>Test Type</mat-label>
+      <input matInput name="testType" [(ngModel)]="model.testType" required />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w-full">
+      <mat-label>Date</mat-label>
+      <input matInput [matDatepicker]="dp" name="date" [(ngModel)]="model.date" />
+      <mat-datepicker-toggle matIconSuffix [for]="dp"></mat-datepicker-toggle>
+      <mat-datepicker #dp></mat-datepicker>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w-full">
+      <mat-label>Status</mat-label>
+      <mat-select name="status" [(ngModel)]="model.status">
+        <mat-option *ngFor="let s of statuses" [value]="s">{{ s }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+  </form>
+</div>
+<div mat-dialog-actions align="end">
+  <button mat-stroked-button (click)="close()">Cancel</button>
+  <button mat-raised-button color="primary" class="!text-white" (click)="save()" [disabled]="!model.patientName || !model.testType">Save</button>
+</div>

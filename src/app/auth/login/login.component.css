@@ -1,0 +1,14 @@
+/* src/app/login/login.component.css */
+:host {
+  display: block;
+}
+
+/* Optional custom override */
+button.scale-105 {
+  transform: scale(1.05);
+  transition: transform 0.2s ease;
+}
+
+input {
+    outline: none;
+}

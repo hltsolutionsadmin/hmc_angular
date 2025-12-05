@@ -1,0 +1,25 @@
+<h2 mat-dialog-title>{{ mode === 'add' ? 'Add Test' : 'Edit Test' }}</h2>
+<div mat-dialog-content>
+  <form #tf="ngForm" class="grid gap-4">
+    <mat-form-field appearance="outline" class="w-full">
+      <mat-label>Test Name</mat-label>
+      <input matInput name="name" [(ngModel)]="model.name" required />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w-full">
+      <mat-label>Category</mat-label>
+      <input matInput name="category" [(ngModel)]="model.category" required />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w-full">
+      <mat-label>Sub-tests (comma separated)</mat-label>
+      <input matInput name="subs" [(ngModel)]="subTestsCSV" />
+    </mat-form-field>
+
+    <mat-slide-toggle color="primary" name="enabled" [(ngModel)]="model.enabled">Enabled</mat-slide-toggle>
+  </form>
+</div>
+<div mat-dialog-actions align="end">
+  <button mat-stroked-button (click)="close()">Cancel</button>
+  <button mat-raised-button color="primary" class="!text-white" (click)="save()" [disabled]="!model.name || !model.category">Save</button>
+</div>

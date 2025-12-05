@@ -1,0 +1,42 @@
+<div class="flex items-center justify-between mb-4">
+  <h2 class="text-2xl font-semibold text-text">Completed Reports</h2>
+</div>
+
+<div class="grid md:grid-cols-2 xl:grid-cols-3 gap-4">
+  <mat-card *ngFor="let r of reports" class="hover:shadow-lg transition">
+    <mat-card-header>
+      <div mat-card-avatar class="bg-accent/20 rounded-full p-2">
+        <mat-icon color="accent">task_alt</mat-icon>
+      </div>
+      <mat-card-title class="text-text">{{ r.patientName }}</mat-card-title>
+      <mat-card-subtitle>{{ r.testName }} • {{ r.date | date:'mediumDate' }}</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-actions align="end" class="flex items-center justify-between p-4 pt-0">
+      <div class="text-sm text-slate-600">Status: {{ r.status }}</div>
+      <div class="space-x-2">
+        <button mat-stroked-button color="primary" (click)="download(r)">
+          <mat-icon class="mr-1">download</mat-icon>
+          Download
+        </button>
+        <button mat-flat-button color="accent" class="!text-white" (click)="startReschedule(r)">
+          <mat-icon class="mr-1">event</mat-icon>
+          Reschedule
+        </button>
+      </div>
+    </mat-card-actions>
+
+    <div *ngIf="editingId === r.id" class="p-4 pt-0 animate-fade-in">
+      <div class="flex items-center gap-3">
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>New Date</mat-label>
+          <input matInput [matDatepicker]="dp" [(ngModel)]="tempDate" />
+          <mat-datepicker-toggle matIconSuffix [for]="dp"></mat-datepicker-toggle>
+          <mat-datepicker #dp></mat-datepicker>
+        </mat-form-field>
+        <button mat-stroked-button (click)="cancelReschedule()">Cancel</button>
+        <button mat-raised-button color="primary" class="!text-white" (click)="saveReschedule(r)">Save</button>
+      </div>
+    </div>
+  </mat-card>
+</div>
+<p>reports-list works!</p>
