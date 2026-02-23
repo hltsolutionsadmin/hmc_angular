@@ -1,0 +1,217 @@
+/* From Uiverse.io by alexruix */ 
+.body {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    row-gap: 2.5em;
+    column-gap: 2em;
+    padding: 1em;
+}
+.card {
+ border-radius: 10px;
+ position: relative;
+ padding: 1.8rem;
+ border: 1px solid #c3c6ce;
+ transition: 0.5s ease-out;
+ overflow: visible;
+}
+
+.card-details {
+ color: black;
+ height: 100%;
+}
+
+.card-button {
+ transform: translate(-50%, 125%);
+ width: 60%;
+ border-radius: 1rem;
+ border: none;
+ background-color: rgb(0 92 187 / var(--tw-bg-opacity, 1));
+ color: #fff;
+ font-size: 1rem;
+ padding: .5rem 1rem;
+ position: absolute;
+ left: 50%;
+ bottom: 0;
+ opacity: 0;
+ transition: 0.3s ease-out;
+}
+
+.text-body {
+ color: rgb(134, 134, 134);
+}
+
+/*Text*/
+.text-title {
+ font-size: 1.5em;
+ font-weight: bold;
+}
+
+/*Hover*/
+.card:hover {
+ border-color: rgb(0 92 187 / var(--tw-bg-opacity, 1));
+ box-shadow: 0 4px 18px 0 rgba(0, 0, 0, 0.25);
+}
+
+.card:hover .card-button {
+ transform: translate(-50%, 50%);
+ opacity: 1;
+}
+
+.view-toggle {
+    display: inline-flex;
+    align-items: center;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    padding: 3px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+.toggle-btn {
+    width: 40px;
+    height: 36px;
+    border: none;
+    border-radius: 8px;
+    background: transparent;
+    color: #6b7280;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+}
+
+.toggle-btn:hover {
+    background-color: #eff6ff;
+    color: rgb(0 92 187 / var(--tw-bg-opacity, 1));
+    transform: translateY(-1px);
+}
+
+.toggle-btn.active {
+    background-color: rgb(0 92 187 / var(--tw-bg-opacity, 1));
+    color: #ffffff;
+    box-shadow: 0 6px 14px rgba(0, 92, 187, 0.25);
+}
+
+.toggle-btn mat-icon {
+    font-size: 20px;
+    height: 20px;
+    width: 20px;
+}
+
+.orders-cards {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.orders-card {
+    background-color: #ffffff;
+    border-radius: 12px;
+    border: 1px solid #eef0f6;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.06);
+    padding: 16px;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    animation: ordersCardEnter 180ms ease-out both;
+}
+
+.orders-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 24px rgba(0,0,0,0.10);
+    border-color: rgba(0, 92, 187, 0.35);
+}
+
+.orders-card:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(0, 92, 187, 0.25), 0 10px 24px rgba(0,0,0,0.10);
+}
+
+@keyframes ordersCardEnter {
+    from {
+        opacity: 0;
+        transform: translateY(6px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.orders-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.orders-card-title {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+}
+
+.orders-card-patient {
+    font-weight: 700;
+    color: #111827;
+    font-size: 1rem;
+    line-height: 1.2;
+}
+
+.orders-card-test {
+    color: #6b7280;
+    font-size: 0.9rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.orders-card-body {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    padding: 10px 12px;
+    background: #f9fafb;
+    border-radius: 10px;
+    border: 1px solid #eef0f6;
+}
+
+.orders-card-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.meta-label {
+    font-size: 0.75rem;
+    color: #6b7280;
+}
+
+.meta-value {
+    font-weight: 600;
+    color: #111827;
+}
+
+.orders-empty {
+    grid-column: 1 / -1;
+    background: #ffffff;
+    border: 1px dashed #d6dbe8;
+    border-radius: 12px;
+    padding: 18px;
+    color: #6b7280;
+    text-align: center;
+}
+
+@media (max-width: 1200px) {
+    .orders-cards {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 768px) {
+    .orders-cards {
+        grid-template-columns: 1fr;
+    }
+}

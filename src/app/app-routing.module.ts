@@ -4,14 +4,12 @@ import { RegisterComponent } from './auth/register/register.component';
 import { HomeComponent } from './landing-page/Components/home/home.component';
 import { LoginComponent } from './auth/login/login.component';
 import { SideNavComponent } from './core/layout/side-nav/side-nav.component';
-import { SecurityVisualComponent } from './features/security-visual/security-visual.component';
 
 const routes: Routes = [
   { path: '', redirectTo: 'landing-page', pathMatch: 'full' },
   { path: 'landing-page', component: HomeComponent },
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
-  {path: 'security' , component: SecurityVisualComponent},
   {
     path: 'layout',
     component: SideNavComponent,

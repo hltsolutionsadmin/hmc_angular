@@ -38,8 +38,35 @@
   animation: fadeIn 1s ease-out forwards;
 }
 
-/* Smooth gradient slide from bottom to top */
+/* Gradient slide */
 .group:hover .translate-y-full {
   transform: translateY(0) !important;
   background-color: #213abd;
+}
+
+/* ===== RESPONSIVE LAYOUT ===== */
+
+/* Carousel container */
+.carousel {
+  width: 100%;
+  max-width: calc((14rem * 4) + (1.5rem * 3)); /* 4 cards centered */
+}
+
+/* Desktop */
+@media (min-width: 1024px) {
+  .carousel > div {
+    width: 14rem;
+  }
+}
+
+/* Mobile */
+@media (max-width: 767px) {
+  .carousel {
+    max-width: 100%;
+  }
+
+  .carousel > div {
+    width: 100%;
+    max-width: 20rem;
+  }
 }

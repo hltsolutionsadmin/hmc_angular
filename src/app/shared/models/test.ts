@@ -5,6 +5,7 @@ export interface SubTest {
   method: string;
   sample: string;
   price: number;
+  description: string;
   enabled: boolean;
 }
 

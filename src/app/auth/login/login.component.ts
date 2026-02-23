@@ -34,7 +34,24 @@ interface Quote {
       transition(':leave', [
         animate('800ms ease-out', style({ opacity: 0 }))
       ])
-    ])
+    ]),
+    trigger('shake', [
+  transition('* => shake', [
+    animate(
+      '40ms',
+      style({ transform: 'translateX(-5px)' })
+    ),
+    animate(
+      '40ms',
+      style({ transform: 'translateX(5px)' })
+    ),
+    animate(
+      '40ms',
+      style({ transform: 'translateX(0)' })
+    )
+  ])
+])
+
   ]
 })
 
@@ -105,4 +122,13 @@ export class LoginComponent implements OnInit{
     }
     return 'border-gray-300 text-gray-500';
   }
+
+  shouldShake(controlName: string): string | null {
+  const control = this.loginForm.get(controlName);
+  if (control && control.invalid && control.touched) {
+    return 'shake';
+  }
+  return null;
+}
+
 }

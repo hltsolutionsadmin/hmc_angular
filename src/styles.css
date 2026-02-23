@@ -17,3 +17,23 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
   .accent-pill { @apply inline-flex items-center px-2.5 py-0.5 text-xs font-medium rounded-full bg-accent/10 text-accent; }
   .primary-pill { @apply inline-flex items-center px-2.5 py-0.5 text-xs font-medium rounded-full bg-primary/10 text-primary; }
 }
+
+.hover:hover {
+  text-decoration: underline;
+}
+
+/* Chrome, Edge, Safari */
+::-webkit-scrollbar {
+  width: 0px;
+  height: 0px;
+}
+
+/* Firefox */
+html {
+  scrollbar-width: none;
+}
+
+/* IE / old Edge */
+body {
+  -ms-overflow-style: none;
+}

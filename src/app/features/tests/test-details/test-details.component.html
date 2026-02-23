@@ -1,0 +1,135 @@
+<div class="test-details-container" *ngIf="test">
+  <div class="test-header">
+    <button mat-icon-button routerLink="/layout/tests" class="back-button">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+    <h1 class="test-title">{{ test.name }}</h1>
+    <span class="test-category">{{ test.category }}</span>
+    <div class="status-badge" [class.active]="test.isActive">
+      {{ test.isActive ? 'Available' : 'Not Available' }}
+    </div>
+  </div>
+
+  <div class="test-content">
+    <div class="test-main-info">
+      <mat-card class="test-card">
+        <mat-card-header>
+          <mat-card-title>Test Overview</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <p class="test-description">{{ test.detailedDescription }}</p>
+          
+          <div class="info-grid">
+            <div class="info-item">
+              <mat-icon class="info-icon">schedule</mat-icon>
+              <div>
+                <div class="info-label">Turnaround Time</div>
+                <div class="info-value">{{ test.tat }}</div>
+              </div>
+            </div>
+            <div class="info-item">
+              <mat-icon class="info-icon">biotech</mat-icon>
+              <div>
+                <div class="info-label">Sample Required</div>
+                <div class="info-value">{{ test.sampleRequired ? 'Yes' : 'No' }}</div>
+              </div>
+            </div>
+            <div class="info-item">
+              <mat-icon class="info-icon">payments</mat-icon>
+              <div>
+                <div class="info-label">Price</div>
+                <div class="info-value price">₹{{ test.price }}</div>
+              </div>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="test-card">
+        <mat-card-header>
+          <mat-card-title>Test Details</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <h3>What's Included</h3>
+          <ul class="test-includes">
+            <li *ngFor="let item of test.testIncludes">
+              <mat-icon class="check-icon">check_circle</mat-icon>
+              <span>{{ item }}</span>
+            </li>
+          </ul>
+
+          <h3>Clinical Significance</h3>
+          <p>{{ test.clinicalSignificance }}</p>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="test-card" *ngIf="test.preparationInstructions">
+        <mat-card-header>
+          <mat-card-title>Preparation Instructions</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <p>{{ test.preparationInstructions }}</p>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <div class="test-sidebar">
+      <mat-card class="booking-card">
+        <mat-card-header>
+          <mat-card-title>Book This Test</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="price-section">
+            <span class="price">₹{{ test.price }}</span>
+            <span class="vat">+ 18% GST</span>
+          </div>
+          <div class="report-time">
+            <mat-icon>schedule</mat-icon>
+            <span>Report ready in {{ test.tat }}</span>
+          </div>
+          <button 
+            mat-raised-button 
+            color="primary" 
+            class="book-button"
+            (click)="bookTest()"
+            [disabled]="!test.isActive">
+            {{ test.isActive ? 'Book Now' : 'Not Available' }}
+          </button>
+          <div class="sample-info" *ngIf="test.sampleRequired">
+            <mat-icon>info</mat-icon>
+            <span>Sample collection at home available</span>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="why-choose-us">
+        <mat-card-header>
+          <mat-card-title>Why Choose Us</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="benefit">
+            <mat-icon>verified</mat-icon>
+            <span>NABL Accredited Labs</span>
+          </div>
+          <div class="benefit">
+            <mat-icon>home</mat-icon>
+            <span>Free Home Sample Collection</span>
+          </div>
+          <div class="benefit">
+            <mat-icon>security</mat-icon>
+            <span>Safe & Hygienic</span>
+          </div>
+          <div class="benefit">
+            <mat-icon>support_agent</mat-icon>
+            <span>24/7 Customer Support</span>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+</div>
+
+<div class="loading-spinner" *ngIf="!test">
+  <mat-spinner diameter="50"></mat-spinner>
+  <p>Loading test details...</p>
+</div>

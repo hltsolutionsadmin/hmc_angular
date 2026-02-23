@@ -1,42 +1,253 @@
-<div class="flex items-center justify-between mb-4">
-  <h2 class="text-2xl font-semibold text-text">Completed Reports</h2>
-</div>
-
-<div class="grid md:grid-cols-2 xl:grid-cols-3 gap-4">
-  <mat-card *ngFor="let r of reports" class="hover:shadow-lg transition">
-    <mat-card-header>
-      <div mat-card-avatar class="bg-accent/20 rounded-full p-2">
-        <mat-icon color="accent">task_alt</mat-icon>
+ <div class="h-full flex flex-col">
+  <div class="flex-1 min-h-0 overflow-auto">
+    <div class="flex justify-between items-center">
+      <div class="relative w-64">
+        <input
+          type="text"
+          placeholder="Search orders..."
+          class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+        >
+        <svg
+          class="absolute right-3 top-2.5 h-5 w-5 text-gray-400"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+          ></path>
+        </svg>
       </div>
-      <mat-card-title class="text-text">{{ r.patientName }}</mat-card-title>
-      <mat-card-subtitle>{{ r.testName }} • {{ r.date | date:'mediumDate' }}</mat-card-subtitle>
-    </mat-card-header>
-    <mat-card-actions align="end" class="flex items-center justify-between p-4 pt-0">
-      <div class="text-sm text-slate-600">Status: {{ r.status }}</div>
-      <div class="space-x-2">
-        <button mat-stroked-button color="primary" (click)="download(r)">
-          <mat-icon class="mr-1">download</mat-icon>
-          Download
-        </button>
-        <button mat-flat-button color="accent" class="!text-white" (click)="startReschedule(r)">
-          <mat-icon class="mr-1">event</mat-icon>
-          Reschedule
-        </button>
-      </div>
-    </mat-card-actions>
-
-    <div *ngIf="editingId === r.id" class="p-4 pt-0 animate-fade-in">
-      <div class="flex items-center gap-3">
-        <mat-form-field appearance="outline" class="w-full">
-          <mat-label>New Date</mat-label>
-          <input matInput [matDatepicker]="dp" [(ngModel)]="tempDate" />
-          <mat-datepicker-toggle matIconSuffix [for]="dp"></mat-datepicker-toggle>
-          <mat-datepicker #dp></mat-datepicker>
-        </mat-form-field>
-        <button mat-stroked-button (click)="cancelReschedule()">Cancel</button>
-        <button mat-raised-button color="primary" class="!text-white" (click)="saveReschedule(r)">Save</button>
+      <div class="flex space-x-2 items-center">
+        <select
+          class="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+        >
+          <option value="">All Status</option>
+          <option>status</option>
+        </select>
+         <button class="btn-primary">
+                <mat-icon>add</mat-icon>Reporte
+              </button>
+        <div *ngIf="!isMobile" class="view-toggle" role="group" aria-label="View mode">
+          <button
+            type="button"
+            class="toggle-btn"
+            [class.active]="viewMode === 'table'"
+            (click)="setViewMode('table')"
+            aria-label="Table view"
+            title="Table view"
+          >
+            <mat-icon>table_rows</mat-icon>
+          </button>
+          <button
+            type="button"
+            class="toggle-btn"
+            [class.active]="viewMode === 'card'"
+            (click)="setViewMode('card')"
+            aria-label="Card view"
+            title="Card view"
+          >
+            <mat-icon>grid_view</mat-icon>
+          </button>
+        </div>
       </div>
     </div>
-  </mat-card>
+    <div class="dashboard">
+      <!-- Contenido principal -->
+      <main class="main-content">
+        <div class="content">                
+          <!-- Resumen rápido -->
+          <div class="quick-stats">
+            <div class="stat-card">
+              <div class="stat-icon" style="background-color: #4e73df;">
+                <mat-icon>list</mat-icon>
+              </div>
+              <div class="stat-info">
+                <h3>125</h3>
+                <p>totales</p>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon" style="background-color: #1cc88a;">
+                <mat-icon>check_circle</mat-icon>
+              </div>
+              <div class="stat-info">
+                <h3>98</h3>
+                <p>Completed</p>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon" style="background-color: #f6c23e;">
+                <mat-icon>info</mat-icon>
+              </div>
+              <div class="stat-info">
+                <h3>15</h3>
+                <p>Pending</p>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon" style="background-color: #e74a3b;">
+                <mat-icon>cancel</mat-icon>
+              </div>
+              <div class="stat-info">
+                <h3>12</h3>
+                <p>Rechazados</p>
+              </div>
+            </div>
+          </div>
+
+          <div *ngIf="!isMobile && viewMode === 'table'">
+          <!-- Tabla de reportes -->
+          <div class="reports-table">
+            <table>
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Título</th>
+                  <th>Categoría</th>
+                  <th>Fecha</th>
+                  <th>Estado</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let row of paginatedReportRows; trackBy: trackByReportRowId">
+                  <td>{{ row.id }}</td>
+                  <td>{{ row.title }}</td>
+                  <td>{{ row.category }}</td>
+                  <td>{{ row.date }}</td>
+                  <td><span class="status" [ngClass]="row.statusClass">{{ row.statusLabel }}</span></td>
+                  <td>
+                    <button class="btn-action"><mat-icon>visibility</mat-icon></button>
+                    <button class="btn-action"><mat-icon>download</mat-icon></button>
+                    <button class="btn-action"><mat-icon>delete</mat-icon></button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          </div>
+
+          <div *ngIf="isMobile || viewMode === 'card'" class="reports-cards">
+            <div class="reports-card" *ngFor="let row of paginatedReportRows; trackBy: trackByReportRowId">
+              <div class="reports-card-header">
+                <div class="reports-card-title">
+                  <div class="reports-card-test">{{ row.title }}</div>
+                  <div class="reports-card-patient">{{ row.category }}</div>
+                </div>
+                <span class="status" [ngClass]="row.statusClass">{{ row.statusLabel }}</span>
+              </div>
+
+              <div class="reports-card-body">
+                <div class="reports-card-meta">
+                  <span class="meta-label">Report ID</span>
+                  <span class="meta-value">{{ row.id }}</span>
+                </div>
+                <div class="reports-card-meta">
+                  <span class="meta-label">Date</span>
+                  <span class="meta-value">{{ row.date }}</span>
+                </div>
+              </div>
+
+              <div class="reports-card-actions">
+                <button class="btn-action" type="button" aria-label="View">
+                  <mat-icon>visibility</mat-icon>
+                </button>
+                <button class="btn-action" type="button" aria-label="Download">
+                  <mat-icon>download</mat-icon>
+                </button>
+                <button class="btn-action" type="button" aria-label="Delete">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </div>
+            </div>
+
+            <div class="reports-empty" *ngIf="paginatedReportRows.length === 0">
+              No reports found.
+            </div>
+          </div>
+
+          <div class="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6" *ngIf="totalItems > itemsPerPage">
+            <div class="flex-1 flex justify-between sm:hidden">
+              <button
+                (click)="currentPage = currentPage - 1; $event.stopPropagation()"
+                [disabled]="currentPage === 1"
+                class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Previous
+              </button>
+              <button
+                (click)="currentPage = currentPage + 1; $event.stopPropagation()"
+                [disabled]="currentPage * itemsPerPage >= totalItems"
+                class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Next
+              </button>
+            </div>
+            <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+              <div>
+                <p class="text-sm text-gray-700">
+                  Showing
+                  <span class="font-medium">{{ (currentPage - 1) * itemsPerPage + 1 }}</span>
+                  to
+                  <span class="font-medium">
+                    {{ currentPage * itemsPerPage > totalItems ? totalItems : currentPage * itemsPerPage }}
+                  </span>
+                  of
+                  <span class="font-medium">{{ totalItems }}</span>
+                  results
+                </p>
+              </div>
+              <div>
+                <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                  <button
+                    (click)="currentPage = currentPage - 1; $event.stopPropagation()"
+                    [disabled]="currentPage === 1"
+                    class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    <span class="sr-only">Previous</span>
+                    <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                      <path fill-rule="evenodd" d="M12.79 5.23a.75.75 0 01-.02 1.06L8.832 10l3.938 3.71a.75.75 0 11-1.04 1.08l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 011.06.02z" clip-rule="evenodd" />
+                    </svg>
+                  </button>
+
+                  <ng-container *ngFor="let page of getPageNumbers()">
+                    <button
+                      *ngIf="page !== '...'"
+                      (click)="currentPage = +page; $event.stopPropagation()"
+                      [class.bg-blue-50]="currentPage === +page"
+                      [class.border-blue-500]="currentPage === +page"
+                      [class.text-blue-600]="currentPage === +page"
+                      class="relative inline-flex items-center px-4 py-2 border text-sm font-medium"
+                      [ngClass]="currentPage === +page ? 'z-10 bg-blue-50 border-blue-500 text-blue-600' : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50'"
+                    >
+                      {{ page }}
+                    </button>
+                    <span *ngIf="page === '...'" class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700">
+                      {{ page }}
+                    </span>
+                  </ng-container>
+
+                  <button
+                    (click)="currentPage = currentPage + 1; $event.stopPropagation()"
+                    [disabled]="currentPage * itemsPerPage >= totalItems"
+                    class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    <span class="sr-only">Next</span>
+                    <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                      <path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clip-rule="evenodd" />
+                    </svg>
+                  </button>
+                </nav>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
 </div>
-<p>reports-list works!</p>

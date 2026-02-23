@@ -1,12 +1,10 @@
 <div
-  class="flex justify-between items-center bg-gradient-to-br from-white via-[#f6f7fb] to-[#e9ecf8]"
-  style="height: 500px;"
+  class="reviews-container flex justify-between items-center bg-gradient-to-br from-white via-[#f6f7fb] to-[#e9ecf8]"
 >
   <!-- LEFT SIDE -->
-  <div class="space-y-5" style="width: 40%; padding: 2rem;">
+  <div class="reviews-content space-y-5">
     <h2
       class="text-4xl md:text-5xl font-bold text-[#213abd] leading-tight mb-8"
-      style="line-height: 3.5rem;"
     >
       Real User Reviews <br />
       <span class="text-gray-900">of Our HMC Plateform</span>
@@ -18,8 +16,11 @@
   </div>
 
   <!-- RIGHT SIDE -->
-  <div style="width: 55%;">
-    <div class="slider" style="--width: 200px; --height: 350px; --quantity: {{ quotes.length }};">
+  <div class="reviews-slider">
+    <div
+      class="slider"
+      style="--width: 200px; --height: 350px; --quantity: {{ quotes.length }};"
+    >
       <div class="list mt-12">
         <div
           class="item"
@@ -32,7 +33,12 @@
             </div>
 
             <div class="avatar-img flex justify-center mt-2">
-              <img [src]="q.img" alt="avatar" class="rounded-full w-14 h-14 object-cover" style="border: 3px solid #213abd;" />
+              <img
+                [src]="q.img"
+                alt="avatar"
+                class="rounded-full w-14 h-14 object-cover"
+                style="border: 3px solid #213abd;"
+              />
             </div>
 
             <p class="font-semibold mt-2 text-gray-800">{{ q.name }}</p>

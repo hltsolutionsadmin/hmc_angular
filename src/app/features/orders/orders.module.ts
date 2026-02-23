@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 
 import { OrdersRoutingModule } from './orders-routing.module';
 import { OrdersListComponent } from './orders-list/orders-list.component';
-import { OrderDialogComponent } from './order-dialog/order-dialog.component';
+import { OrderDetailsComponent } from './order-details/order-details.component';
 import { MatTableModule } from '@angular/material/table';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
@@ -22,7 +22,7 @@ import { MatCardModule } from '@angular/material/card';
 @NgModule({
   declarations: [
     OrdersListComponent,
-    OrderDialogComponent
+    OrderDetailsComponent
   ],
   imports: [
     CommonModule,

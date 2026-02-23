@@ -7,6 +7,9 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
 import { LayoutModule } from './core/layout/layout.module';
 import { AuthModule } from './auth/auth.module';
 import { LandingPageModule } from './landing-page/landing-page.module';
+import { OrdersModule } from './features/orders/orders.module';
+import { ReportsModule } from './features/reports/reports.module';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 @NgModule({
   declarations: [
@@ -19,7 +22,10 @@ import { LandingPageModule } from './landing-page/landing-page.module';
     LayoutModule,
     AuthModule,
     FormsModule,
-    LandingPageModule
+    LandingPageModule,
+    OrdersModule,
+    FontAwesomeModule,
+    ReportsModule
   ],
   providers: [
     provideAnimationsAsync()

@@ -33,7 +33,7 @@
 
         <!-- Email -->
         <label class="block text-sm font-medium text-gray-900">Email</label>
-        <div class="flex" style="margin-top: 10px !important;">
+        <div class="flex" style="margin-top: 10px !important;" [@shake]="shouldShake('email')">
           <span
             class="inline-flex items-center px-3 text-sm bg-gray-200 border rounded-s-md"
             [ngClass]="getInputState('email')">
@@ -51,7 +51,7 @@
 
         <!-- Password -->
         <label class="block text-sm font-medium text-gray-900">Password</label>
-        <div class="flex" style="margin-top: 10px !important;">
+        <div class="flex" style="margin-top: 10px !important;" [@shake]="shouldShake('password')">
           <span
             class="inline-flex items-center px-3 text-sm bg-gray-200 border rounded-s-md"
             [ngClass]="getInputState('password')">

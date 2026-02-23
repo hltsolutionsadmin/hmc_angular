@@ -1,10 +1,8 @@
 <div class="flex h-screen bg-gray-50">
   <!-- Sidebar -->
-  
- <aside
-    [ngClass]="sidebarOpen ? 'w-[250px]' : 'w-20'"
-    class="transition-all duration-300 bg-white border-r shadow-sm flex flex-col"
-  >
+
+  <aside [ngClass]="sidebarOpen ? 'w-[250px]' : 'w-20'"
+    class="transition-all duration-300 bg-white border-r shadow-sm flex flex-col">
     <div class="flex items-center justify-between p-4 border-b">
       <span class="text-xl font-semibold text-blue-600 truncate" style="color: #000;" *ngIf="sidebarOpen">HMC</span>
       <button mat-icon-button (click)="toggleSidebar()">
@@ -13,30 +11,55 @@
     </div>
 
     <nav class="flex-1 overflow-y-auto px-2 py-3 space-y-1 custom-scrollbar">
-      <a
-        routerLink="/layout/teachers"
-        routerLinkActive="bg-[#fae27c] text-blue-600"
-        class="flex items-center gap-3 px-3 py-2 text-gray-700 rounded-lg hover:bg-[#fae27c] transition"
-      >
-        <mat-icon>dashboard</mat-icon>
-        <span *ngIf="sidebarOpen">Tests</span>
-      </a>
-
-      <a
-        routerLink="/layout/scl-class"
-        routerLinkActive="bg-[#fae27c] text-blue-600"
-        class="flex items-center gap-3 px-3 py-2 text-gray-700 rounded-lg hover:bg-blue-50 transition"
-      >
+      <div>
+        <div [ngClass]="{'bg-[#005cbb] text-white': isServicesActive()}" class="rounded-lg">
+          <button (click)="toggleTimeAttendance()"
+            class="flex items-center justify-between w-full text-sm font-medium rounded-lg transition"
+            [class.text-white]="isServicesActive()"
+            [class.text-neutral-600]="!isServicesActive()"
+            [class.hover:bg-blue-600]="isServicesActive()"
+            [class.hover:bg-neutral-100]="!isServicesActive()">
+            <div class="flex items-center">
+              <div class="flex items-center gap-3 px-3 py-2 rounded-lg">
+                <mat-icon [class.text-white]="isServicesActive()" [class.text-gray-700]="!isServicesActive()">dashboard</mat-icon>
+                <span *ngIf="sidebarOpen">Services</span>
+              </div>
+            </div>
+            <mat-icon [class.rotate-180]="isTimeAttendanceOpen" class="transition-transform duration-200" [class.text-white]="isServicesActive()">
+              arrow_drop_down
+            </mat-icon>
+          </button>
+        </div>
+        <ul id="time-attendance-submenu" class="mt-1 ml-4 space-y-1" [class.hidden]="!isTimeAttendanceOpen">
+          <li>
+            <a routerLink="/layout/tests/categories" 
+              routerLinkActive="bg-[#005cbb] text-white"
+              [routerLinkActiveOptions]="{exact: true}"
+              class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-blue-600 transition">
+              <mat-icon>category</mat-icon>
+              <span *ngIf="sidebarOpen">Categories</span>
+            </a>
+          </li>
+          <li>
+            <a routerLink="/layout/tests" 
+              routerLinkActive="bg-[#005cbb] text-white"
+              [routerLinkActiveOptions]="{exact: true}"
+              class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-blue-600 transition">
+              <mat-icon>loyalty</mat-icon>
+              <span *ngIf="sidebarOpen">Products</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+      <a routerLink="/layout/orders" routerLinkActive="bg-[#005cbb] text-white"
+        class="flex items-center gap-3 px-3 py-2 text-gray-700 rounded-lg hover:bg-blue-50 transition">
         <mat-icon>group</mat-icon>
-        <span *ngIf="sidebarOpen">bookings</span>
+        <span *ngIf="sidebarOpen">Orders & Bookings</span>
       </a>
 
-      <a
-        routerLink="/students"
-        routerLinkActive="bg-[#fae27c] text-blue-600"
-        class="flex items-center gap-3 px-3 py-2 text-gray-700 rounded-lg hover:bg-blue-50 transition"
-      >
-        <mat-icon>school</mat-icon>
+      <a routerLink="/layout/reports" routerLinkActive="bg-[#005cbb] text-white"
+        class="flex items-center gap-3 px-3 py-2 text-gray-700 rounded-lg hover:bg-blue-50 transition">
+        <mat-icon>reports</mat-icon>
         <span *ngIf="sidebarOpen">Reports</span>
       </a>
 
@@ -59,18 +82,18 @@
         <mat-icon class="cursor-pointer">chat_bubble_outline</mat-icon>
 
         <div class="flex items-center gap-2">
-           <div class="hidden md:block text-sm">
+          <div class="hidden md:block text-sm">
             <div class="font-medium">Linda Adora</div>
             <div class="text-gray-500">Admin</div>
           </div>
           <img src="https://randomuser.me/api/portraits/women/44.jpg" class="w-10 h-10 rounded-full" alt="User">
-         
+
         </div>
       </div>
     </header>
 
     <!-- Router outlet for table -->
-    <main class="flex-1 overflow-auto" style="padding: 1em 2em;">
+    <main class="flex-1 min-h-0 overflow-auto" style="padding: 1em 2em;">
       <router-outlet></router-outlet>
     </main>
   </div>

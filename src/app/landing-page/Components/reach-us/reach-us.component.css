@@ -1,11 +1,16 @@
+/* ================= EXISTING DESKTOP STYLES (UNCHANGED) ================= */
+
 @keyframes shake {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateX(0);
   }
-  20%, 60% {
+  20%,
+  60% {
     transform: translateX(-10px);
   }
-  40%, 80% {
+  40%,
+  80% {
     transform: translateX(10px);
   }
 }
@@ -20,8 +25,8 @@
   align-items: center;
   padding: 10px 15px;
   gap: 15px;
-  background-color: #007ACC;
-  outline: 3px #007ACC solid;
+  background-color: #007acc;
+  outline: 3px #007acc solid;
   outline-offset: -3px;
   border: none;
   cursor: pointer;
@@ -37,10 +42,80 @@
   transition: 400ms;
 }
 
-
-input, textarea {
+input,
+textarea {
   background: #fff;
-    border: 1px solid #ced4da;
-    color: #495057;
-    font-size: 14px;
+  border: 1px solid #ced4da;
+  color: #495057;
+  font-size: 14px;
+}
+
+/* ================= MOBILE VIEW ONLY ================= */
+
+@media (max-width: 768px) {
+  .reach-container {
+    padding: 2rem 1rem;
+  }
+
+  .reach-card {
+    padding: 1.5rem;
+    animation: slideUp 0.8s ease-out both;
+  }
+
+  /* Stack contact info vertically */
+  .reach-info {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .info-block {
+    width: 100%;
+    padding: 1rem;
+    border-radius: 12px;
+    background: #f6f7fb;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+    animation: fadeIn 0.6s ease forwards;
+  }
+
+  .info-block span.material-icons {
+    font-size: 32px;
+    margin-bottom: 0.5rem;
+  }
+
+  /* Map responsive height */
+  .reach-map {
+    height: 300px !important;
+    margin-top: 1.5rem;
+    border-radius: 16px;
+    overflow: hidden;
+    animation: fadeIn 1s ease forwards;
+  }
+
+  h2 {
+    text-align: center;
+  }
+}
+
+/* ================= MOBILE ANIMATIONS ================= */
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }

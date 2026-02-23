@@ -8,5 +8,56 @@
 }
 
 a {
-    font-size: 15px;
+  font-size: 15px;
+}
+
+/* ================= MOBILE VIEW ONLY ================= */
+@media (max-width: 768px) {
+
+  /* Top black bar */
+  .top-bar {
+    /* flex-direction: column; */
+    text-align: center;
+    gap: 6px;
+    padding: 0.75em 1em !important;
+  }
+
+  .top-bar > div {
+    flex-direction: column;
+    gap: 4px;
+  }
+  .timings {
+    flex-direction: row !important;
+    width: 50%;
+  }
+
+  .top-bar mat-icon {
+    font-size: 16px;
+  }
+
+  /* Hide nav links */
+  .nav-links {
+    display: none;
+  }
+
+  /* Navbar actions */
+  .nav-actions {
+    gap: 0;
+  }
+
+  /* Hide Sign Up button */
+  .nav-actions button:last-child {
+    display: none;
+  }
+
+  /* Compact Sign In */
+  .nav-actions button {
+    padding: 0.4rem 0.8rem;
+    font-size: 14px;
+  }
+
+  /* Logo size */
+  h1 {
+    font-size: 1.5rem;
+  }
 }
