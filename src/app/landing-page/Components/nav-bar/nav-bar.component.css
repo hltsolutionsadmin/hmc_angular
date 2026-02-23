@@ -2,6 +2,12 @@
   display: block;
 }
 
+.app-logo {
+  height: 40px;
+  width: auto;
+  object-fit: contain;
+}
+
 .hidden {
   transform: translateY(-100%);
   opacity: 0;
@@ -59,5 +65,9 @@ a {
   /* Logo size */
   h1 {
     font-size: 1.5rem;
+  }
+
+  .app-logo {
+    height: 32px;
   }
 }

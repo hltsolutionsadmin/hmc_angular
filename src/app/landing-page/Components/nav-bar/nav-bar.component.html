@@ -1,35 +1,13 @@
-<!-- Top Black Bar -->
-<div
-  class="bg-black text-white text-sm py-2 px-4 flex justify-between items-center transition-all duration-300 top-bar"
-  style="padding: 1em 3em;"
-  [class.hidden]="hideTopBar"
->
-  <div class="flex items-center">
-    <div class="flex items-center space-x-1">
-      <mat-icon fontIcon="email" class="text-blue-500 text-base"></mat-icon>
-      <span>infoexample.com</span>
-    </div>
-    <div class="flex items-center space-x-1">
-      <mat-icon fontIcon="call" class="text-blue-500 text-base"></mat-icon>
-      <span>+1 56654 65656</span>
-    </div>
-  </div>
-
-  <div class="flex items-center space-x-1 timings">
-    <mat-icon fontIcon="schedule" class="text-blue-500 text-base"></mat-icon>
-    <span>Monday - Friday, 8 AM to 10 PM</span>
-  </div>
-</div>
-
 <!-- Sticky White Navbar -->
 <div class="bg-white shadow-sm py-3 px-6 flex items-center justify-between sticky top-0 z-50">
   <!-- Logo -->
   <div class="flex items-center space-x-2">
+    <img class="app-logo" src="/assets/hmc-logo.png" alt="HMC Logo" />
     <h1 class="text-2xl font-bold text-gray-800">HMC</h1>
   </div>
 
   <!-- Center Nav Links -->
-  <div class="flex space-x-8 text-lg font-medium text-gray-900 nav-links">
+  <div class="flex space-x-8 text-lg font-medium text-gray-900 nav-links justify-center items-center">
     <a href="javascript:void(0)" (click)="scrollToSection('home')" class="hover:text-blue-600 text-blue-700">Home</a>
     <a href="javascript:void(0)" (click)="scrollToSection('specialities')" class="hover:text-blue-600">Specialities</a>
     <a href="javascript:void(0)" (click)="scrollToSection('healthcare')" class="hover:text-blue-600">Healthcare</a>
@@ -38,21 +16,4 @@
     <a href="javascript:void(0)" (click)="scrollToSection('footer')" class="hover:text-blue-600">Footer</a>
   </div>
 
-  <!-- Right Buttons -->
-  <div class="flex space-x-3 nav-actions">
-    <button
-      class="bg-blue-700 text-white flex items-center space-x-1 px-4 py-2 rounded-md hover:bg-blue-800"
-      routerLink="/login"
-    >
-      <mat-icon fontIcon="lock"></mat-icon>
-      <span>Sign In</span>
-    </button>
-
-    <button
-      class="bg-black text-white flex items-center space-x-1 px-4 py-2 rounded-md hover:bg-gray-900"
-    >
-      <mat-icon fontIcon="group_add"></mat-icon>
-      <span>Sign Up</span>
-    </button>
-  </div>
 </div>
