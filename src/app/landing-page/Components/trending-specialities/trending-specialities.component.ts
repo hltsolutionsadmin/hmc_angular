@@ -12,12 +12,12 @@ export class TrendingSpecialitiesComponent implements AfterViewInit {
   isVisible = false;
 
   specialities = [
-    { name: 'Cardiology', doctors: 20, icon: '../../../../assets/icon-01.svg' },
-    { name: 'Dental Care', doctors: 15, icon: '../../../../assets/icon-02.svg' },
-    { name: 'Neurology', doctors: 12, icon: '../../../../assets/icon-03.svg' },
-    { name: 'Gynecology', doctors: 10, icon: '../../../../assets/icon-04.svg' },
-    { name: 'Oncology', doctors: 17, icon: '../../../../assets/icon-05.svg' },
-    { name: 'Urology', doctors: 14, icon: '../../../../assets/icon-06.svg' },
+    { name: 'TMT', doctors: 1, icon: '../../../../assets/icon-01.svg' },
+    { name: 'PFT', doctors: 1, icon: '../../../../assets/icon-02.svg' },
+    { name: 'X-Ray', doctors: 1, icon: '../../../../assets/icon-03.svg' },
+    { name: 'Audiometry', doctors: 1, icon: '../../../../assets/icon-04.svg' },
+    { name: 'ECG', doctors: 1, icon: '../../../../assets/icon-05.svg' },
+    { name: '2D Echo', doctors: 1, icon: '../../../../assets/icon-06.svg' },
   ];
 
   ngAfterViewInit() {
