@@ -42,10 +42,8 @@
         ></div>
 
         <!-- Icon -->
-        <div
-          class="relative z-10 bg-gray-100 rounded-full p-5 mb-4 transition-transform duration-700 group-hover:-rotate-full"
-        >
-          <img [src]="spec.icon" alt="{{ spec.name }}" class="h-10 w-10" />
+        <div class="relative z-10 mb-4">
+          <img [src]="spec.icon" alt="{{ spec.name }}" class="h-30 w-30 object-contain" />
         </div>
 
         <!-- Text -->
@@ -54,11 +52,6 @@
         >
           {{ spec.name }}
         </h3>
-        <p
-          class="relative z-10 text-sm text-gray-500 mt-1 transition-colors duration-500 group-hover:text-white"
-        >
-          {{ spec.doctors }} Available
-        </p>
       </div>
     </div>
 

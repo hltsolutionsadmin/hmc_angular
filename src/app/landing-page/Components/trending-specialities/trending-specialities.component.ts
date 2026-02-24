@@ -12,12 +12,12 @@ export class TrendingSpecialitiesComponent implements AfterViewInit {
   isVisible = false;
 
   specialities = [
-    { name: 'TMT', doctors: 1, icon: '../../../../assets/icon-01.svg' },
-    { name: 'PFT', doctors: 1, icon: '../../../../assets/icon-02.svg' },
-    { name: 'X-Ray', doctors: 1, icon: '../../../../assets/icon-03.svg' },
-    { name: 'Audiometry', doctors: 1, icon: '../../../../assets/icon-04.svg' },
-    { name: 'ECG', doctors: 1, icon: '../../../../assets/icon-05.svg' },
-    { name: '2D Echo', doctors: 1, icon: '../../../../assets/icon-06.svg' },
+    { name: 'TMT', icon: '../../../../assets/tmt.png' },
+    { name: 'PFT', icon: '../../../../assets/pft.png' },
+    { name: 'X-Ray', icon: '../../../../assets/xray.png' },
+    { name: 'Audiometry', icon: '../../../../assets/audiometry.png' },
+    { name: 'ECG', icon: '../../../../assets/ecg.png' },
+    { name: '2D Echo', icon: '../../../../assets/2d echo.png' },
   ];
 
   ngAfterViewInit() {
