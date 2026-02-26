@@ -1,7 +1,4 @@
-<section
-  #trendingSection
-  class="py-20 px-16 bg-white text-center relative overflow-hidden"
->
+<section #trendingSection class="py-20 px-16 bg-white text-center relative overflow-hidden">
   <!-- Heading -->
   <div class="mb-12 animate-fadeIn">
     <h2 class="text-3xl md:text-4xl font-bold text-gray-900">
@@ -18,48 +15,37 @@
   <!-- Carousel Container -->
   <div class="relative flex items-center justify-center">
     <!-- Left Button -->
-    <button
-      (click)="scrollLeft()"
-      class="absolute left-0 z-10 bg-white border border-gray-200 rounded-full p-3 shadow-md hover:bg-gray-50 transition"
-    >
+    <button (click)="scrollLeft()"
+      class="absolute left-0 z-10 bg-white border border-gray-200 rounded-full p-3 shadow-md hover:bg-gray-50 transition">
       <mat-icon fontIcon="chevron_left"></mat-icon>
     </button>
 
     <!-- Scrollable Cards -->
-    <div
-      #carousel
-      class="carousel flex space-x-6 overflow-x-hidden scroll-smooth transition-all duration-700 mx-auto"
-    >
-      <div
-        *ngFor="let spec of specialities; let i = index"
-        class="group relative bg-white border border-gray-200 rounded-2xl flex-shrink-0 py-8 flex flex-col items-center justify-center shadow-sm hover:shadow-md transition-shadow duration-500 overflow-hidden"
-        [ngClass]="{ 'animate-cardIn': isVisible }"
-        [style.animation-delay.ms]="i * 100"
-      >
+    <div #carousel class="carousel flex space-x-6 overflow-x-hidden scroll-smooth transition-all duration-700 mx-auto">
+      <div *ngFor="let spec of specialities; let i = index"
+        class="group relative bg-white border border-gray-200 rounded-2xl flex-shrink-0 flex flex-col items-center justify-center shadow-sm hover:shadow-md transition-shadow duration-500 overflow-hidden"
+        [ngClass]="{ 'animate-cardIn': isVisible }" [style.animation-delay.ms]="i * 100">
         <!-- Gradient -->
         <div
-          class="absolute inset-0 bg-[#213abd] transition-transform duration-700 ease-in-out translate-y-full group-hover:translate-y-0"
-        ></div>
+          class="absolute inset-0 bg-[#213abd] transition-transform duration-700 ease-in-out translate-y-full group-hover:translate-y-0">
+        </div>
 
         <!-- Icon -->
-        <div class="relative z-10 mb-4">
-          <img [src]="spec.icon" alt="{{ spec.name }}" class="h-30 w-30 object-contain" />
+        <div class="relative z-10 mb-4 image-wrapper">
+          <img [src]="spec.icon" alt="{{ spec.name }}" class="service-img" />
         </div>
 
         <!-- Text -->
         <h3
-          class="relative z-10 text-lg font-semibold text-gray-900 transition-colors duration-500 group-hover:text-white"
-        >
+          class="relative z-10 text-lg font-semibold text-gray-900 transition-colors duration-500 group-hover:text-white">
           {{ spec.name }}
         </h3>
       </div>
     </div>
 
     <!-- Right Button -->
-    <button
-      (click)="scrollRight()"
-      class="absolute right-0 z-10 bg-white border border-gray-200 rounded-full p-3 shadow-md hover:bg-gray-50 transition"
-    >
+    <button (click)="scrollRight()"
+      class="absolute right-0 z-10 bg-white border border-gray-200 rounded-full p-3 shadow-md hover:bg-gray-50 transition">
       <mat-icon fontIcon="chevron_right"></mat-icon>
     </button>
   </div>
