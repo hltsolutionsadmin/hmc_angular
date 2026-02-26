@@ -12,11 +12,11 @@ export class TrendingSpecialitiesComponent implements AfterViewInit {
   isVisible = false;
 
   specialities = [
-    { name: 'TMT', icon: '../../../../assets/tmt.png' },
-    { name: 'PFT', icon: '../../../../assets/pft.png' },
-    { name: 'X-Ray', icon: '../../../../assets/xray.png' },
-    { name: 'Audiometry', icon: '../../../../assets/audiometry.png' },
-    { name: 'ECG', icon: '../../../../assets/ecg.png' },
+    { name: 'TMT', icon: '../../../../assets/tmt2.png' },
+    { name: 'PFT', icon: '../../../../assets/pft1.png' },
+    { name: 'X-Ray', icon: '../../../../assets/xray1.png' },
+    { name: 'Audiometry', icon: '../../../../assets/audiometry1.png' },
+    { name: 'ECG', icon: '../../../../assets/ecg1.png' },
     { name: '2D Echo', icon: '../../../../assets/2d echo.png' },
   ];
 

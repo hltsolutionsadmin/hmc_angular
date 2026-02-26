@@ -7,6 +7,29 @@
   display: none;
 }
 
+
+.carousel > div {
+  height: 18rem; 
+  padding: 1.5rem;
+}
+
+/* Image wrapper fixed area */
+.image-wrapper {
+  height: 14rem;          
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+/* Image uniform sizing */
+.service-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;   /* keeps full image visible */
+}
+
 /* Entry animation */
 @keyframes cardIn {
   from {
