@@ -1,135 +1,112 @@
-<div class="test-details-container" *ngIf="test">
-  <div class="test-header">
-    <button mat-icon-button routerLink="/layout/tests" class="back-button">
-      <mat-icon>arrow_back</mat-icon>
-    </button>
-    <h1 class="test-title">{{ test.name }}</h1>
-    <span class="test-category">{{ test.category }}</span>
-    <div class="status-badge" [class.active]="test.isActive">
-      {{ test.isActive ? 'Available' : 'Not Available' }}
-    </div>
+<div *ngIf="test" class="space-y-6">
+  <div class="flex items-center gap-3">
+    <a routerLink="/layout/tests" class="inline-flex items-center gap-2 text-sm font-bold text-slate-700 hover:text-indigo-700">
+      <mat-icon class="text-[18px]">arrow_back</mat-icon>
+      Back to tests
+    </a>
+    <span class="text-slate-300">/</span>
+    <span class="text-sm font-semibold text-slate-600">{{ test.categoryTitle }}</span>
   </div>
 
-  <div class="test-content">
-    <div class="test-main-info">
-      <mat-card class="test-card">
-        <mat-card-header>
-          <mat-card-title>Test Overview</mat-card-title>
-        </mat-card-header>
-        <mat-card-content>
-          <p class="test-description">{{ test.detailedDescription }}</p>
-          
-          <div class="info-grid">
-            <div class="info-item">
-              <mat-icon class="info-icon">schedule</mat-icon>
-              <div>
-                <div class="info-label">Turnaround Time</div>
-                <div class="info-value">{{ test.tat }}</div>
-              </div>
-            </div>
-            <div class="info-item">
-              <mat-icon class="info-icon">biotech</mat-icon>
-              <div>
-                <div class="info-label">Sample Required</div>
-                <div class="info-value">{{ test.sampleRequired ? 'Yes' : 'No' }}</div>
-              </div>
-            </div>
-            <div class="info-item">
-              <mat-icon class="info-icon">payments</mat-icon>
-              <div>
-                <div class="info-label">Price</div>
-                <div class="info-value price">₹{{ test.price }}</div>
-              </div>
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <!-- Main -->
+    <div class="lg:col-span-2 space-y-4">
+      <div class="rounded-3xl border border-slate-200 bg-white shadow-sm p-6">
+        <div class="flex items-start gap-4">
+          <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-50 to-emerald-50 border border-slate-200 grid place-content-center shrink-0">
+            <mat-icon class="text-indigo-700">biotech</mat-icon>
+          </div>
+          <div class="min-w-0">
+            <p class="text-2xl font-extrabold text-slate-900 leading-snug">{{ test.name }}</p>
+            <p class="mt-2 text-sm text-slate-600">{{ test.description }}</p>
+
+            <div class="mt-4 flex flex-wrap items-center gap-2">
+              <span class="text-[11px] px-2 py-1 rounded-full bg-slate-50 border border-slate-200 text-slate-700">{{ test.reportTime }}</span>
+              <span *ngIf="test.fastingRequired" class="text-[11px] px-2 py-1 rounded-full bg-amber-50 border border-amber-200 text-amber-700">Fasting</span>
+              <span *ngIf="test.parametersCount" class="text-[11px] px-2 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700">{{ test.parametersCount }} parameters</span>
+              <span *ngIf="test.rating" class="text-[11px] px-2 py-1 rounded-full bg-white border border-slate-200 text-slate-700 inline-flex items-center gap-1">
+                <mat-icon class="text-[16px] text-amber-500">star</mat-icon>
+                {{ test.rating }}
+              </span>
             </div>
           </div>
-        </mat-card-content>
-      </mat-card>
+        </div>
+      </div>
 
-      <mat-card class="test-card">
-        <mat-card-header>
-          <mat-card-title>Test Details</mat-card-title>
-        </mat-card-header>
-        <mat-card-content>
-          <h3>What's Included</h3>
-          <ul class="test-includes">
-            <li *ngFor="let item of test.testIncludes">
-              <mat-icon class="check-icon">check_circle</mat-icon>
-              <span>{{ item }}</span>
-            </li>
-          </ul>
+      <div class="rounded-3xl border border-slate-200 bg-white shadow-sm p-6">
+        <p class="text-sm font-extrabold text-slate-900">What’s included</p>
+        <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div *ngFor="let x of (test.included || [])" class="flex items-start gap-2 text-sm text-slate-700">
+            <mat-icon class="text-[18px] text-emerald-600">check_circle</mat-icon>
+            <span>{{ x }}</span>
+          </div>
+          <p *ngIf="!(test.included?.length)" class="text-sm text-slate-600">Included parameters will be shown here.</p>
+        </div>
+      </div>
 
-          <h3>Clinical Significance</h3>
-          <p>{{ test.clinicalSignificance }}</p>
-        </mat-card-content>
-      </mat-card>
+      <div class="rounded-3xl border border-slate-200 bg-white shadow-sm p-6">
+        <p class="text-sm font-extrabold text-slate-900">Preparation</p>
+        <p class="mt-2 text-sm text-slate-600">
+          {{ test.preparation || (test.fastingRequired ? 'Fasting may be required. Please follow lab guidance during booking.' : 'No special preparation required for most patients.') }}
+        </p>
+      </div>
 
-      <mat-card class="test-card" *ngIf="test.preparationInstructions">
-        <mat-card-header>
-          <mat-card-title>Preparation Instructions</mat-card-title>
-        </mat-card-header>
-        <mat-card-content>
-          <p>{{ test.preparationInstructions }}</p>
-        </mat-card-content>
-      </mat-card>
+      <div *ngIf="related.length" class="space-y-4">
+        <app-section-title title="Related tests" subtitle="More options in the same category."></app-section-title>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <app-test-card *ngFor="let t of related" [test]="t" (add)="addRelatedToCart($event)" (view)="viewRelated($event)"></app-test-card>
+        </div>
+      </div>
     </div>
 
-    <div class="test-sidebar">
-      <mat-card class="booking-card">
-        <mat-card-header>
-          <mat-card-title>Book This Test</mat-card-title>
-        </mat-card-header>
-        <mat-card-content>
-          <div class="price-section">
-            <span class="price">₹{{ test.price }}</span>
-            <span class="vat">+ 18% GST</span>
-          </div>
-          <div class="report-time">
-            <mat-icon>schedule</mat-icon>
-            <span>Report ready in {{ test.tat }}</span>
-          </div>
-          <button 
-            mat-raised-button 
-            color="primary" 
-            class="book-button"
-            (click)="bookTest()"
-            [disabled]="!test.isActive">
-            {{ test.isActive ? 'Book Now' : 'Not Available' }}
+    <!-- Sidebar -->
+    <aside class="space-y-4">
+      <div class="rounded-3xl border border-slate-200 bg-white shadow-sm p-6 sticky top-24">
+        <p class="text-sm font-extrabold text-slate-900">Price</p>
+        <div class="mt-3 flex items-end gap-2">
+          <p class="text-3xl font-extrabold text-slate-900">₹{{ test.discountPrice ?? test.price }}</p>
+          <p *ngIf="test.discountPrice" class="text-sm text-slate-400 line-through">₹{{ test.price }}</p>
+        </div>
+
+        <div class="mt-4 grid gap-2 text-sm text-slate-700">
+          <div class="flex items-center gap-2"><mat-icon class="text-[18px] text-emerald-600">verified</mat-icon> Trusted lab network</div>
+          <div class="flex items-center gap-2"><mat-icon class="text-[18px] text-sky-600">home</mat-icon> Home collection</div>
+          <div class="flex items-center gap-2"><mat-icon class="text-[18px] text-indigo-600">schedule</mat-icon> Reports in {{ test.reportTime }}</div>
+        </div>
+
+        <div class="mt-5 grid gap-3">
+          <ng-container *ngIf="(productIdsInCart$ | async) as ids">
+            <button
+              *ngIf="!ids.has(test.id); else inCart"
+              type="button"
+              class="w-full rounded-2xl px-5 py-3 bg-indigo-700 hover:bg-indigo-800 text-white font-extrabold transition disabled:opacity-60 disabled:cursor-not-allowed"
+              [disabled]="(cartLoading$ | async) === true"
+              (click)="addToCart()"
+            >
+              Add to cart
+            </button>
+
+            <ng-template #inCart>
+              <button
+                type="button"
+                disabled
+                class="w-full rounded-2xl px-5 py-3 bg-slate-100 text-slate-700 font-extrabold border border-slate-200"
+              >
+                In Cart
+              </button>
+            </ng-template>
+          </ng-container>
+          <button type="button" class="w-full rounded-2xl px-5 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold transition" (click)="bookNow()">
+            Book now
           </button>
-          <div class="sample-info" *ngIf="test.sampleRequired">
-            <mat-icon>info</mat-icon>
-            <span>Sample collection at home available</span>
-          </div>
-        </mat-card-content>
-      </mat-card>
+        </div>
 
-      <mat-card class="why-choose-us">
-        <mat-card-header>
-          <mat-card-title>Why Choose Us</mat-card-title>
-        </mat-card-header>
-        <mat-card-content>
-          <div class="benefit">
-            <mat-icon>verified</mat-icon>
-            <span>NABL Accredited Labs</span>
-          </div>
-          <div class="benefit">
-            <mat-icon>home</mat-icon>
-            <span>Free Home Sample Collection</span>
-          </div>
-          <div class="benefit">
-            <mat-icon>security</mat-icon>
-            <span>Safe & Hygienic</span>
-          </div>
-          <div class="benefit">
-            <mat-icon>support_agent</mat-icon>
-            <span>24/7 Customer Support</span>
-          </div>
-        </mat-card-content>
-      </mat-card>
-    </div>
+        <p class="mt-3 text-xs text-slate-500">Checkout UI is ready — connect payment & slots later.</p>
+      </div>
+    </aside>
   </div>
 </div>
 
-<div class="loading-spinner" *ngIf="!test">
-  <mat-spinner diameter="50"></mat-spinner>
-  <p>Loading test details...</p>
+<div *ngIf="!test" class="rounded-3xl border border-slate-200 bg-white shadow-sm p-8 text-center text-slate-600">
+  Loading…
 </div>

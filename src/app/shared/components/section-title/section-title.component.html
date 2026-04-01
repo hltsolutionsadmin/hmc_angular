@@ -1,0 +1,18 @@
+<div class="flex items-end justify-between gap-4">
+  <div class="min-w-0">
+    <div class="flex items-center gap-2">
+      <h2 class="text-lg sm:text-xl font-bold text-slate-900 tracking-tight">{{ title }}</h2>
+      <span *ngIf="hint" class="text-[11px] px-2 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">{{ hint }}</span>
+    </div>
+    <p *ngIf="subtitle" class="mt-1 text-sm text-slate-600">{{ subtitle }}</p>
+  </div>
+
+  <a
+    *ngIf="actionLabel && actionLink"
+    [routerLink]="actionLink"
+    class="shrink-0 text-sm font-semibold text-indigo-700 hover:text-indigo-800 hover:underline"
+  >
+    {{ actionLabel }}
+  </a>
+</div>
+

@@ -1,0 +1,68 @@
+<div class="space-y-6">
+  <app-section-title title="My account" subtitle="Profile, saved addresses, and quick access to bookings."></app-section-title>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <div class="rounded-3xl border border-slate-200 bg-white shadow-sm p-5">
+      <div class="flex items-center gap-3">
+        <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-slate-50 to-indigo-50 border border-slate-200 grid place-content-center">
+          <mat-icon class="text-indigo-700">person</mat-icon>
+        </div>
+        <div class="min-w-0">
+          <p class="font-extrabold text-slate-900">{{ name }}</p>
+          <p class="text-xs text-slate-600">{{ mobile }}</p>
+          <p class="text-xs text-slate-600">{{ email }}</p>
+        </div>
+      </div>
+
+      <div class="mt-5 grid gap-2">
+        <a routerLink="/layout/orders" class="rounded-2xl px-4 py-3 bg-slate-50 border border-slate-200 hover:bg-white transition flex items-center gap-3">
+          <mat-icon class="text-emerald-700">receipt_long</mat-icon>
+          <span class="font-bold text-slate-900">My bookings</span>
+          <mat-icon class="ml-auto text-slate-300">chevron_right</mat-icon>
+        </a>
+        <a routerLink="/layout/offers" class="rounded-2xl px-4 py-3 bg-slate-50 border border-slate-200 hover:bg-white transition flex items-center gap-3">
+          <mat-icon class="text-amber-600">local_offer</mat-icon>
+          <span class="font-bold text-slate-900">Offers & coupons</span>
+          <mat-icon class="ml-auto text-slate-300">chevron_right</mat-icon>
+        </a>
+        <a routerLink="/login" class="rounded-2xl px-4 py-3 bg-rose-50 border border-rose-200 hover:bg-rose-100 transition flex items-center gap-3 text-rose-800">
+          <mat-icon>logout</mat-icon>
+          <span class="font-extrabold">Logout</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="lg:col-span-2 space-y-4">
+      <div class="rounded-3xl border border-slate-200 bg-white shadow-sm p-5">
+        <p class="text-sm font-extrabold text-slate-900">Saved addresses</p>
+        <p class="mt-1 text-xs text-slate-600">Used in checkout. Edit UI can be added later.</p>
+
+        <div class="mt-4 grid gap-3">
+          <div *ngFor="let a of checkoutState.addresses" class="rounded-3xl border border-slate-200 bg-slate-50 p-5">
+            <div class="flex items-start gap-3">
+              <div class="w-11 h-11 rounded-2xl bg-white border border-slate-200 grid place-content-center shrink-0">
+                <mat-icon class="text-indigo-700">location_on</mat-icon>
+              </div>
+              <div class="min-w-0">
+                <div class="flex items-center gap-2">
+                  <p class="font-extrabold text-slate-900">{{ a.label }}</p>
+                  <span class="text-[11px] px-2 py-1 rounded-full bg-white border border-slate-200 text-slate-700">{{ a.pincode }}</span>
+                </div>
+                <p class="mt-1 text-sm text-slate-700">{{ a.name }} • {{ a.phone }}</p>
+                <p class="mt-1 text-xs text-slate-600">{{ a.line1 }}<span *ngIf="a.line2">, {{ a.line2 }}</span>, {{ a.city }}, {{ a.state }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-4">
+          <a routerLink="/layout/checkout/address" class="inline-flex items-center gap-2 text-sm font-bold text-indigo-700 hover:underline">
+            <mat-icon class="text-[18px]">add</mat-icon>
+            Add/update addresses via checkout
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+

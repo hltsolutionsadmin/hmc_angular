@@ -23,6 +23,8 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
+import { SharedModule } from '../../shared/shared.module';
+
 @NgModule({
   declarations: [
     TestsListComponent,
@@ -33,6 +35,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
     CommonModule,
     TestsRoutingModule,
     FormsModule,
+    SharedModule,
     MatTableModule,
     MatSlideToggleModule,
     MatDialogModule,

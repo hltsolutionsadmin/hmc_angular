@@ -74,7 +74,12 @@
               "buildTarget": "hmc:build:production"
             },
             "development": {
-              "buildTarget": "hmc:build:development"
+              "buildTarget": "hmc:build:development",
+               "proxyConfig": "proxy.cofig.json"
+            },
+            "local": {
+              "buildTarget": "juvicommerce:build:local",
+              "proxyConfig": "proxy.cofig.json"
             }
           },
           "defaultConfiguration": "development"

@@ -1,0 +1,13 @@
+<section class="space-y-4">
+  <app-section-title
+    title="Best offers"
+    subtitle="Save more on packages and essentials."
+    actionLabel="See all offers"
+    actionLink="/layout/offers"
+  ></app-section-title>
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+    <app-offer-card *ngFor="let o of offers" [offer]="o"></app-offer-card>
+  </div>
+</section>
+

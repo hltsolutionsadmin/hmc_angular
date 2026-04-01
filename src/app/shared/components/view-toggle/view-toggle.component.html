@@ -1,0 +1,24 @@
+<div class="view-toggle" role="group" aria-label="View mode">
+  <button
+    type="button"
+    class="toggle-btn"
+    [class.active]="mode === 'table'"
+    [disabled]="disabled"
+    aria-label="Table view"
+    title="Table view"
+    (click)="setMode('table')"
+  >
+    <mat-icon>table_rows</mat-icon>
+  </button>
+  <button
+    type="button"
+    class="toggle-btn"
+    [class.active]="mode === 'card'"
+    [disabled]="disabled"
+    aria-label="Card view"
+    title="Card view"
+    (click)="setMode('card')"
+  >
+    <mat-icon>grid_view</mat-icon>
+  </button>
+</div>

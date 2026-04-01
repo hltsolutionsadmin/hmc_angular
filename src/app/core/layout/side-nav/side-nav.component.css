@@ -1,0 +1,8 @@
+
+#sidebar a {
+  transition: background-color 160ms ease, color 160ms ease, transform 160ms ease;
+}
+
+#sidebar a:hover {
+  transform: translateX(1px);
+}

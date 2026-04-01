@@ -2,6 +2,8 @@ import { Component, HostListener } from '@angular/core';
 import { ReportsService } from '../../../shared/services/reports.service';
 import { Report } from '../../../shared/models/report';
 
+import { TableAction, TableColumn } from '../../../shared/components/table/table.component';
+
 @Component({
   selector: 'app-reports-list',
   templateUrl: './reports-list.component.html',
@@ -14,46 +16,100 @@ export class ReportsListComponent {
   viewMode: 'table' | 'card' = 'table';
   isMobile: boolean = false;
 
+  searchText: string = '';
+  statusFilter: string = '';
+
   currentPage: number = 1;
   itemsPerPage: number = 2;
   totalItems: number = 0;
 
   reportRows = [
-    { id: '#4567', title: 'Reporte de ventas Q3', category: 'Ventas', date: '15/05/2023', statusClass: 'completed', statusLabel: 'Completado' },
-    { id: '#4566', title: 'Análisis de mercado', category: 'Marketing', date: '14/05/2023', statusClass: 'pending', statusLabel: 'Pendiente' },
-    { id: '#4565', title: 'Inventario mensual', category: 'Logística', date: '13/05/2023', statusClass: 'completed', statusLabel: 'Completado' },
-    { id: '#4564', title: 'Rendimiento del personal', category: 'RRHH', date: '10/05/2023', statusClass: 'rejected', statusLabel: 'Rechazado' },
+    { id: '#4567', title: 'Reporte de ventas Q3', category: 'Ventas', date: '15/05/2023', statusClass: 'completed', statusLabel: 'completed' },
+    { id: '#4566', title: 'Análisis de mercado', category: 'Marketing', date: '14/05/2023', statusClass: 'pending', statusLabel: 'pending' },
+    { id: '#4565', title: 'Inventario mensual', category: 'Logística', date: '13/05/2023', statusClass: 'completed', statusLabel: 'completed' },
+    { id: '#4564', title: 'Rendimiento del personal', category: 'RRHH', date: '10/05/2023', statusClass: 'rejected', statusLabel: 'rejected' },
   ];
 
+  get filteredReportRows(): any[] {
+    const q = (this.searchText ?? '').trim().toLowerCase();
+    const status = (this.statusFilter ?? '').trim().toLowerCase();
+
+    return this.reportRows.filter((r) => {
+      const matchesSearch =
+        !q ||
+        String(r.id ?? '').toLowerCase().includes(q) ||
+        String(r.title ?? '').toLowerCase().includes(q) ||
+        String(r.category ?? '').toLowerCase().includes(q) ||
+        String(r.date ?? '').toLowerCase().includes(q);
+
+      const matchesStatus = !status || String(r.statusClass ?? '').toLowerCase() === status;
+      return matchesSearch && matchesStatus;
+    });
+  }
+
+  tableColumns: TableColumn[] = [
+    { key: 'id', label: 'ID', align: 'left', type: 'text' },
+    { key: 'title', label: 'title', align: 'left', type: 'text' },
+    { key: 'category', label: 'category', align: 'left', type: 'text' },
+    { key: 'date', label: 'date', align: 'left', type: 'text' },
+    { key: 'statusClass', label: 'statusClass', align: 'left', type: 'status' }
+  ];
+
+  tableActions: TableAction[] = [
+    {
+      label: 'View',
+      icon: 'visibility',
+      action: 'view',
+      colorClass: 'text-blue-600 hover:text-blue-900 hover:bg-blue-100',
+      tooltip: 'View'
+    },
+    {
+      label: 'Download',
+      icon: 'download',
+      action: 'download',
+      colorClass: 'btn-action',
+      tooltip: 'Download'
+    },
+    {
+      label: 'Delete',
+      icon: 'delete',
+      action: 'delete',
+      colorClass: 'text-red-600 hover:text-red-900 hover:bg-red-100',
+      tooltip: 'Delete'
+    }
+  ];
+
+  reportStatusClass(value: any): string {
+    switch (value) {
+      case 'pending':
+        return 'bg-yellow-100 text-yellow-800';
+      case 'completed':
+        return 'bg-green-100 text-green-800';
+      case 'rejected':
+        return 'bg-red-100 text-red-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
+    }
+  }
+
+  // reportStatusLabel(_value: any, row?: any): string {
+  //   return row?.statusLabel ?? '';
+  // }
+
+  onTableAction(e: { action: string; row: any }): void {
+    switch (e.action) {
+      case 'download':
+        this.download(e.row);
+        return;
+      default:
+        return;
+    }
+  }
+
   constructor(private svc: ReportsService) {
-    this.updateIsMobile();
-    this.refresh();
   }
 
-  @HostListener('window:resize')
-  onResize() {
-    this.updateIsMobile();
-  }
-
-  private updateIsMobile() {
-    this.isMobile = window.innerWidth <= 768;
-    if (this.isMobile) {
-      this.viewMode = 'card';
-    }
-  }
-
-  refresh() {
-    this.reports = this.svc.getAll();
-    this.totalItems = this.reportRows.length;
-    this.currentPage = 1;
-  }
-
-  setViewMode(mode: 'table' | 'card') {
-    if (this.isMobile) {
-      this.viewMode = 'card';
-      return;
-    }
-    this.viewMode = mode;
+  add(): void {
   }
 
   trackByReportId(_index: number, r: Report) {
@@ -117,7 +173,6 @@ export class ReportsListComponent {
     if (this.tempDate) {
       this.svc.update(r.id, { date: this.tempDate.toISOString() });
       this.editingId = undefined;
-      this.refresh();
     }
   }
 

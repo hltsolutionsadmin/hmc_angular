@@ -1,0 +1,90 @@
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+  <div class="lg:col-span-2 space-y-4">
+    <div class="flex items-center justify-between gap-3">
+      <p class="text-sm font-extrabold text-slate-900">Select address</p>
+      <button type="button" class="text-sm font-bold text-indigo-700 hover:underline" (click)="toggleAdd()">
+        {{ adding ? 'Close' : 'Add new' }}
+      </button>
+    </div>
+
+    <div class="grid gap-3" *ngIf="state.addresses.length > 0">
+      <label
+        *ngFor="let a of state.addresses"
+        class="rounded-3xl border bg-white shadow-sm p-5 cursor-pointer transition"
+        [ngClass]="state.selectedAddressId === a.id ? 'border-indigo-300 ring-4 ring-indigo-100' : 'border-slate-200 hover:bg-slate-50'"
+      >
+        <input type="radio" class="hidden" name="addr" [value]="a.id" [(ngModel)]="state.selectedAddressId" />
+        <div class="flex items-start gap-3">
+          <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-emerald-50 to-indigo-50 border border-slate-200 grid place-content-center shrink-0">
+            <mat-icon class="text-indigo-700">location_on</mat-icon>
+          </div>
+          <div class="min-w-0 flex-1">
+            <div class="flex items-center gap-2">
+              <p class="font-extrabold text-slate-900">{{ a.label }}</p>
+              <span class="text-[11px] px-2 py-1 rounded-full bg-slate-50 border border-slate-200 text-slate-700">{{ a.pincode }}</span>
+            </div>
+            <p class="mt-1 text-sm text-slate-700" *ngIf="a.name">{{ a.name }}</p>
+            <p class="mt-1 text-xs text-slate-600">{{ a.line1 }}<span *ngIf="a.line2">, {{ a.line2 }}</span>, {{ a.city }}, {{ a.state }}</p>
+          </div>
+          <mat-icon class="text-emerald-600" *ngIf="state.selectedAddressId === a.id">check_circle</mat-icon>
+        </div>
+      </label>
+    </div>
+
+    <div *ngIf="adding" class="rounded-3xl border border-slate-200 bg-white shadow-sm p-5">
+      <p class="text-sm font-extrabold text-slate-900">Add address</p>
+      <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <!-- <input [(ngModel)]="form.firstName" class="px-4 py-2.5 rounded-2xl border border-slate-200 bg-slate-50 outline-none" placeholder="First name" />
+        <input [(ngModel)]="form.lastName" class="px-4 py-2.5 rounded-2xl border border-slate-200 bg-slate-50 outline-none" placeholder="Last name" /> -->
+        <input [(ngModel)]="form.addressLine1" class="px-4 py-2.5 rounded-2xl border border-slate-200 bg-slate-50 outline-none sm:col-span-2" placeholder="Address line 1" />
+        <input [(ngModel)]="form.addressLine2" class="px-4 py-2.5 rounded-2xl border border-slate-200 bg-slate-50 outline-none sm:col-span-2" placeholder="Address line 2 (optional)" />
+
+        <select
+          [(ngModel)]="form.stateId"
+          (ngModelChange)="onStateChange()"
+          class="px-4 py-2.5 rounded-2xl border border-slate-200 bg-slate-50 outline-none"
+        >
+          <option value="" disabled>Select state</option>
+          <option *ngFor="let s of states" [value]="s.id">{{ s.name }}</option>
+        </select>
+
+        <select
+          [(ngModel)]="form.cityId"
+          [disabled]="!form.stateId"
+          class="px-4 py-2.5 rounded-2xl border border-slate-200 bg-slate-50 outline-none"
+        >
+          <option value="" disabled>Select city</option>
+          <option *ngFor="let c of filteredCities" [value]="c.id">{{ c.name }}</option>
+        </select>
+
+        <input [(ngModel)]="form.postalCode" class="px-4 py-2.5 rounded-2xl border border-slate-200 bg-slate-50 outline-none sm:col-span-2" placeholder="Pincode" />
+      </div>
+      <div class="mt-4 flex justify-end">
+        <button
+          type="button"
+          class="px-5 py-2.5 rounded-2xl bg-indigo-700 hover:bg-indigo-800 text-white font-extrabold transition disabled:opacity-60 disabled:cursor-not-allowed"
+          [disabled]="saving"
+          (click)="save()"
+        >
+          Save address
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <aside class="space-y-4">
+    <div class="rounded-3xl border border-slate-200 bg-white shadow-sm p-5">
+      <p class="text-sm font-extrabold text-slate-900">Next</p>
+      <p class="mt-2 text-xs text-slate-600">Confirm address to schedule sample collection.</p>
+      <button
+        type="button"
+        class="mt-4 w-full inline-flex items-center justify-center gap-2 rounded-2xl px-5 py-3 bg-indigo-700 hover:bg-indigo-800 text-white font-extrabold shadow-sm transition disabled:opacity-60 disabled:cursor-not-allowed"
+        [disabled]="!state.selectedAddressId"
+        (click)="continue()"
+      >
+        Continue
+        <mat-icon class="text-[18px]">arrow_forward</mat-icon>
+      </button>
+    </div>
+  </aside>
+</div>

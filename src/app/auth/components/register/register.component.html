@@ -1,0 +1,270 @@
+<div class="min-h-screen flex bg-slate-50" [@pageFade]>
+  <!-- ==================== LEFT – HERO ==================== -->
+  <div class="hidden lg:flex lg:w-1/2 relative overflow-hidden bg-gradient-to-br from-indigo-700 via-indigo-700 to-sky-600 text-white">
+    <div class="absolute inset-0 bg-black/15"></div>
+    <div class="blob blob-a"></div>
+    <div class="blob blob-b"></div>
+    <div class="blob blob-c"></div>
+
+    <div class="relative z-10 flex flex-col justify-center h-full px-10 xl:px-14">
+      <div class="max-w-xl">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-white/15 backdrop-blur flex items-center justify-center ring-1 ring-white/25">
+            <mat-icon class="text-white">local_hospital</mat-icon>
+          </div>
+          <p class="text-sm font-semibold tracking-wide text-white/90">Medical Center Portal</p>
+        </div>
+
+        <h2 class="mt-6 text-4xl xl:text-5xl font-extrabold leading-tight">
+          Create your account and
+          <span class="text-sky-200">verify</span> in minutes.
+        </h2>
+        <p class="mt-4 text-white/90 text-base xl:text-lg">
+          Seamless onboarding for patients and staff — secure, fast, and built for every screen.
+        </p>
+
+        <div class="mt-8 grid gap-3 text-sm">
+          <div class="flex items-center gap-3">
+            <span class="tick">✓</span>
+            <span>OTP verification via email</span>
+          </div>
+          <div class="flex items-center gap-3">
+            <span class="tick">✓</span>
+            <span>Mobile-first, accessible UI</span>
+          </div>
+          <div class="flex items-center gap-3">
+            <span class="tick">✓</span>
+            <span>Secure sign-in with your credentials</span>
+          </div>
+        </div>
+      </div>
+
+      <p class="mt-10 text-xs text-white/80">
+        Already registered?
+        <a routerLink="/login" class="underline decoration-white/60 underline-offset-4 hover:decoration-white">Login here</a>.
+      </p>
+    </div>
+  </div>
+
+  <!-- ==================== RIGHT – FORM ==================== -->
+  <div class="flex-1 flex items-center justify-center p-6 lg:p-12" [@formSlide]>
+    <div class="w-full max-w-lg">
+      <div class="mb-6 text-center lg:text-left">
+        <h1 class="text-3xl font-bold text-indigo-800">Register</h1>
+        <p class="text-sm text-slate-600 mt-1" *ngIf="step === 'details'">Enter your details to receive an OTP.</p>
+        <p class="text-sm text-slate-600 mt-1" *ngIf="step === 'otp'">Enter the OTP sent to your email.</p>
+        <p class="text-sm text-slate-600 mt-1" *ngIf="step === 'verified'">Verification successful.</p>
+      </div>
+
+      <div class="rounded-2xl border border-slate-200 bg-white/80 backdrop-blur shadow-xl p-6 sm:p-8">
+        <div *ngIf="errorMessage" class="mb-4 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
+          {{ errorMessage }}
+        </div>
+        <div *ngIf="infoMessage" class="mb-4 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
+          {{ infoMessage }}
+        </div>
+
+        <!-- DETAILS -->
+        <form *ngIf="step === 'details'" [formGroup]="registerForm" (ngSubmit)="onRegister()" class="space-y-5">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-slate-900">First name</label>
+              <div class="mt-2 flex" [@shake]="shouldShakeControl(registerForm.get('firstName'))">
+                <span class="inline-flex items-center px-3 text-sm bg-slate-100 border rounded-s-xl" [ngClass]="getInputState('firstName')">
+                  <mat-icon [ngClass]="getInputState('firstName')">person</mat-icon>
+                </span>
+                <input
+                  formControlName="firstName"
+                  type="text"
+                  autocomplete="given-name"
+                  class="rounded-none rounded-e-xl bg-white border text-slate-900 block flex-1 min-w-0 w-full text-sm p-3.5"
+                  [ngClass]="getInputState('firstName')"
+                  placeholder="Rahul"
+                />
+              </div>
+              <p *ngIf="registerForm.get('firstName')?.invalid && registerForm.get('firstName')?.touched" class="text-rose-600 text-xs mt-1">
+                First name is required.
+              </p>
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-slate-900">Last name</label>
+              <div class="mt-2 flex" [@shake]="shouldShakeControl(registerForm.get('lastName'))">
+                <span class="inline-flex items-center px-3 text-sm bg-slate-100 border rounded-s-xl" [ngClass]="getInputState('lastName')">
+                  <mat-icon [ngClass]="getInputState('lastName')">badge</mat-icon>
+                </span>
+                <input
+                  formControlName="lastName"
+                  type="text"
+                  autocomplete="family-name"
+                  class="rounded-none rounded-e-xl bg-white border text-slate-900 block flex-1 min-w-0 w-full text-sm p-3.5"
+                  [ngClass]="getInputState('lastName')"
+                  placeholder="Doe"
+                />
+              </div>
+              <p *ngIf="registerForm.get('lastName')?.invalid && registerForm.get('lastName')?.touched" class="text-rose-600 text-xs mt-1">
+                Last name is required.
+              </p>
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-slate-900">Email</label>
+            <div class="mt-2 flex" [@shake]="shouldShakeControl(registerForm.get('email'))">
+              <span class="inline-flex items-center px-3 text-sm bg-slate-100 border rounded-s-xl" [ngClass]="getInputState('email')">
+                <mat-icon [ngClass]="getInputState('email')">mail</mat-icon>
+              </span>
+              <input
+                formControlName="email"
+                type="email"
+                autocomplete="email"
+                class="rounded-none rounded-e-xl bg-white border text-slate-900 block flex-1 min-w-0 w-full text-sm p-3.5"
+                [ngClass]="getInputState('email')"
+                placeholder="name@example.com"
+              />
+            </div>
+            <p *ngIf="registerForm.get('email')?.invalid && registerForm.get('email')?.touched" class="text-rose-600 text-xs mt-1">
+              Enter a valid email.
+            </p>
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-slate-900">Mobile</label>
+            <div class="mt-2 flex" [@shake]="shouldShakeControl(registerForm.get('mobile'))">
+              <span class="inline-flex items-center px-3 text-sm bg-slate-100 border rounded-s-xl" [ngClass]="getInputState('mobile')">
+                <mat-icon [ngClass]="getInputState('mobile')">phone_iphone</mat-icon>
+              </span>
+              <input
+                formControlName="mobile"
+                inputmode="numeric"
+                autocomplete="tel"
+                class="rounded-none rounded-e-xl bg-white border text-slate-900 block flex-1 min-w-0 w-full text-sm p-3.5"
+                [ngClass]="getInputState('mobile')"
+                placeholder="8309948792"
+              />
+            </div>
+            <p *ngIf="registerForm.get('mobile')?.invalid && registerForm.get('mobile')?.touched" class="text-rose-600 text-xs mt-1">
+              Enter a 10-digit mobile number.
+            </p>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-1 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-slate-900">Password</label>
+              <div class="mt-2 flex" [@shake]="shouldShakeControl(registerForm.get('password'))">
+                <span class="inline-flex items-center px-3 text-sm bg-slate-100 border rounded-s-xl" [ngClass]="getInputState('password')">
+                  <mat-icon [ngClass]="getInputState('password')">lock</mat-icon>
+                </span>
+                <input
+                  formControlName="password"
+                  [type]="hidePassword ? 'password' : 'text'"
+                  autocomplete="new-password"
+                  class="rounded-none bg-white border text-slate-900 block flex-1 min-w-0 w-full text-sm p-3.5"
+                  [ngClass]="getInputState('password')"
+                  placeholder="Create a password"
+                />
+                <button type="button" class="inline-flex items-center px-3 bg-slate-100 border rounded-e-xl" (click)="hidePassword = !hidePassword">
+                  <mat-icon class="text-slate-600">{{ hidePassword ? 'visibility' : 'visibility_off' }}</mat-icon>
+                </button>
+              </div>
+              <p *ngIf="registerForm.get('password')?.invalid && registerForm.get('password')?.touched" class="text-rose-600 text-xs mt-1">
+                Password is required.
+              </p>
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-slate-900">Confirm</label>
+              <div class="mt-2 flex" [@shake]="shouldShakeControl(registerForm.get('confirmPassword'))">
+                <span class="inline-flex items-center px-3 text-sm bg-slate-100 border rounded-s-xl" [ngClass]="getInputState('confirmPassword')">
+                  <mat-icon [ngClass]="getInputState('confirmPassword')">verified_user</mat-icon>
+                </span>
+                <input
+                  formControlName="confirmPassword"
+                  [type]="hideConfirm ? 'password' : 'text'"
+                  autocomplete="new-password"
+                  class="rounded-none bg-white border text-slate-900 block flex-1 min-w-0 w-full text-sm p-3.5"
+                  [ngClass]="getInputState('confirmPassword')"
+                  placeholder="Re-enter password"
+                />
+                <button type="button" class="inline-flex items-center px-3 bg-slate-100 border rounded-e-xl" (click)="hideConfirm = !hideConfirm">
+                  <mat-icon class="text-slate-600">{{ hideConfirm ? 'visibility' : 'visibility_off' }}</mat-icon>
+                </button>
+              </div>
+              <p *ngIf="registerForm.errors?.['fieldsMismatch'] && registerForm.get('confirmPassword')?.touched" class="text-rose-600 text-xs mt-1">
+                Passwords do not match.
+              </p>
+            </div>
+          </div>
+
+          <button class="primary-btn" type="submit" [disabled]="loadingRegister">
+            <span *ngIf="!loadingRegister">Create account</span>
+            <span *ngIf="loadingRegister">Creating...</span>
+          </button>
+
+          <p class="text-xs text-slate-600 text-center">
+            Already have an account?
+            <a routerLink="/login" class="text-indigo-700 font-semibold hover:underline">Login</a>
+          </p>
+        </form>
+
+        <!-- OTP -->
+        <form *ngIf="step === 'otp'" [formGroup]="otpForm" (ngSubmit)="onVerifyOtp()" class="space-y-5">
+          <div class="flex items-center justify-between gap-3">
+            <label class="block text-sm font-medium text-slate-900">Enter 6-digit OTP</label>
+            <span class="text-xs text-slate-500" *ngIf="otpCooldownSeconds > 0">Resend in {{ otpCooldownSeconds }}s</span>
+          </div>
+
+          <div class="otp-grid" formArrayName="otpDigits" [@shake]="shouldShakeControl(otpDigits)">
+            <input
+              *ngFor="let ctrl of otpDigits.controls; let i = index"
+              #otpInput
+              class="otp-input"
+              [ngClass]="getOtpBoxState(i)"
+              [formControlName]="i"
+              inputmode="numeric"
+              autocomplete="one-time-code"
+              pattern="[0-9]*"
+              maxlength="1"
+              (input)="onOtpInput(i, $event)"
+              (keydown)="onOtpKeyDown(i, $event)"
+              (paste)="onOtpPaste($event)"
+              [attr.aria-label]="'OTP digit ' + (i + 1)"
+            />
+          </div>
+
+          <div class="flex flex-col sm:flex-row gap-3">
+            <button class="primary-btn" type="submit" [disabled]="loadingVerify">
+              <span *ngIf="!loadingVerify">Verify OTP</span>
+              <span *ngIf="loadingVerify">Verifying...</span>
+            </button>
+
+            <button
+              type="button"
+              class="secondary-btn"
+              [disabled]="loadingResend || otpCooldownSeconds > 0"
+              (click)="resendOtp()">
+              <span *ngIf="!loadingResend">Resend OTP</span>
+              <span *ngIf="loadingResend">Sending...</span>
+            </button>
+          </div>
+
+          <button type="button" class="text-xs text-slate-600 hover:text-indigo-700 underline underline-offset-4" (click)="step = 'details'">
+            Edit details
+          </button>
+        </form>
+
+        <!-- VERIFIED -->
+        <div *ngIf="step === 'verified'" class="text-center space-y-4">
+          <div class="mx-auto w-14 h-14 rounded-2xl bg-emerald-50 border border-emerald-200 flex items-center justify-center">
+            <mat-icon class="text-emerald-600">check_circle</mat-icon>
+          </div>
+          <div>
+            <h3 class="text-lg font-semibold text-slate-900">Account verified</h3>
+            <p class="text-sm text-slate-600 mt-1">You can now sign in with your email and password.</p>
+          </div>
+          <button class="primary-btn" type="button" (click)="goToLogin()">Go to login</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

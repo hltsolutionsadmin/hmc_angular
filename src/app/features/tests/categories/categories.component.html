@@ -19,7 +19,6 @@
               type="button"
               class="toggle-btn"
               [class.active]="viewMode === 'table'"
-              (click)="setViewMode('table')"
               aria-label="Table view"
               title="Table view"
             >
@@ -29,7 +28,6 @@
               type="button"
               class="toggle-btn"
               [class.active]="viewMode === 'card'"
-              (click)="setViewMode('card')"
               aria-label="Card view"
               title="Card view"
             >
@@ -43,7 +41,13 @@
       </div>
 
       <!-- Table -->
-      <div *ngIf="!isMobile && viewMode === 'table'" class="bg-white rounded-lg shadow overflow-hidden">
+       <app-table
+       [columns]="tableColumns"
+       [data]="categories"
+       [actions]="tableActions">
+
+       </app-table>
+      <!-- <div *ngIf="!isMobile && viewMode === 'table'" class="bg-white rounded-lg shadow overflow-hidden">
         <table class="min-w-full divide-y divide-gray-200">
           <thead class="bg-gray-50">
             <tr>
@@ -85,16 +89,6 @@
                     ">
                   </div>
                 </label>
-
-                <!-- <span 
-              [class.bg-green-100]="category.isActive" 
-              [class.text-green-800]="category.isActive"
-              [class.bg-red-100]="!category.isActive"
-              [class.text-red-800]="!category.isActive"
-              class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full"
-            >
-              {{ category.isActive ? 'Active' : 'Inactive' }}
-            </span> -->
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                 <div class="flex justify-end space-x-2">
@@ -111,37 +105,7 @@
             </tr>
           </tbody>
         </table>
-
-        <!-- Pagination -->
-
-      </div>
-
-      <div *ngIf="isMobile || viewMode === 'card'" class="categories-cards">
-        <div class="categories-card" *ngFor="let category of pagedItems; trackBy: trackByCategoryId">
-          <div class="categories-card-header">
-            <div class="categories-card-title">
-              <div class="categories-card-name">{{ category.name }}</div>
-              <div class="categories-card-desc">{{ category.description || 'N/A' }}</div>
-            </div>
-            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full" [ngClass]="{ 'bg-green-100 text-green-800': category.isActive, 'bg-red-100 text-red-800': !category.isActive }">
-              {{ category.isActive ? 'Active' : 'Inactive' }}
-            </span>
-          </div>
-
-          <div class="categories-card-actions">
-            <button (click)="edit(category)" class="text-blue-600 hover:text-blue-900 mr-2" matTooltip="Edit">
-              <mat-icon>edit</mat-icon>
-            </button>
-            <button (click)="delete(category)" class="text-red-600 hover:text-red-900" matTooltip="Delete">
-              <mat-icon>delete</mat-icon>
-            </button>
-          </div>
-        </div>
-
-        <div class="categories-empty" *ngIf="totalItems === 0">
-          No categories found.
-        </div>
-      </div>
+      </div> -->
 
       <div class="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6" *ngIf="(isMobile || viewMode === 'card') && totalItems > 0">
         <div class="flex-1 flex justify-between sm:hidden">

@@ -1,52 +1,36 @@
-import { Component, OnInit } from '@angular/core';
-import { Router, NavigationEnd } from '@angular/router';
-import { filter } from 'rxjs/operators';
+import { Component } from '@angular/core';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-side-nav',
   templateUrl: './side-nav.component.html',
   styleUrls: ['./side-nav.component.css']
 })
-export class SideNavComponent implements OnInit {
-  sidebarOpen = true;
-  isTimeAttendanceOpen = false;
-  data: string = 'dev'
+export class SideNavComponent {
+  isCatalogOpen = true;
+  isInventoryOpen = false;
+  isMarketingOpen = false;
 
   constructor(private router: Router) {}
 
-  ngOnInit() {
-    // Check the current route on initialization
-    this.checkActiveRoute(this.router.url);
-    
-    // Subscribe to route changes
-    this.router.events.pipe(
-      filter(event => event instanceof NavigationEnd)
-    ).subscribe((event: any) => {
-      this.checkActiveRoute(event.url);
+  toggleCatalog(): void {
+    this.isCatalogOpen = !this.isCatalogOpen;
+  }
+
+  toggleInventory(): void {
+    this.isInventoryOpen = !this.isInventoryOpen;
+  }
+
+  toggleMarketing(): void {
+    this.isMarketingOpen = !this.isMarketingOpen;
+  }
+
+  isActive(url: string): boolean {
+    return this.router.isActive(url, {
+      paths: 'subset',
+      queryParams: 'ignored',
+      fragment: 'ignored',
+      matrixParams: 'ignored'
     });
-  }
-
-  toggleSidebar() {
-    this.sidebarOpen = !this.sidebarOpen;
-  }
-
-  toggleTimeAttendance(): void {
-    this.isTimeAttendanceOpen = !this.isTimeAttendanceOpen;
-  }
-
-  isServicesActive(): boolean {
-    const currentRoute = this.router?.url || '';
-    return currentRoute.startsWith('/layout/tests') || 
-           currentRoute.startsWith('/layout/products') ||
-           currentRoute.startsWith('/layout/categories');
-  }
-
-  private checkActiveRoute(url: string): void {
-    // Auto-expand the services menu if on a child route
-    if (url.startsWith('/layout/tests') || 
-        url.startsWith('/layout/products') ||
-        url.startsWith('/layout/categories')) {
-      this.isTimeAttendanceOpen = true;
-    }
   }
 }
