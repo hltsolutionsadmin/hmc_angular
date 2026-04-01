@@ -1,98 +1,172 @@
-<div class="space-y-5">
-  <app-section-title
-    title="Browse tests"
-    subtitle="A Myntra-style browsing experience — premium cards, quick filters, and cart-ready actions."
-    [actionLabel]="'Go Back'"
-    actionLink="/layout/home"
-  ></app-section-title>
+<div class="min-h-screen bg-slate-50">
 
-  <!-- Search + controls -->
-  <div class="grid grid-cols-1 lg:grid-cols-3 gap-3">
-    <div class="lg:col-span-2">
+  <!-- ── Header ── -->
+  <div class="bg-white border-b border-slate-200 shadow-sm sticky top-0 z-20">
+    <div class="max-w-5xl mx-auto px-4 py-4">
+
+      <!-- Title row -->
+      <div class="flex items-center justify-between mb-3">
+        <div>
+          <h1 class="text-xl font-extrabold text-slate-900">Book a Test</h1>
+          <p class="text-xs text-slate-500">{{ filteredTests.length }} tests available • Home collection</p>
+        </div>
+        <button type="button" routerLink="/layout/home"
+          class="text-xs font-bold text-blue-600 hover:underline flex items-center gap-1">
+          <mat-icon class="text-[14px]">home</mat-icon>
+          Home
+        </button>
+      </div>
+
+      <!-- Search bar -->
       <div class="relative">
-        <mat-icon class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">search</mat-icon>
+        <mat-icon class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[20px]">search</mat-icon>
         <input
-          [(ngModel)]="search"
-          class="w-full pl-10 pr-28 py-3 rounded-2xl border border-slate-200 bg-white shadow-sm focus:border-indigo-300 focus:ring-4 focus:ring-indigo-100 transition outline-none"
-          placeholder="Search tests (CBC, thyroid, vitamin D…)"
+          type="text"
+          [value]="search"
+          (input)="onSearch($any($event.target).value)"
+          placeholder="Search tests — CBC, thyroid, vitamin D…"
+          class="w-full pl-10 pr-10 py-3 rounded-2xl border border-slate-200 bg-slate-50 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition"
         />
-        <button
-          type="button"
-          class="absolute right-2 top-1/2 -translate-y-1/2 px-4 py-2 rounded-xl bg-indigo-700 hover:bg-indigo-800 text-white font-bold transition"
-        >
-          Search
+        <button *ngIf="search" type="button"
+          class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+          (click)="clearSearch()">
+          <mat-icon class="text-[18px]">close</mat-icon>
         </button>
       </div>
     </div>
+  </div>
 
-    <div class="grid grid-cols-2 gap-3">
-      <select [(ngModel)]="sort" class="px-4 py-3 rounded-2xl border border-slate-200 bg-white shadow-sm outline-none">
-        <option value="recommended">Recommended</option>
-        <option value="rating">Top rated</option>
-        <option value="price_low">Price: Low to High</option>
-        <option value="price_high">Price: High to Low</option>
-      </select>
+  <div class="max-w-5xl mx-auto px-4 pt-4 pb-10 space-y-5">
 
-      <button type="button" class="px-4 py-3 rounded-2xl border border-slate-200 bg-white shadow-sm hover:bg-slate-50 transition font-bold text-slate-700">
+    <!-- ── Category tabs ── -->
+    <div class="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
+      <!-- ALL -->
+      <button type="button"
+        class="shrink-0 flex items-center gap-1.5 px-4 py-2.5 rounded-2xl border text-sm font-bold transition"
+        [ngClass]="!selectedCategoryId
+          ? 'bg-blue-600 border-blue-600 text-white shadow-sm'
+          : 'bg-white border-slate-200 text-slate-700 hover:border-blue-300 hover:bg-blue-50'"
+        (click)="selectCategory('')">
+        <mat-icon class="text-[16px]">apps</mat-icon>
+        All
+      </button>
+
+      <button *ngFor="let cat of categories; trackBy: trackByCat"
+        type="button"
+        class="shrink-0 flex items-center gap-1.5 px-4 py-2.5 rounded-2xl border text-sm font-bold transition whitespace-nowrap"
+        [ngClass]="selectedCategoryId === cat.id
+          ? 'bg-blue-600 border-blue-600 text-white shadow-sm'
+          : 'bg-white border-slate-200 text-slate-700 hover:border-blue-300 hover:bg-blue-50'"
+        (click)="selectCategory(cat.id)">
+        <mat-icon class="text-[15px]">{{ categoryIcon(cat.id) }}</mat-icon>
+        {{ cat.name }}
+      </button>
+    </div>
+
+    <!-- ── Category description strip ── -->
+    <div *ngIf="selectedCategoryId" class="rounded-2xl bg-blue-50 border border-blue-100 px-4 py-3 flex items-center gap-3">
+      <mat-icon class="text-blue-600 text-[22px]">{{ categoryIcon(selectedCategoryId) }}</mat-icon>
+      <div>
+        <p class="font-bold text-blue-800 text-sm">
+          {{ categories | slice:0 | slice:0 }}
+          {{ (categories | slice:0).length }}
+        </p>
+        <p class="text-xs text-blue-600">
+          {{ filteredTests.length }} test{{ filteredTests.length !== 1 ? 's' : '' }} in this category
+        </p>
+      </div>
+      <button type="button" class="ml-auto text-blue-500 hover:text-blue-700 font-bold text-xs" (click)="selectCategory('')">
         Clear
       </button>
     </div>
-  </div>
 
-  <!-- Category chips -->
-  <div class="flex items-center gap-2 overflow-x-auto pb-1">
-    <button
-      type="button"
-      class="shrink-0 px-4 py-2 rounded-full border text-sm font-bold transition"
-      [ngClass]="selectedCategoryId ? 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50' : 'border-indigo-300 bg-indigo-50 text-indigo-800'"
-      (click)="onCategoryChip('')"
-    >
-      All
-    </button>
-    <button
-      *ngFor="let c of categories"
-      type="button"
-      class="shrink-0 px-4 py-2 rounded-full border text-sm font-bold transition"
-      [ngClass]="selectedCategoryId === c.id ? 'border-indigo-300 bg-indigo-50 text-indigo-800' : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50'"
-      (click)="onCategoryChip(c.id)"
-    >
-      {{ c.name }}
-    </button>
-
-    <label class="shrink-0 ml-auto inline-flex items-center gap-2 px-4 py-2 rounded-full border border-slate-200 bg-white text-sm font-bold text-slate-700">
-      <input type="checkbox" [(ngModel)]="fastingOnly" />
-      Fasting only
-    </label>
-  </div>
-
-  <!-- Results -->
-  <div *ngIf="!featured$">
-    <app-empty-state
-      icon="search_off"
-      title="No tests found"
-      subtitle="Try another keyword or clear filters."
-      actionLabel="Clear filters"
-      actionLink="/layout/tests"
-    ></app-empty-state>
-  </div>
-
-  <ng-container *ngIf="featured$ | async as featured">
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-      <app-test-card
-        *ngFor="let t of featured; trackBy: trackById"
-        [test]="t"
-        (add)="add.emit($event)"
-        (view)="view.emit($event)"
-      ></app-test-card>
+    <!-- ── No results ── -->
+    <div *ngIf="filteredTests.length === 0" class="rounded-3xl border border-slate-200 bg-white p-10 text-center">
+      <mat-icon class="text-slate-300 text-[48px]">search_off</mat-icon>
+      <p class="mt-2 font-extrabold text-slate-600">No tests found</p>
+      <p class="text-sm text-slate-400 mt-1">Try a different keyword or clear the filter</p>
+      <button type="button"
+        class="mt-4 px-5 py-2.5 rounded-2xl bg-blue-600 text-white font-bold text-sm"
+        (click)="clearSearch(); selectCategory('')">
+        Show all tests
+      </button>
     </div>
-  </ng-container>
 
- <app-pagination
-    [page]="page"
-    [size]="size"
-    [totalItems]="totalItems"
-    [pageSizeOptions]="[6, 10, 20, 50]"
-    (pageChange)="onPageChange($event)"
-    (sizeChange)="onSizeChange($event)"
-  ></app-pagination>
+    <!-- ── Test Cards Grid ── -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div *ngFor="let test of filteredTests; trackBy: trackById"
+        class="group bg-white rounded-3xl border border-slate-200 shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden flex flex-col">
+
+        <div class="p-5 flex-1 flex flex-col">
+
+          <!-- Icon + name -->
+          <div class="flex items-start gap-3">
+            <div class="shrink-0 w-11 h-11 rounded-2xl bg-blue-50 border border-blue-100 grid place-content-center">
+              <mat-icon class="text-blue-600 text-[22px]">biotech</mat-icon>
+            </div>
+            <div class="min-w-0">
+              <p class="font-extrabold text-slate-900 leading-snug text-sm group-hover:text-blue-700 transition line-clamp-2">
+                {{ test.name }}
+              </p>
+              <span class="inline-block mt-1 text-[11px] px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 font-semibold">
+                {{ test.categoryTitle }}
+              </span>
+            </div>
+          </div>
+
+          <!-- Description -->
+          <p class="mt-3 text-xs text-slate-500 line-clamp-2 flex-1">{{ test.description }}</p>
+
+          <!-- Meta chips -->
+          <div class="mt-3 flex flex-wrap gap-1.5">
+            <span class="text-[11px] px-2 py-1 rounded-full bg-slate-50 border border-slate-200 text-slate-600 font-semibold flex items-center gap-1">
+              <mat-icon class="text-[11px]">schedule</mat-icon>{{ test.reportTime }}
+            </span>
+            <span *ngIf="test.fastingRequired"
+              class="text-[11px] px-2 py-1 rounded-full bg-amber-50 border border-amber-200 text-amber-700 font-semibold">
+              Fasting
+            </span>
+            <span *ngIf="test.parametersCount"
+              class="text-[11px] px-2 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 font-semibold">
+              {{ test.parametersCount }}
+            </span>
+          </div>
+
+          <!-- Price + CTA -->
+          <div class="mt-4 flex items-center justify-between gap-2">
+            <div>
+              <div class="flex items-baseline gap-1.5">
+                <span class="text-lg font-extrabold text-slate-900">₹{{ priceToShow(test) }}</span>
+                <span *ngIf="test.discountPrice" class="text-sm text-slate-400 line-through">₹{{ test.price }}</span>
+              </div>
+              <span *ngIf="discountPct(test) !== null"
+                class="text-[11px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">
+                {{ discountPct(test) }}% OFF
+              </span>
+            </div>
+
+            <button type="button"
+              class="flex items-center gap-1.5 px-4 py-2.5 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-sm shadow-sm transition shrink-0"
+              (click)="onBookNow(test)">
+              <mat-icon class="text-[16px]">event_available</mat-icon>
+              Book Now
+            </button>
+          </div>
+
+        </div>
+
+        <!-- Bottom stripe -->
+        <div class="h-0.5 bg-gradient-to-r from-blue-500 to-indigo-500 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+      </div>
+    </div>
+
+    <!-- ── Bottom trust strip ── -->
+    <div class="rounded-3xl bg-white border border-slate-200 px-5 py-4 flex flex-wrap justify-center gap-6 text-xs text-slate-500">
+      <span class="flex items-center gap-1.5"><mat-icon class="text-[16px] text-emerald-500">verified</mat-icon> NABL Certified Lab</span>
+      <span class="flex items-center gap-1.5"><mat-icon class="text-[16px] text-blue-500">home</mat-icon> Free Home Collection</span>
+      <span class="flex items-center gap-1.5"><mat-icon class="text-[16px] text-amber-500">schedule</mat-icon> Reports in 24–48 hrs</span>
+      <span class="flex items-center gap-1.5"><mat-icon class="text-[16px] text-purple-500">support_agent</mat-icon> 24/7 Support</span>
+    </div>
+
+  </div>
 </div>

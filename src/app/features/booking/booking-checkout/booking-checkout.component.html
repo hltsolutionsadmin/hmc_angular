@@ -1,0 +1,193 @@
+<div class="min-h-screen bg-slate-50 pb-8">
+
+  <!-- ── Back bar ── -->
+  <div class="sticky top-0 z-20 bg-white border-b border-slate-200 shadow-sm">
+    <div class="max-w-3xl mx-auto px-4 py-3 flex items-center gap-3">
+      <button type="button"
+        class="w-9 h-9 rounded-2xl border border-slate-200 bg-slate-50 hover:bg-slate-100 grid place-content-center transition"
+        (click)="goBack()">
+        <mat-icon class="text-slate-700 text-[20px]">arrow_back</mat-icon>
+      </button>
+      <div>
+        <p class="font-extrabold text-slate-900 text-sm sm:text-base">Confirm Booking</p>
+        <p class="text-xs text-slate-500">Step 2 of 2 — Enter your details</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Progress bar ── -->
+  <div class="h-1 bg-slate-200">
+    <div class="h-1 bg-blue-600 w-full transition-all duration-500"></div>
+  </div>
+
+  <div class="max-w-3xl mx-auto px-4 pt-5 space-y-5">
+
+    <!-- ── Booking Summary ── -->
+    <div class="rounded-3xl border border-blue-100 bg-white shadow-sm p-5">
+      <p class="text-xs font-extrabold text-blue-600 uppercase tracking-wide mb-3">Booking Summary</p>
+      <div class="flex items-start gap-4">
+        <div class="w-11 h-11 rounded-2xl bg-blue-50 border border-blue-200 grid place-content-center shrink-0">
+          <mat-icon class="text-blue-600 text-[22px]">biotech</mat-icon>
+        </div>
+        <div class="flex-1 min-w-0">
+          <p class="font-extrabold text-slate-900 leading-snug">{{ state?.selectedTest?.name }}</p>
+          <p class="text-xs text-slate-500 mt-1">{{ state?.selectedTest?.reportTime }}</p>
+          <div class="mt-2 flex flex-wrap gap-2">
+            <span class="text-xs px-2 py-1 rounded-full bg-blue-50 border border-blue-200 text-blue-700 font-semibold">
+              <mat-icon class="text-[12px] align-middle">calendar_today</mat-icon>
+              {{ state?.selectedDate?.dayName }}, {{ state?.selectedDate?.dayNumber }} {{ state?.selectedDate?.monthName }}
+            </span>
+            <span class="text-xs px-2 py-1 rounded-full bg-blue-50 border border-blue-200 text-blue-700 font-semibold">
+              <mat-icon class="text-[12px] align-middle">schedule</mat-icon>
+              {{ state?.selectedSlot?.displayTime }}
+            </span>
+          </div>
+        </div>
+        <div class="text-right shrink-0">
+          <p class="text-lg font-extrabold text-slate-900">₹{{ priceToShow }}</p>
+          <p *ngIf="state?.selectedTest?.discountPrice" class="text-xs text-slate-400 line-through">
+            ₹{{ state?.selectedTest?.price }}
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Collection Type ── -->
+    <div class="rounded-3xl border border-slate-200 bg-white shadow-sm p-5">
+      <p class="text-sm font-extrabold text-slate-900 mb-3">Sample Collection</p>
+      <div class="grid grid-cols-2 gap-3">
+        <button type="button"
+          class="rounded-2xl border p-4 text-left transition"
+          [ngClass]="collectionType === 'home'
+            ? 'border-blue-400 bg-blue-50 ring-2 ring-blue-200'
+            : 'border-slate-200 bg-white hover:bg-slate-50'"
+          (click)="setCollectionType('home')">
+          <div class="flex items-center gap-2 mb-1">
+            <mat-icon class="text-[20px]" [ngClass]="collectionType === 'home' ? 'text-blue-600' : 'text-slate-500'">home</mat-icon>
+            <span class="font-extrabold text-sm" [ngClass]="collectionType === 'home' ? 'text-blue-800' : 'text-slate-700'">Home Collection</span>
+          </div>
+          <p class="text-xs text-slate-500">Phlebotomist visits your address</p>
+          <span class="mt-2 inline-block text-[11px] font-bold px-2 py-0.5 rounded-full"
+            [ngClass]="collectionType === 'home' ? 'bg-blue-600 text-white' : 'bg-emerald-50 text-emerald-700 border border-emerald-200'">
+            Recommended
+          </span>
+        </button>
+
+        <button type="button"
+          class="rounded-2xl border p-4 text-left transition"
+          [ngClass]="collectionType === 'lab'
+            ? 'border-blue-400 bg-blue-50 ring-2 ring-blue-200'
+            : 'border-slate-200 bg-white hover:bg-slate-50'"
+          (click)="setCollectionType('lab')">
+          <div class="flex items-center gap-2 mb-1">
+            <mat-icon class="text-[20px]" [ngClass]="collectionType === 'lab' ? 'text-blue-600' : 'text-slate-500'">local_hospital</mat-icon>
+            <span class="font-extrabold text-sm" [ngClass]="collectionType === 'lab' ? 'text-blue-800' : 'text-slate-700'">Lab Visit</span>
+          </div>
+          <p class="text-xs text-slate-500">Visit our centre in Anakapalle</p>
+        </button>
+      </div>
+    </div>
+
+    <!-- ── Patient Details Form ── -->
+    <div class="rounded-3xl border border-slate-200 bg-white shadow-sm p-5">
+      <p class="text-sm font-extrabold text-slate-900 mb-4">Patient Details</p>
+
+      <form [formGroup]="form" class="space-y-4">
+
+        <!-- Name -->
+        <div>
+          <label class="block text-xs font-bold text-slate-600 mb-1.5">Full Name *</label>
+          <div class="relative">
+            <mat-icon class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[20px]">person</mat-icon>
+            <input formControlName="name" type="text"
+              placeholder="Enter patient's full name"
+              class="w-full pl-10 pr-4 py-3.5 rounded-2xl border text-sm outline-none transition"
+              [ngClass]="form.get('name')?.invalid && form.get('name')?.touched
+                ? 'border-red-300 bg-red-50 focus:ring-2 focus:ring-red-100'
+                : 'border-slate-200 bg-slate-50 focus:border-blue-400 focus:ring-2 focus:ring-blue-100'"
+              />
+          </div>
+          <p *ngIf="form.get('name')?.errors?.['required'] && form.get('name')?.touched"
+            class="text-xs text-red-500 mt-1">Name is required</p>
+          <p *ngIf="form.get('name')?.errors?.['minlength'] && form.get('name')?.touched"
+            class="text-xs text-red-500 mt-1">Name must be at least 2 characters</p>
+        </div>
+
+        <!-- Phone -->
+        <div>
+          <label class="block text-xs font-bold text-slate-600 mb-1.5">Phone Number *</label>
+          <div class="relative">
+            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-sm font-semibold">+91</span>
+            <input formControlName="phone" type="tel" maxlength="10"
+              placeholder="10-digit mobile number"
+              class="w-full pl-12 pr-4 py-3.5 rounded-2xl border text-sm outline-none transition"
+              [ngClass]="form.get('phone')?.invalid && form.get('phone')?.touched
+                ? 'border-red-300 bg-red-50 focus:ring-2 focus:ring-red-100'
+                : 'border-slate-200 bg-slate-50 focus:border-blue-400 focus:ring-2 focus:ring-blue-100'"
+              />
+          </div>
+          <p *ngIf="form.get('phone')?.errors?.['required'] && form.get('phone')?.touched"
+            class="text-xs text-red-500 mt-1">Phone is required</p>
+          <p *ngIf="form.get('phone')?.errors?.['pattern'] && form.get('phone')?.touched"
+            class="text-xs text-red-500 mt-1">Enter a valid 10-digit Indian mobile number</p>
+        </div>
+
+        <!-- Address -->
+        <div *ngIf="collectionType === 'home'">
+          <label class="block text-xs font-bold text-slate-600 mb-1.5">Home Address *</label>
+          <div class="relative">
+            <mat-icon class="absolute left-3 top-3.5 text-slate-400 text-[20px]">location_on</mat-icon>
+            <textarea formControlName="address" rows="3"
+              placeholder="House no., Street, Area, City, Pincode"
+              class="w-full pl-10 pr-4 py-3.5 rounded-2xl border text-sm outline-none transition resize-none"
+              [ngClass]="form.get('address')?.invalid && form.get('address')?.touched
+                ? 'border-red-300 bg-red-50 focus:ring-2 focus:ring-red-100'
+                : 'border-slate-200 bg-slate-50 focus:border-blue-400 focus:ring-2 focus:ring-blue-100'">
+            </textarea>
+          </div>
+          <p *ngIf="form.get('address')?.errors?.['required'] && form.get('address')?.touched"
+            class="text-xs text-red-500 mt-1">Address is required</p>
+          <p *ngIf="form.get('address')?.errors?.['minlength'] && form.get('address')?.touched"
+            class="text-xs text-red-500 mt-1">Please enter a complete address</p>
+        </div>
+
+        <!-- Landmark -->
+        <div *ngIf="collectionType === 'home'">
+          <label class="block text-xs font-bold text-slate-600 mb-1.5">Landmark <span class="text-slate-400 font-normal">(optional)</span></label>
+          <div class="relative">
+            <mat-icon class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[20px]">place</mat-icon>
+            <input formControlName="landmark" type="text"
+              placeholder="e.g. Near post office, opposite school"
+              class="w-full pl-10 pr-4 py-3.5 rounded-2xl border border-slate-200 bg-slate-50 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition"
+              />
+          </div>
+        </div>
+
+      </form>
+    </div>
+
+    <!-- ── Error ── -->
+    <div *ngIf="errorMsg" class="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 flex items-center gap-2">
+      <mat-icon class="text-red-500 text-[18px]">error</mat-icon>
+      {{ errorMsg }}
+    </div>
+
+    <!-- ── Confirm Button ── -->
+    <button type="button"
+      class="w-full flex items-center justify-center gap-2 rounded-2xl px-6 py-4 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-300 disabled:cursor-not-allowed text-white font-extrabold text-base shadow-lg transition"
+      [disabled]="submitting"
+      (click)="onConfirm()">
+      <mat-icon *ngIf="!submitting" class="text-[20px]">check_circle</mat-icon>
+      <mat-progress-spinner *ngIf="submitting" mode="indeterminate" diameter="20" strokeWidth="3" style="--mdc-circular-progress-active-indicator-color: white;"></mat-progress-spinner>
+      {{ submitting ? 'Confirming…' : 'Confirm Booking' }}
+    </button>
+
+    <!-- ── Trust footer ── -->
+    <div class="flex items-center justify-center gap-4 text-xs text-slate-400 pb-6">
+      <span class="flex items-center gap-1"><mat-icon class="text-[14px] text-emerald-500">verified</mat-icon> NABL Certified</span>
+      <span class="flex items-center gap-1"><mat-icon class="text-[14px] text-blue-500">lock</mat-icon> Secure Booking</span>
+      <span class="flex items-center gap-1"><mat-icon class="text-[14px] text-amber-500">home</mat-icon> Free Home Collection</span>
+    </div>
+
+  </div>
+</div>

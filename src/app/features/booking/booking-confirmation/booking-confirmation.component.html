@@ -1,0 +1,148 @@
+<div class="min-h-screen bg-slate-50 flex flex-col items-center justify-start pt-8 pb-16 px-4">
+
+  <div class="w-full max-w-lg space-y-5">
+
+    <!-- ── Success Animation ── -->
+    <div class="rounded-3xl bg-gradient-to-br from-emerald-500 to-emerald-600 text-white p-8 text-center shadow-xl"
+      [class.opacity-0]="!showAnimation"
+      [class.scale-95]="!showAnimation"
+      style="transition: opacity 0.5s ease, transform 0.5s ease;"
+      [ngStyle]="{'opacity': showAnimation ? '1' : '0', 'transform': showAnimation ? 'scale(1)' : 'scale(0.95)'}">
+
+      <div class="w-20 h-20 rounded-full bg-white/20 grid place-content-center mx-auto mb-4">
+        <mat-icon class="text-white text-[48px]">check_circle</mat-icon>
+      </div>
+
+      <h1 class="text-2xl font-extrabold">Booking Confirmed!</h1>
+      <p class="mt-2 text-emerald-100 text-sm">Your appointment has been successfully booked</p>
+
+      <div class="mt-4 inline-flex items-center gap-2 bg-white/20 rounded-2xl px-5 py-2.5">
+        <mat-icon class="text-[16px]">confirmation_number</mat-icon>
+        <span class="font-extrabold tracking-wider text-sm">{{ state?.bookingId }}</span>
+      </div>
+    </div>
+
+    <!-- ── Appointment Details ── -->
+    <div class="rounded-3xl border border-slate-200 bg-white shadow-sm p-5 space-y-4">
+      <p class="text-xs font-extrabold text-slate-500 uppercase tracking-wide">Appointment Details</p>
+
+      <div class="flex items-start gap-3">
+        <div class="w-10 h-10 rounded-2xl bg-blue-50 border border-blue-200 grid place-content-center shrink-0">
+          <mat-icon class="text-blue-600 text-[20px]">biotech</mat-icon>
+        </div>
+        <div>
+          <p class="font-extrabold text-slate-900 text-sm">{{ state?.selectedTest?.name }}</p>
+          <p class="text-xs text-slate-500 mt-0.5">{{ state?.selectedTest?.categoryTitle }}</p>
+        </div>
+        <div class="ml-auto text-right">
+          <p class="font-extrabold text-slate-900">₹{{ state?.selectedTest?.discountPrice ?? state?.selectedTest?.price }}</p>
+        </div>
+      </div>
+
+      <div class="h-px bg-slate-100"></div>
+
+      <!-- Date & Time -->
+      <div class="grid grid-cols-2 gap-3">
+        <div class="rounded-2xl bg-slate-50 border border-slate-100 p-3">
+          <div class="flex items-center gap-1.5 mb-1">
+            <mat-icon class="text-blue-500 text-[16px]">calendar_today</mat-icon>
+            <span class="text-[11px] font-bold text-slate-500 uppercase">Date</span>
+          </div>
+          <p class="font-extrabold text-slate-900 text-sm">{{ formattedDate }}</p>
+        </div>
+        <div class="rounded-2xl bg-slate-50 border border-slate-100 p-3">
+          <div class="flex items-center gap-1.5 mb-1">
+            <mat-icon class="text-blue-500 text-[16px]">schedule</mat-icon>
+            <span class="text-[11px] font-bold text-slate-500 uppercase">Time</span>
+          </div>
+          <p class="font-extrabold text-slate-900 text-sm">{{ state?.selectedSlot?.displayTime }}</p>
+        </div>
+      </div>
+
+      <div class="h-px bg-slate-100"></div>
+
+      <!-- Patient Details -->
+      <div *ngIf="state?.patientDetails" class="space-y-3">
+        <div class="flex items-start gap-3">
+          <mat-icon class="text-slate-400 text-[18px] shrink-0 mt-0.5">person</mat-icon>
+          <div>
+            <p class="text-[11px] text-slate-400 font-bold">PATIENT</p>
+            <p class="text-sm font-extrabold text-slate-900">{{ state.patientDetails!.name }}</p>
+            <p class="text-xs text-slate-500">+91 {{ state.patientDetails!.phone }}</p>
+          </div>
+        </div>
+
+        <div *ngIf="state.patientDetails!.collectionType === 'home'" class="flex items-start gap-3">
+          <mat-icon class="text-slate-400 text-[18px] shrink-0 mt-0.5">home</mat-icon>
+          <div>
+            <p class="text-[11px] text-slate-400 font-bold">HOME COLLECTION ADDRESS</p>
+            <p class="text-sm font-semibold text-slate-900">{{ state.patientDetails!.address }}</p>
+            <p *ngIf="state.patientDetails!.landmark" class="text-xs text-slate-500">
+              Near: {{ state.patientDetails!.landmark }}
+            </p>
+          </div>
+        </div>
+
+        <div *ngIf="state.patientDetails!.collectionType === 'lab'" class="flex items-start gap-3">
+          <mat-icon class="text-slate-400 text-[18px] shrink-0 mt-0.5">local_hospital</mat-icon>
+          <div>
+            <p class="text-[11px] text-slate-400 font-bold">LAB VISIT</p>
+            <p class="text-sm font-semibold text-slate-900">Himaneesh Medical Centre</p>
+            <p class="text-xs text-slate-500">Anakapalle, Andhra Pradesh</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── What's Next ── -->
+    <div class="rounded-3xl border border-slate-200 bg-white shadow-sm p-5">
+      <p class="text-xs font-extrabold text-slate-500 uppercase tracking-wide mb-3">What Happens Next</p>
+      <div class="space-y-3">
+        <div class="flex items-start gap-3">
+          <div class="w-7 h-7 rounded-full bg-blue-100 text-blue-700 text-xs font-extrabold grid place-content-center shrink-0">1</div>
+          <div>
+            <p class="text-sm font-bold text-slate-900">Confirmation SMS</p>
+            <p class="text-xs text-slate-500">You'll receive a confirmation on your mobile</p>
+          </div>
+        </div>
+        <div class="flex items-start gap-3">
+          <div class="w-7 h-7 rounded-full bg-blue-100 text-blue-700 text-xs font-extrabold grid place-content-center shrink-0">2</div>
+          <div>
+            <p class="text-sm font-bold text-slate-900">Sample Collection</p>
+            <p class="text-xs text-slate-500">Our phlebotomist will arrive at the scheduled time</p>
+          </div>
+        </div>
+        <div class="flex items-start gap-3">
+          <div class="w-7 h-7 rounded-full bg-blue-100 text-blue-700 text-xs font-extrabold grid place-content-center shrink-0">3</div>
+          <div>
+            <p class="text-sm font-bold text-slate-900">Reports Ready</p>
+            <p class="text-xs text-slate-500">Reports available in {{ state?.selectedTest?.reportTime }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── CTA Buttons ── -->
+    <div class="grid grid-cols-1 gap-3">
+      <button type="button"
+        class="w-full flex items-center justify-center gap-2 rounded-2xl px-6 py-4 bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-sm shadow-lg transition"
+        (click)="onTrackBooking()">
+        <mat-icon class="text-[20px]">track_changes</mat-icon>
+        Track My Booking
+      </button>
+      <button type="button"
+        class="w-full flex items-center justify-center gap-2 rounded-2xl px-6 py-3.5 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 font-extrabold text-sm shadow-sm transition"
+        (click)="onBookAnother()">
+        <mat-icon class="text-[20px]">add</mat-icon>
+        Book Another Test
+      </button>
+      <button type="button"
+        class="w-full flex items-center justify-center gap-2 rounded-2xl px-6 py-3.5 text-slate-500 hover:text-slate-700 font-bold text-sm transition"
+        (click)="onGoHome()">
+        <mat-icon class="text-[18px]">home</mat-icon>
+        Go to Home
+      </button>
+    </div>
+
+  </div>
+</div>

@@ -1,0 +1,210 @@
+<div class="min-h-screen bg-slate-50 pb-32">
+
+  <!-- ── Back bar ── -->
+  <div class="sticky top-0 z-20 bg-white border-b border-slate-200 shadow-sm">
+    <div class="max-w-3xl mx-auto px-4 py-3 flex items-center gap-3">
+      <button type="button"
+        class="w-9 h-9 rounded-2xl border border-slate-200 bg-slate-50 hover:bg-slate-100 grid place-content-center transition"
+        (click)="router.navigate(['/layout/tests'])">
+        <mat-icon class="text-slate-700 text-[20px]">arrow_back</mat-icon>
+      </button>
+      <div class="min-w-0">
+        <p class="font-extrabold text-slate-900 truncate text-sm sm:text-base">
+          {{ test?.name ?? 'Select a Slot' }}
+        </p>
+        <p class="text-xs text-slate-500">Choose your preferred appointment time</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="max-w-3xl mx-auto px-4 pt-5 space-y-6">
+
+    <!-- ── Test Summary Card ── -->
+    <div *ngIf="test" class="rounded-3xl border border-blue-100 bg-gradient-to-r from-blue-600 to-blue-700 text-white p-5 shadow-lg">
+      <div class="flex items-start gap-4">
+        <div class="w-12 h-12 rounded-2xl bg-white/20 grid place-content-center shrink-0">
+          <mat-icon class="text-white text-[24px]">biotech</mat-icon>
+        </div>
+        <div class="min-w-0 flex-1">
+          <p class="font-extrabold text-lg leading-snug">{{ test.name }}</p>
+          <p class="mt-1 text-sm text-blue-100">{{ test.description }}</p>
+          <div class="mt-3 flex flex-wrap gap-2">
+            <span class="text-xs px-3 py-1 rounded-full bg-white/20 text-white font-semibold">
+              <mat-icon class="text-[13px] align-middle">schedule</mat-icon>
+              Report: {{ test.reportTime }}
+            </span>
+            <span class="text-xs px-3 py-1 rounded-full bg-white/20 text-white font-semibold">
+              ₹{{ test.discountPrice ?? test.price }}
+            </span>
+            <span *ngIf="test.fastingRequired" class="text-xs px-3 py-1 rounded-full bg-amber-400/30 text-white font-semibold">
+              Fasting required
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Date Selector ── -->
+    <div>
+      <p class="text-sm font-extrabold text-slate-700 mb-3">Select Date</p>
+      <div class="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+        <button
+          *ngFor="let d of dates; trackBy: trackByDateStr"
+          type="button"
+          class="shrink-0 flex flex-col items-center gap-0.5 rounded-2xl border px-4 py-3 min-w-[68px] transition font-bold"
+          [ngClass]="selectedDate.dateStr === d.dateStr
+            ? 'bg-blue-600 border-blue-600 text-white shadow-md'
+            : 'bg-white border-slate-200 text-slate-700 hover:border-blue-300 hover:bg-blue-50'"
+          (click)="selectDate(d)">
+          <span class="text-[11px] font-semibold" [ngClass]="selectedDate.dateStr === d.dateStr ? 'text-blue-100' : 'text-slate-500'">
+            {{ d.dayName }}
+          </span>
+          <span class="text-xl font-extrabold leading-none">{{ d.dayNumber }}</span>
+          <span class="text-[11px]" [ngClass]="selectedDate.dateStr === d.dateStr ? 'text-blue-200' : 'text-slate-400'">
+            {{ d.monthName }}
+          </span>
+        </button>
+      </div>
+    </div>
+
+    <!-- ── Loading skeleton ── -->
+    <div *ngIf="loadingSlots" class="space-y-4">
+      <div *ngFor="let i of [1,2,3]" class="rounded-3xl border border-slate-100 bg-white p-4 animate-pulse">
+        <div class="h-4 w-24 bg-slate-200 rounded-full mb-3"></div>
+        <div class="grid grid-cols-3 sm:grid-cols-4 gap-2">
+          <div *ngFor="let j of [1,2,3,4]" class="h-12 rounded-2xl bg-slate-100"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Slot Sections ── -->
+    <ng-container *ngIf="!loadingSlots">
+
+      <!-- Morning -->
+      <div *ngIf="morningSlots.length > 0" class="rounded-3xl border border-slate-200 bg-white shadow-sm p-5">
+        <div class="flex items-center gap-2 mb-4">
+          <span class="w-8 h-8 rounded-xl bg-amber-50 border border-amber-200 grid place-content-center">
+            <mat-icon class="text-amber-500 text-[18px]">wb_sunny</mat-icon>
+          </span>
+          <p class="font-extrabold text-slate-800">Morning</p>
+          <span class="text-xs text-slate-400 ml-auto">07:00 AM – 12:00 PM</span>
+        </div>
+        <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+          <button
+            *ngFor="let slot of morningSlots; trackBy: trackById"
+            type="button"
+            class="rounded-2xl border px-3 py-3 text-sm font-bold transition flex flex-col items-center gap-0.5"
+            [ngClass]="{
+              'border-blue-400 bg-blue-600 text-white shadow-md': selectedSlot?.id === slot.id,
+              'border-slate-200 bg-white text-slate-800 hover:border-blue-300 hover:bg-blue-50': slot.available && selectedSlot?.id !== slot.id,
+              'border-slate-100 bg-slate-50 text-slate-300 cursor-not-allowed': !slot.available
+            }"
+            [disabled]="!slot.available"
+            (click)="selectSlot(slot)">
+            <span>{{ slot.displayTime }}</span>
+            <span class="text-[10px] font-semibold"
+              [ngClass]="selectedSlot?.id === slot.id ? 'text-blue-200' : slot.available ? 'text-emerald-500' : 'text-slate-300'">
+              {{ slot.available ? 'Available' : 'Full' }}
+            </span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Afternoon -->
+      <div *ngIf="afternoonSlots.length > 0" class="rounded-3xl border border-slate-200 bg-white shadow-sm p-5">
+        <div class="flex items-center gap-2 mb-4">
+          <span class="w-8 h-8 rounded-xl bg-orange-50 border border-orange-200 grid place-content-center">
+            <mat-icon class="text-orange-500 text-[18px]">light_mode</mat-icon>
+          </span>
+          <p class="font-extrabold text-slate-800">Afternoon</p>
+          <span class="text-xs text-slate-400 ml-auto">12:00 PM – 05:00 PM</span>
+        </div>
+        <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+          <button
+            *ngFor="let slot of afternoonSlots; trackBy: trackById"
+            type="button"
+            class="rounded-2xl border px-3 py-3 text-sm font-bold transition flex flex-col items-center gap-0.5"
+            [ngClass]="{
+              'border-blue-400 bg-blue-600 text-white shadow-md': selectedSlot?.id === slot.id,
+              'border-slate-200 bg-white text-slate-800 hover:border-blue-300 hover:bg-blue-50': slot.available && selectedSlot?.id !== slot.id,
+              'border-slate-100 bg-slate-50 text-slate-300 cursor-not-allowed': !slot.available
+            }"
+            [disabled]="!slot.available"
+            (click)="selectSlot(slot)">
+            <span>{{ slot.displayTime }}</span>
+            <span class="text-[10px] font-semibold"
+              [ngClass]="selectedSlot?.id === slot.id ? 'text-blue-200' : slot.available ? 'text-emerald-500' : 'text-slate-300'">
+              {{ slot.available ? 'Available' : 'Full' }}
+            </span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Evening -->
+      <div *ngIf="eveningSlots.length > 0" class="rounded-3xl border border-slate-200 bg-white shadow-sm p-5">
+        <div class="flex items-center gap-2 mb-4">
+          <span class="w-8 h-8 rounded-xl bg-indigo-50 border border-indigo-200 grid place-content-center">
+            <mat-icon class="text-indigo-500 text-[18px]">nights_stay</mat-icon>
+          </span>
+          <p class="font-extrabold text-slate-800">Evening</p>
+          <span class="text-xs text-slate-400 ml-auto">05:00 PM – 06:00 PM</span>
+        </div>
+        <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+          <button
+            *ngFor="let slot of eveningSlots; trackBy: trackById"
+            type="button"
+            class="rounded-2xl border px-3 py-3 text-sm font-bold transition flex flex-col items-center gap-0.5"
+            [ngClass]="{
+              'border-blue-400 bg-blue-600 text-white shadow-md': selectedSlot?.id === slot.id,
+              'border-slate-200 bg-white text-slate-800 hover:border-blue-300 hover:bg-blue-50': slot.available && selectedSlot?.id !== slot.id,
+              'border-slate-100 bg-slate-50 text-slate-300 cursor-not-allowed': !slot.available
+            }"
+            [disabled]="!slot.available"
+            (click)="selectSlot(slot)">
+            <span>{{ slot.displayTime }}</span>
+            <span class="text-[10px] font-semibold"
+              [ngClass]="selectedSlot?.id === slot.id ? 'text-blue-200' : slot.available ? 'text-emerald-500' : 'text-slate-300'">
+              {{ slot.available ? 'Available' : 'Full' }}
+            </span>
+          </button>
+        </div>
+      </div>
+
+      <!-- No slots state -->
+      <div *ngIf="slots.length === 0 && !loadingSlots"
+        class="rounded-3xl border border-slate-200 bg-white p-8 text-center">
+        <mat-icon class="text-slate-300 text-[48px]">event_busy</mat-icon>
+        <p class="mt-2 font-extrabold text-slate-600">No slots available</p>
+        <p class="text-sm text-slate-400 mt-1">Please try another date</p>
+      </div>
+
+    </ng-container>
+  </div>
+
+  <!-- ── Sticky CTA ── -->
+  <div class="fixed bottom-0 left-0 right-0 z-30 bg-white border-t border-slate-200 shadow-2xl p-4">
+    <div class="max-w-3xl mx-auto flex items-center justify-between gap-4">
+      <div class="min-w-0">
+        <p *ngIf="selectedSlot; else noSlotHint" class="font-extrabold text-slate-900 text-sm">
+          <mat-icon class="text-[16px] text-blue-600 align-middle">check_circle</mat-icon>
+          {{ selectedSlot.displayTime }}
+        </p>
+        <ng-template #noSlotHint>
+          <p class="text-sm text-slate-500">Select a time slot above</p>
+        </ng-template>
+        <p *ngIf="selectedSlot" class="text-xs text-slate-500">
+          {{ selectedDate.dayName }}, {{ selectedDate.dayNumber }} {{ selectedDate.monthName }}
+        </p>
+      </div>
+      <button
+        type="button"
+        class="shrink-0 flex items-center gap-2 rounded-2xl px-6 py-3.5 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-300 disabled:cursor-not-allowed text-white font-extrabold text-sm shadow-lg transition"
+        [disabled]="!selectedSlot"
+        (click)="onBookAppointment()">
+        Book Appointment
+        <mat-icon class="text-[18px]">arrow_forward</mat-icon>
+      </button>
+    </div>
+  </div>
+
+</div>

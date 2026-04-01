@@ -1,10 +1,8 @@
-import { Component, EventEmitter, inject, OnInit, Output } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { StoreCategory, StoreTest } from '../../../shared/models/storefront';
-import { SectionService } from '../../home/sections/section.service';
-import { Observable } from 'rxjs';
-import { CatalogApiService } from '../../../shared/services/catalog-api.service';
-import { environment } from '../../../../environment/environment';
+import { CatalogService } from '../../../shared/services/catalog.service';
+import { BookingFlowStateService } from '../../booking/services/booking-flow-state.service';
 
 @Component({
   selector: 'app-tests-list',
@@ -12,90 +10,76 @@ import { environment } from '../../../../environment/environment';
   styleUrl: './tests-list.component.css',
 })
 export class TestsListComponent implements OnInit {
-  @Output() add = new EventEmitter<StoreTest>();
-  @Output() view = new EventEmitter<StoreTest>();
-  private readonly storeId = environment.storeId; 
   categories: StoreCategory[] = [];
-  tests: StoreTest[] = [];
-  search = '';
+  allTests: StoreTest[] = [];
+  filteredTests: StoreTest[] = [];
   selectedCategoryId = '';
-  fastingOnly = false;
-  errorMessage?: string;
-   page = 0;
-  size = 10;
-  totalItems = 0;
-  loading = false;
-  sort: 'recommended' | 'price_low' | 'price_high' | 'rating' = 'recommended';
-  private readonly productService = inject(SectionService);
-  featured$!: Observable<StoreTest[]>;
+  search = '';
+
   constructor(
-    private route: ActivatedRoute,
+    private catalog: CatalogService,
     private router: Router,
-    private catalogApi: CatalogApiService
+    private bookingState: BookingFlowStateService,
   ) {}
 
   ngOnInit(): void {
-  this.fetchCategories();
-  this.featured$ = this.productService.getFeaturedTests(this.page, this.size)
-  this.route.queryParamMap.subscribe((params) => {
-    this.search = params.get('q') ?? '';
-    this.selectedCategoryId = params.get('cat') ?? '';
-    this.page = Number(params.get('page') ?? 0);
-    this.size = Number(params.get('size') ?? 12);
-  });
-}
-
-
-  fetchCategories(): void { 
-    this.catalogApi 
-      .getCategories({ storeId: this.storeId, page: 0, size: 200 }) 
-      .subscribe(this.onCategoriesSuccess.bind(this), this.onCategoriesError.bind(this)); 
-  } 
-
-  private onCategoriesSuccess(res: any): void { 
-    this.categories = res?.content ?? []; 
-    } 
-
-    private onCategoriesError(): void { 
-    this.errorMessage = 'Failed to load categories'; 
+    this.categories = this.catalog.getCategories();
+    this.allTests   = this.catalog.getAllTests();
+    this.applyFilters();
   }
 
-  trackById(index: number, item: StoreTest): string {
-    return item.id;
+  selectCategory(id: string): void {
+    this.selectedCategoryId = id;
+    this.applyFilters();
   }
 
-  onCategoryChip(categoryId: string): void {
-    this.selectedCategoryId = categoryId;
-    this.router.navigate([], {
-      relativeTo: this.route,
-      queryParams: { cat: categoryId || null },
-      queryParamsHandling: 'merge',
-    });
+  onSearch(value: string): void {
+    this.search = value;
+    this.applyFilters();
   }
 
-  onPageChange(page: number): void {
-  this.router.navigate([], {
-    relativeTo: this.route,
-    queryParams: {
-      page,
-      size: this.size
-    },
-    queryParamsHandling: 'merge'
-  });
-}
+  clearSearch(): void {
+    this.search = '';
+    this.applyFilters();
+  }
 
-onSizeChange(size: number): void {
-  this.router.navigate([], {
-    relativeTo: this.route,
-    queryParams: {
-      page: 0,
-      size
-    },
-    queryParamsHandling: 'merge'
-  });
-}
+  private applyFilters(): void {
+    let result = this.allTests;
+    if (this.selectedCategoryId) {
+      result = result.filter(t => t.categoryId === this.selectedCategoryId);
+    }
+    const q = this.search.trim().toLowerCase();
+    if (q) {
+      result = result.filter(t =>
+        t.name.toLowerCase().includes(q) ||
+        t.description.toLowerCase().includes(q) ||
+        t.categoryTitle.toLowerCase().includes(q)
+      );
+    }
+    this.filteredTests = result;
+  }
 
-  // view(test: StoreTest): void {
-  //   this.router.navigate(['/layout/tests/test', test.id]);
-  // }
+  onBookNow(test: StoreTest): void {
+    this.bookingState.setTest(test);
+    this.router.navigate(['/layout/booking/slots', test.id]);
+  }
+
+  categoryIcon(id: string): string {
+    const icons: Record<string, string> = {
+      blood: 'bloodtype', fullbody: 'health_and_safety', diabetes: 'vaccines',
+      thyroid: 'monitor_heart', heart: 'favorite', liver: 'science',
+      kidney: 'water_drop', vitamin: 'sunny',
+    };
+    return icons[id] ?? 'biotech';
+  }
+
+  priceToShow(test: StoreTest): number { return test.discountPrice ?? test.price; }
+
+  discountPct(test: StoreTest): number | null {
+    if (!test.discountPrice || test.discountPrice >= test.price) return null;
+    return Math.round(((test.price - test.discountPrice) / test.price) * 100);
+  }
+
+  trackById(_: number, item: StoreTest): string { return item.id; }
+  trackByCat(_: number, item: StoreCategory): string { return item.id; }
 }

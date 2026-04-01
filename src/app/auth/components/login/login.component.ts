@@ -4,6 +4,8 @@ import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/fo
 import { ActivatedRoute, Router } from '@angular/router';
 import { interval, Subject, takeUntil } from 'rxjs';
 import { AuthServiceService } from '../../service/auth-service.service';
+import { consumeReturnUrl } from '../../guards/auth.guard';
+import { BookingFlowStateService } from '../../../features/booking/services/booking-flow-state.service';
 
 interface Quote {
   text: string;
@@ -72,9 +74,13 @@ export class LoginComponent implements OnInit, OnDestroy {
   ];
   currentIdx = 0;
 
-  constructor(private fb: FormBuilder, private authService: AuthServiceService,
+  constructor(
+    private fb: FormBuilder,
+    private authService: AuthServiceService,
     private router: Router,
-    private activatedRoute: ActivatedRoute) {}
+    private activatedRoute: ActivatedRoute,
+    private bookingFlowState: BookingFlowStateService,
+  ) {}
 
   ngOnInit(): void {
     // Initialize reactive form
@@ -116,7 +122,10 @@ export class LoginComponent implements OnInit, OnDestroy {
     this.authService.login(this.loginForm.getRawValue() as any).subscribe({
       next: () => {
         this.loading = false;
-        this.router.navigate(['/layout/home']);
+        // Restore any saved booking state and redirect to intended URL
+        this.bookingFlowState.restoreFromSession();
+        const returnUrl = consumeReturnUrl();
+        this.router.navigateByUrl(returnUrl ?? '/layout/home');
       },
       error: (error) => {
         this.loading = false;
