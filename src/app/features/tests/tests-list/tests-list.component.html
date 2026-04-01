@@ -1,172 +1,378 @@
-<div class="min-h-screen bg-slate-50">
+<div class="min-h-screen bg-[#f5f7fa]">
 
-  <!-- ── Header ── -->
-  <div class="bg-white border-b border-slate-200 shadow-sm sticky top-0 z-20">
-    <div class="max-w-5xl mx-auto px-4 py-4">
+  <!-- ═══════════════════════════════════════════════════════
+       STICKY TOP BAR
+  ════════════════════════════════════════════════════════ -->
+  <div class="sticky top-0 z-30 bg-white border-b border-slate-200 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center gap-3">
 
-      <!-- Title row -->
-      <div class="flex items-center justify-between mb-3">
-        <div>
-          <h1 class="text-xl font-extrabold text-slate-900">Book a Test</h1>
-          <p class="text-xs text-slate-500">{{ filteredTests.length }} tests available • Home collection</p>
-        </div>
-        <button type="button" routerLink="/layout/home"
-          class="text-xs font-bold text-blue-600 hover:underline flex items-center gap-1">
-          <mat-icon class="text-[14px]">home</mat-icon>
-          Home
-        </button>
-      </div>
+      <!-- Logo / back link -->
+      <a routerLink="/layout/home" class="shrink-0 flex items-center gap-2 text-slate-700 hover:text-blue-600 transition mr-2">
+        <img src="/assets/favicon.svg" alt="HMC" class="h-8 w-8 rounded-lg"/>
+        <span class="hidden sm:block font-extrabold text-sm">HMC</span>
+      </a>
 
       <!-- Search bar -->
-      <div class="relative">
+      <div class="relative flex-1 max-w-xl">
         <mat-icon class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[20px]">search</mat-icon>
         <input
           type="text"
           [value]="search"
           (input)="onSearch($any($event.target).value)"
-          placeholder="Search tests — CBC, thyroid, vitamin D…"
-          class="w-full pl-10 pr-10 py-3 rounded-2xl border border-slate-200 bg-slate-50 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition"
+          placeholder="Search CBC, thyroid, vitamin D, diabetes…"
+          class="w-full pl-10 pr-9 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition"
         />
         <button *ngIf="search" type="button"
-          class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+          class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 transition"
           (click)="clearSearch()">
           <mat-icon class="text-[18px]">close</mat-icon>
         </button>
       </div>
+
+      <!-- Mobile filter button -->
+      <button type="button"
+        class="md:hidden shrink-0 flex items-center gap-1.5 px-3 py-2.5 rounded-xl border border-blue-200 bg-blue-50 text-blue-700 font-bold text-sm"
+        (click)="mobileSidebarOpen = true">
+        <mat-icon class="text-[18px]">tune</mat-icon>
+        Filter
+      </button>
+
     </div>
   </div>
+  <!-- END STICKY TOP BAR -->
 
-  <div class="max-w-5xl mx-auto px-4 pt-4 pb-10 space-y-5">
 
-    <!-- ── Category tabs ── -->
-    <div class="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
-      <!-- ALL -->
-      <button type="button"
-        class="shrink-0 flex items-center gap-1.5 px-4 py-2.5 rounded-2xl border text-sm font-bold transition"
-        [ngClass]="!selectedCategoryId
-          ? 'bg-blue-600 border-blue-600 text-white shadow-sm'
-          : 'bg-white border-slate-200 text-slate-700 hover:border-blue-300 hover:bg-blue-50'"
-        (click)="selectCategory('')">
-        <mat-icon class="text-[16px]">apps</mat-icon>
-        All
-      </button>
+  <!-- ═══════════════════════════════════════════════════════
+       MOBILE SIDEBAR DRAWER OVERLAY
+  ════════════════════════════════════════════════════════ -->
+  <div class="md:hidden" *ngIf="mobileSidebarOpen">
+    <!-- Backdrop -->
+    <div class="fixed inset-0 z-40 bg-black/40 backdrop-blur-sm"
+      (click)="mobileSidebarOpen = false"></div>
 
-      <button *ngFor="let cat of categories; trackBy: trackByCat"
-        type="button"
-        class="shrink-0 flex items-center gap-1.5 px-4 py-2.5 rounded-2xl border text-sm font-bold transition whitespace-nowrap"
-        [ngClass]="selectedCategoryId === cat.id
-          ? 'bg-blue-600 border-blue-600 text-white shadow-sm'
-          : 'bg-white border-slate-200 text-slate-700 hover:border-blue-300 hover:bg-blue-50'"
-        (click)="selectCategory(cat.id)">
-        <mat-icon class="text-[15px]">{{ categoryIcon(cat.id) }}</mat-icon>
-        {{ cat.name }}
-      </button>
-    </div>
-
-    <!-- ── Category description strip ── -->
-    <div *ngIf="selectedCategoryId" class="rounded-2xl bg-blue-50 border border-blue-100 px-4 py-3 flex items-center gap-3">
-      <mat-icon class="text-blue-600 text-[22px]">{{ categoryIcon(selectedCategoryId) }}</mat-icon>
-      <div>
-        <p class="font-bold text-blue-800 text-sm">
-          {{ categories | slice:0 | slice:0 }}
-          {{ (categories | slice:0).length }}
-        </p>
-        <p class="text-xs text-blue-600">
-          {{ filteredTests.length }} test{{ filteredTests.length !== 1 ? 's' : '' }} in this category
-        </p>
+    <!-- Drawer panel -->
+    <div class="fixed inset-y-0 left-0 z-50 w-72 bg-white shadow-2xl flex flex-col drawer-slide-in">
+      <div class="flex items-center justify-between px-5 py-4 border-b border-slate-100">
+        <p class="font-extrabold text-slate-900">Filter by Category</p>
+        <button type="button" class="text-slate-400 hover:text-slate-700" (click)="mobileSidebarOpen = false">
+          <mat-icon>close</mat-icon>
+        </button>
       </div>
-      <button type="button" class="ml-auto text-blue-500 hover:text-blue-700 font-bold text-xs" (click)="selectCategory('')">
-        Clear
-      </button>
+
+      <div class="flex-1 overflow-y-auto py-3">
+        <ng-container *ngTemplateOutlet="categoryList"></ng-container>
+      </div>
+
+      <div class="p-4 border-t border-slate-100">
+        <button type="button"
+          class="w-full py-3 rounded-xl bg-blue-600 text-white font-extrabold text-sm"
+          (click)="mobileSidebarOpen = false">
+          Show {{ filteredTests.length }} Tests
+        </button>
+      </div>
     </div>
+  </div>
+  <!-- END MOBILE DRAWER -->
 
-    <!-- ── No results ── -->
-    <div *ngIf="filteredTests.length === 0" class="rounded-3xl border border-slate-200 bg-white p-10 text-center">
-      <mat-icon class="text-slate-300 text-[48px]">search_off</mat-icon>
-      <p class="mt-2 font-extrabold text-slate-600">No tests found</p>
-      <p class="text-sm text-slate-400 mt-1">Try a different keyword or clear the filter</p>
-      <button type="button"
-        class="mt-4 px-5 py-2.5 rounded-2xl bg-blue-600 text-white font-bold text-sm"
-        (click)="clearSearch(); selectCategory('')">
-        Show all tests
-      </button>
-    </div>
 
-    <!-- ── Test Cards Grid ── -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-      <div *ngFor="let test of filteredTests; trackBy: trackById"
-        class="group bg-white rounded-3xl border border-slate-200 shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden flex flex-col">
+  <!-- ═══════════════════════════════════════════════════════
+       MAIN CONTENT AREA
+  ════════════════════════════════════════════════════════ -->
+  <div class="max-w-7xl mx-auto px-4 py-5 flex gap-6 items-start">
 
-        <div class="p-5 flex-1 flex flex-col">
+    <!-- ──────────────────────────────────────────────────
+         LEFT SIDEBAR (desktop only)
+    ────────────────────────────────────────────────── -->
+    <aside class="hidden md:flex flex-col gap-3 w-60 shrink-0 sticky top-[69px]">
 
-          <!-- Icon + name -->
-          <div class="flex items-start gap-3">
-            <div class="shrink-0 w-11 h-11 rounded-2xl bg-blue-50 border border-blue-100 grid place-content-center">
-              <mat-icon class="text-blue-600 text-[22px]">biotech</mat-icon>
+      <!-- Sidebar header -->
+      <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+        <div class="px-4 py-3 bg-blue-600 flex items-center gap-2">
+          <mat-icon class="text-white text-[18px]">category</mat-icon>
+          <p class="font-extrabold text-white text-sm">Categories</p>
+        </div>
+
+        <!-- Category list -->
+        <ng-container *ngTemplateOutlet="categoryList"></ng-container>
+      </div>
+
+      <!-- Trust badges card -->
+      <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 space-y-3">
+        <p class="text-[11px] font-extrabold text-slate-500 uppercase tracking-wide">Why HMC?</p>
+        <div class="space-y-2.5">
+          <div class="flex items-center gap-2.5">
+            <div class="w-8 h-8 rounded-xl bg-emerald-50 grid place-content-center shrink-0">
+              <mat-icon class="text-emerald-600 text-[16px]">verified</mat-icon>
             </div>
-            <div class="min-w-0">
-              <p class="font-extrabold text-slate-900 leading-snug text-sm group-hover:text-blue-700 transition line-clamp-2">
-                {{ test.name }}
-              </p>
-              <span class="inline-block mt-1 text-[11px] px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 font-semibold">
-                {{ test.categoryTitle }}
-              </span>
+            <span class="text-xs text-slate-600 font-semibold">NABL Certified Lab</span>
+          </div>
+          <div class="flex items-center gap-2.5">
+            <div class="w-8 h-8 rounded-xl bg-blue-50 grid place-content-center shrink-0">
+              <mat-icon class="text-blue-600 text-[16px]">home</mat-icon>
+            </div>
+            <span class="text-xs text-slate-600 font-semibold">Free Home Collection</span>
+          </div>
+          <div class="flex items-center gap-2.5">
+            <div class="w-8 h-8 rounded-xl bg-amber-50 grid place-content-center shrink-0">
+              <mat-icon class="text-amber-600 text-[16px]">schedule</mat-icon>
+            </div>
+            <span class="text-xs text-slate-600 font-semibold">Reports in 24–48 hrs</span>
+          </div>
+          <div class="flex items-center gap-2.5">
+            <div class="w-8 h-8 rounded-xl bg-purple-50 grid place-content-center shrink-0">
+              <mat-icon class="text-purple-600 text-[16px]">support_agent</mat-icon>
+            </div>
+            <span class="text-xs text-slate-600 font-semibold">24 / 7 Support</span>
+          </div>
+        </div>
+      </div>
+
+    </aside>
+    <!-- END LEFT SIDEBAR -->
+
+
+    <!-- ──────────────────────────────────────────────────
+         RIGHT — TEST LISTING
+    ────────────────────────────────────────────────── -->
+    <main class="flex-1 min-w-0 space-y-4">
+
+      <!-- Breadcrumb + result bar -->
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <p class="text-xs text-slate-500">
+            <span class="text-slate-400">All Tests</span>
+            <ng-container *ngIf="selectedCategoryId">
+              <mat-icon class="text-[12px] align-middle text-slate-300">chevron_right</mat-icon>
+              <span class="text-slate-700 font-semibold">{{ selectedCategoryName() }}</span>
+            </ng-container>
+          </p>
+          <p class="font-extrabold text-slate-900 text-base mt-0.5">
+            {{ selectedCategoryName() }}
+            <span class="text-sm font-normal text-slate-400 ml-1">({{ filteredTests.length }} tests)</span>
+          </p>
+        </div>
+
+        <!-- Sort dropdown -->
+        <div class="flex items-center gap-2">
+          <span class="text-xs text-slate-500 hidden sm:block">Sort:</span>
+          <div class="flex rounded-xl border border-slate-200 overflow-hidden bg-white shadow-sm">
+            <button type="button"
+              class="px-3 py-2 text-xs font-bold transition"
+              [ngClass]="sortBy === 'popular' ? 'bg-blue-600 text-white' : 'text-slate-600 hover:bg-slate-50'"
+              (click)="onSort('popular')">Popular</button>
+            <button type="button"
+              class="px-3 py-2 text-xs font-bold border-l border-slate-200 transition"
+              [ngClass]="sortBy === 'price_low' ? 'bg-blue-600 text-white' : 'text-slate-600 hover:bg-slate-50'"
+              (click)="onSort('price_low')">₹ Low</button>
+            <button type="button"
+              class="px-3 py-2 text-xs font-bold border-l border-slate-200 transition"
+              [ngClass]="sortBy === 'price_high' ? 'bg-blue-600 text-white' : 'text-slate-600 hover:bg-slate-50'"
+              (click)="onSort('price_high')">₹ High</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Active filter chip -->
+      <div *ngIf="selectedCategoryId || search" class="flex flex-wrap gap-2">
+        <span *ngIf="selectedCategoryId"
+          class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-blue-100 border border-blue-200 text-blue-800 text-xs font-bold">
+          <mat-icon class="text-[13px]">{{ categoryIcon(selectedCategoryId) }}</mat-icon>
+          {{ selectedCategoryName() }}
+          <button type="button" (click)="selectCategory('')">
+            <mat-icon class="text-[14px] ml-1 hover:text-red-500">close</mat-icon>
+          </button>
+        </span>
+        <span *ngIf="search"
+          class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-100 border border-slate-200 text-slate-700 text-xs font-bold">
+          <mat-icon class="text-[13px]">search</mat-icon>
+          "{{ search }}"
+          <button type="button" (click)="clearSearch()">
+            <mat-icon class="text-[14px] ml-1 hover:text-red-500">close</mat-icon>
+          </button>
+        </span>
+      </div>
+
+
+      <!-- ── LOADING SKELETON ── -->
+      <div *ngIf="loading" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+        <div *ngFor="let i of skeletonItems; trackBy: trackByIdx"
+          class="bg-white rounded-2xl border border-slate-100 p-5 space-y-3 animate-pulse">
+          <div class="flex gap-3">
+            <div class="w-12 h-12 rounded-2xl bg-slate-200"></div>
+            <div class="flex-1 space-y-2">
+              <div class="h-3.5 bg-slate-200 rounded-full w-3/4"></div>
+              <div class="h-3 bg-slate-100 rounded-full w-1/3"></div>
             </div>
           </div>
-
-          <!-- Description -->
-          <p class="mt-3 text-xs text-slate-500 line-clamp-2 flex-1">{{ test.description }}</p>
-
-          <!-- Meta chips -->
-          <div class="mt-3 flex flex-wrap gap-1.5">
-            <span class="text-[11px] px-2 py-1 rounded-full bg-slate-50 border border-slate-200 text-slate-600 font-semibold flex items-center gap-1">
-              <mat-icon class="text-[11px]">schedule</mat-icon>{{ test.reportTime }}
-            </span>
-            <span *ngIf="test.fastingRequired"
-              class="text-[11px] px-2 py-1 rounded-full bg-amber-50 border border-amber-200 text-amber-700 font-semibold">
-              Fasting
-            </span>
-            <span *ngIf="test.parametersCount"
-              class="text-[11px] px-2 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 font-semibold">
-              {{ test.parametersCount }}
-            </span>
+          <div class="h-3 bg-slate-100 rounded-full"></div>
+          <div class="h-3 bg-slate-100 rounded-full w-2/3"></div>
+          <div class="flex items-center justify-between pt-2">
+            <div class="h-5 bg-slate-200 rounded-full w-16"></div>
+            <div class="h-9 bg-slate-200 rounded-xl w-24"></div>
           </div>
+        </div>
+      </div>
 
-          <!-- Price + CTA -->
-          <div class="mt-4 flex items-center justify-between gap-2">
-            <div>
-              <div class="flex items-baseline gap-1.5">
-                <span class="text-lg font-extrabold text-slate-900">₹{{ priceToShow(test) }}</span>
-                <span *ngIf="test.discountPrice" class="text-sm text-slate-400 line-through">₹{{ test.price }}</span>
+
+      <!-- ── EMPTY STATE ── -->
+      <div *ngIf="!loading && filteredTests.length === 0"
+        class="bg-white rounded-2xl border border-slate-200 p-12 text-center">
+        <div class="w-16 h-16 rounded-2xl bg-slate-100 grid place-content-center mx-auto mb-4">
+          <mat-icon class="text-slate-300 text-[36px]">search_off</mat-icon>
+        </div>
+        <p class="font-extrabold text-slate-700 text-lg">No tests found</p>
+        <p class="text-sm text-slate-400 mt-1 max-w-xs mx-auto">
+          Try a different keyword or browse all categories
+        </p>
+        <button type="button"
+          class="mt-5 px-6 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-sm transition"
+          (click)="clearSearch(); selectCategory('')">
+          Browse All Tests
+        </button>
+      </div>
+
+
+      <!-- ── TEST CARDS GRID ── -->
+      <div *ngIf="!loading && filteredTests.length > 0"
+        class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+
+        <div *ngFor="let test of filteredTests; trackBy: trackById"
+          class="test-card group bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-lg hover:border-blue-200 transition-all duration-200 flex flex-col overflow-hidden cursor-default">
+
+          <div class="p-5 flex-1 flex flex-col">
+
+            <!-- Header row -->
+            <div class="flex items-start gap-3">
+              <div class="shrink-0 w-12 h-12 rounded-2xl grid place-content-center border border-blue-100"
+                [ngClass]="getCategoryBg(test.categoryId)">
+                <mat-icon class="text-[22px]" [ngClass]="getCategoryColor(test.categoryId)">
+                  {{ categoryIcon(test.categoryId) }}
+                </mat-icon>
               </div>
+
+              <div class="min-w-0 flex-1">
+                <p class="font-extrabold text-slate-900 text-sm leading-snug group-hover:text-blue-700 transition line-clamp-2">
+                  {{ test.name }}
+                </p>
+                <span class="inline-block mt-1.5 text-[10px] px-2 py-0.5 rounded-full font-bold"
+                  [ngClass]="getCategoryBadge(test.categoryId)">
+                  {{ test.categoryTitle }}
+                </span>
+              </div>
+
+              <!-- Discount badge -->
               <span *ngIf="discountPct(test) !== null"
-                class="text-[11px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">
+                class="shrink-0 text-[11px] font-extrabold text-white bg-emerald-500 px-1.5 py-0.5 rounded-lg">
                 {{ discountPct(test) }}% OFF
               </span>
             </div>
 
-            <button type="button"
-              class="flex items-center gap-1.5 px-4 py-2.5 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-sm shadow-sm transition shrink-0"
-              (click)="onBookNow(test)">
-              <mat-icon class="text-[16px]">event_available</mat-icon>
-              Book Now
-            </button>
+            <!-- Description -->
+            <p class="mt-3 text-xs text-slate-500 leading-relaxed line-clamp-2 flex-1">
+              {{ test.description }}
+            </p>
+
+            <!-- Meta row -->
+            <div class="mt-3 flex flex-wrap gap-1.5">
+              <span class="inline-flex items-center gap-1 text-[11px] px-2 py-1 rounded-lg bg-slate-50 border border-slate-100 text-slate-600 font-semibold">
+                <mat-icon class="text-[11px] text-slate-400">schedule</mat-icon>{{ test.reportTime }}
+              </span>
+              <span *ngIf="test.fastingRequired"
+                class="inline-flex items-center gap-1 text-[11px] px-2 py-1 rounded-lg bg-amber-50 border border-amber-100 text-amber-700 font-semibold">
+                <mat-icon class="text-[11px]">no_food</mat-icon> Fasting
+              </span>
+              <span *ngIf="test.parametersCount"
+                class="inline-flex items-center gap-1 text-[11px] px-2 py-1 rounded-lg bg-blue-50 border border-blue-100 text-blue-700 font-semibold">
+                <mat-icon class="text-[11px]">list_alt</mat-icon>{{ test.parametersCount }}
+              </span>
+            </div>
+
           </div>
 
+          <!-- Price + CTA footer -->
+          <div class="px-5 pb-5 mt-auto">
+            <div class="flex items-center justify-between gap-3 pt-3 border-t border-slate-100">
+
+              <div>
+                <div class="flex items-baseline gap-1.5">
+                  <span class="text-xl font-extrabold text-slate-900">₹{{ priceToShow(test) }}</span>
+                  <span *ngIf="test.discountPrice && test.discountPrice < test.price"
+                    class="text-xs text-slate-400 line-through">₹{{ test.price }}</span>
+                </div>
+                <p class="text-[10px] text-slate-400 mt-0.5">Incl. home collection</p>
+              </div>
+
+              <button type="button"
+                class="flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 active:scale-95 text-white font-extrabold text-sm shadow-sm shadow-blue-200 transition-all duration-150 shrink-0"
+                (click)="onBookNow(test)">
+                <mat-icon class="text-[16px]">event_available</mat-icon>
+                Book Now
+              </button>
+
+            </div>
+          </div>
+
+          <!-- Bottom hover stripe -->
+          <div class="h-0.5 bg-gradient-to-r from-blue-500 to-indigo-500 scale-x-0 group-hover:scale-x-100 origin-left transition-transform duration-300"></div>
         </div>
 
-        <!-- Bottom stripe -->
-        <div class="h-0.5 bg-gradient-to-r from-blue-500 to-indigo-500 opacity-0 group-hover:opacity-100 transition-opacity"></div>
       </div>
-    </div>
+      <!-- END GRID -->
 
-    <!-- ── Bottom trust strip ── -->
-    <div class="rounded-3xl bg-white border border-slate-200 px-5 py-4 flex flex-wrap justify-center gap-6 text-xs text-slate-500">
-      <span class="flex items-center gap-1.5"><mat-icon class="text-[16px] text-emerald-500">verified</mat-icon> NABL Certified Lab</span>
-      <span class="flex items-center gap-1.5"><mat-icon class="text-[16px] text-blue-500">home</mat-icon> Free Home Collection</span>
-      <span class="flex items-center gap-1.5"><mat-icon class="text-[16px] text-amber-500">schedule</mat-icon> Reports in 24–48 hrs</span>
-      <span class="flex items-center gap-1.5"><mat-icon class="text-[16px] text-purple-500">support_agent</mat-icon> 24/7 Support</span>
-    </div>
+    </main>
+    <!-- END RIGHT COLUMN -->
 
   </div>
+  <!-- END MAIN CONTENT AREA -->
+
 </div>
+
+
+<!-- ═══════════════════════════════════════════════════════
+     SHARED CATEGORY LIST TEMPLATE (used in sidebar + drawer)
+════════════════════════════════════════════════════════ -->
+<ng-template #categoryList>
+  <ul class="py-1">
+
+    <!-- ALL -->
+    <li>
+      <button type="button"
+        class="category-item w-full flex items-center justify-between px-4 py-2.5 transition"
+        [ngClass]="!selectedCategoryId ? 'active' : ''"
+        (click)="selectCategory('')">
+        <div class="flex items-center gap-2.5">
+          <span class="cat-icon-wrap" [ngClass]="!selectedCategoryId ? 'cat-icon-active' : 'cat-icon-default'">
+            <mat-icon class="text-[16px]">apps</mat-icon>
+          </span>
+          <span class="text-sm font-semibold">All Tests</span>
+        </div>
+        <span class="count-chip" [ngClass]="!selectedCategoryId ? 'count-active' : 'count-default'">
+          {{ countForCategory('') }}
+        </span>
+      </button>
+    </li>
+
+    <li class="mx-4 my-1.5 border-t border-slate-100"></li>
+
+    <!-- EACH CATEGORY -->
+    <li *ngFor="let cat of categories; trackBy: trackByCat">
+      <button type="button"
+        class="category-item w-full flex items-center justify-between px-4 py-2.5 transition"
+        [ngClass]="selectedCategoryId === cat.id ? 'active' : ''"
+        (click)="selectCategory(cat.id)">
+        <div class="flex items-center gap-2.5 min-w-0">
+          <span class="cat-icon-wrap shrink-0"
+            [ngClass]="selectedCategoryId === cat.id ? 'cat-icon-active' : 'cat-icon-default'">
+            <mat-icon class="text-[16px]">{{ categoryIcon(cat.id) }}</mat-icon>
+          </span>
+          <span class="text-sm font-semibold truncate">{{ cat.name }}</span>
+        </div>
+        <span class="count-chip shrink-0"
+          [ngClass]="selectedCategoryId === cat.id ? 'count-active' : 'count-default'">
+          {{ countForCategory(cat.id) }}
+        </span>
+      </button>
+    </li>
+
+  </ul>
+</ng-template>
