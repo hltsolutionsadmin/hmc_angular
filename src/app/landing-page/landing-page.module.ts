@@ -10,6 +10,7 @@ import { ReviewsComponent } from './Components/reviews/reviews.component';
 import { ReachUsComponent } from './Components/reach-us/reach-us.component';
 import { FooterComponent } from './Components/footer/footer.component';
 import { LandingPageRoutingModule } from './landing-page-routing.module';
+import { SharedModule } from "../shared/shared.module";
 
 
 
@@ -27,7 +28,8 @@ import { LandingPageRoutingModule } from './landing-page-routing.module';
   imports: [
     CommonModule,
     MatIconModule,
-    LandingPageRoutingModule
+    LandingPageRoutingModule,
+    SharedModule
 ]
 })
 export class LandingPageModule { }

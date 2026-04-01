@@ -47,7 +47,7 @@
   <aside class="space-y-4">
     <div class="rounded-3xl border border-slate-200 bg-white shadow-sm p-5">
       <p class="text-sm font-extrabold text-slate-900">Payable</p>
-      <p class="mt-2 text-2xl font-extrabold text-slate-900">₹{{ cart.subtotal() }}</p>
+      <p class="mt-2 text-2xl font-extrabold text-slate-900">₹{{ (payable$ | async) ?? 0 }}</p>
       <p class="mt-1 text-xs text-slate-600">Includes all discounts shown in cart.</p>
 
       <button
@@ -70,4 +70,3 @@
     </div>
   </aside>
 </div>
-

@@ -43,7 +43,7 @@ export class CheckoutAddressComponent implements OnInit {
 
   continue(): void {
     if (!this.state.selectedAddressId) return;
-    this.router.navigate(['/layout/checkout/patient']);
+    this.router.navigate(['/layout/checkout/payment']);
   }
 
   toggleAdd(): void {
