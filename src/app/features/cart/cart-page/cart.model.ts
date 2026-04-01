@@ -12,6 +12,9 @@ export interface CartItemDto {
   gift: boolean;
   giftMessage: string | null;
   recommendedProductIds: string[] | null;
+
+  appointmentSlotId?: string | null;
+  appointmentNotes?: string | null;
 }
 
 export interface CartDto {

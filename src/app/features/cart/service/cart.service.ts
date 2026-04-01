@@ -11,12 +11,18 @@ export interface AddCartItemPayload {
   giftMessage: string | null;
 }
 
+export interface UpdateCartItemPayload {
+  quantity: number;
+  appointmentSlotId: string;
+  appointmentNotes: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
 export class CartService {
 
-  constructor() { }
+  constructor() {}
 
   private readonly http = inject(HttpClient);
   private readonly baseUrl = environment.apicommereceUrl;
@@ -29,6 +35,10 @@ export class CartService {
 
   addItem(cartId: string, payload: AddCartItemPayload): Observable<CartDto> {
     return this.http.post<CartDto>(`${this.baseUrl}/api/carts/${cartId}/items`, payload);
+  }
+
+  updateItem(cartId: string, itemId: string, payload: UpdateCartItemPayload): Observable<CartDto> {
+    return this.http.put<CartDto>(`${this.baseUrl}/api/carts/${cartId}/items/${itemId}`, payload);
   }
 
   removeItemFromCart(cartId: string, itemId: string): Observable<CartDto> {

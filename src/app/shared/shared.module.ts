@@ -20,6 +20,7 @@ import { EmptyStateComponent } from './components/empty-state/empty-state.compon
 import { StoreHeaderComponent } from './components/store-header/store-header.component';
 import { StoreFooterComponent } from './components/store-footer/store-footer.component';
 import { PaginationComponent } from './components/pagination/pagination.component';
+import { LoaderComponent } from './components/loader/loader.component';
 
 @NgModule({
   declarations: [
@@ -40,6 +41,7 @@ import { PaginationComponent } from './components/pagination/pagination.componen
        StoreHeaderComponent,
        StoreFooterComponent,
        PaginationComponent,
+       LoaderComponent,
   ],
   imports: [
     CommonModule,
@@ -65,7 +67,8 @@ import { PaginationComponent } from './components/pagination/pagination.componen
     EmptyStateComponent,
     StoreHeaderComponent,
     StoreFooterComponent,
-    PaginationComponent
+    PaginationComponent,
+    LoaderComponent
   ]
 })
 export class SharedModule { }
