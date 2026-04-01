@@ -1,0 +1,20 @@
+<section class="space-y-4">
+  <app-section-title
+    title="Featured tests"
+            actionLabel="view All"
+        actionLink="/layout/tests"
+    subtitle="Handpicked, high-trust tests with fast report delivery."
+    hint="Top picks"
+  ></app-section-title>
+
+  <ng-container *ngIf="featured$ | async as featured">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <app-test-card
+        *ngFor="let t of featured; trackBy: trackById"
+        [test]="t"
+        (add)="add.emit($event)"
+        (view)="view.emit($event)"
+      ></app-test-card>
+    </div>
+  </ng-container>
+</section>

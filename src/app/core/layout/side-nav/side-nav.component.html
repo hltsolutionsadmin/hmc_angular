@@ -1,100 +1,160 @@
-<div class="flex h-screen bg-gray-50">
-  <!-- Sidebar -->
-
-  <aside [ngClass]="sidebarOpen ? 'w-[250px]' : 'w-20'"
-    class="transition-all duration-300 bg-white border-r shadow-sm flex flex-col">
-    <div class="flex items-center justify-between p-4 border-b">
-      <span class="text-xl font-semibold text-blue-600 truncate" style="color: #000;" *ngIf="sidebarOpen">HMC</span>
-      <button mat-icon-button (click)="toggleSidebar()">
-        <mat-icon>{{ sidebarOpen ? 'chevron_left' : 'menu' }}</mat-icon>
-      </button>
-    </div>
-
-    <nav class="flex-1 overflow-y-auto px-2 py-3 space-y-1 custom-scrollbar">
-      <div>
-        <div [ngClass]="{'bg-[#005cbb] text-white': isServicesActive()}" class="rounded-lg">
-          <button (click)="toggleTimeAttendance()"
-            class="flex items-center justify-between w-full text-sm font-medium rounded-lg transition"
-            [class.text-white]="isServicesActive()"
-            [class.text-neutral-600]="!isServicesActive()"
-            [class.hover:bg-blue-600]="isServicesActive()"
-            [class.hover:bg-neutral-100]="!isServicesActive()">
-            <div class="flex items-center">
-              <div class="flex items-center gap-3 px-3 py-2 rounded-lg">
-                <mat-icon [class.text-white]="isServicesActive()" [class.text-gray-700]="!isServicesActive()">dashboard</mat-icon>
-                <span *ngIf="sidebarOpen">Services</span>
-              </div>
-            </div>
-            <mat-icon [class.rotate-180]="isTimeAttendanceOpen" class="transition-transform duration-200" [class.text-white]="isServicesActive()">
-              arrow_drop_down
-            </mat-icon>
-          </button>
-        </div>
-        <ul id="time-attendance-submenu" class="mt-1 ml-4 space-y-1" [class.hidden]="!isTimeAttendanceOpen">
-          <li>
-            <a routerLink="/layout/tests/categories" 
-              routerLinkActive="bg-[#005cbb] text-white"
-              [routerLinkActiveOptions]="{exact: true}"
-              class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-blue-600 transition">
-              <mat-icon>category</mat-icon>
-              <span *ngIf="sidebarOpen">Categories</span>
-            </a>
-          </li>
-          <li>
-            <a routerLink="/layout/tests" 
-              routerLinkActive="bg-[#005cbb] text-white"
-              [routerLinkActiveOptions]="{exact: true}"
-              class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-blue-600 transition">
-              <mat-icon>loyalty</mat-icon>
-              <span *ngIf="sidebarOpen">Products</span>
-            </a>
-          </li>
-        </ul>
-      </div>
-      <a routerLink="/layout/orders" routerLinkActive="bg-[#005cbb] text-white"
-        class="flex items-center gap-3 px-3 py-2 text-gray-700 rounded-lg hover:bg-blue-50 transition">
-        <mat-icon>group</mat-icon>
-        <span *ngIf="sidebarOpen">Orders & Bookings</span>
-      </a>
-
-      <a routerLink="/layout/reports" routerLinkActive="bg-[#005cbb] text-white"
-        class="flex items-center gap-3 px-3 py-2 text-gray-700 rounded-lg hover:bg-blue-50 transition">
-        <mat-icon>reports</mat-icon>
-        <span *ngIf="sidebarOpen">Reports</span>
-      </a>
-
-    </nav>
-
-    <div class="p-4 border-t text-sm text-gray-500">
-      <a class="flex items-center gap-2 cursor-pointer hover:text-blue-600 transition">
-        <mat-icon>logout</mat-icon>
-        <span *ngIf="sidebarOpen">Logout</span>
-      </a>
-    </div>
-  </aside>
-
-  <!-- Main content -->
-  <div class="flex-1 flex flex-col">
-    <!-- Top Navbar -->
-    <header class="flex items-center justify-end p-4 bg-white border-b shadow-sm">
-      <div class="flex items-center gap-4">
-        <mat-icon class="cursor-pointer">notifications_none</mat-icon>
-        <mat-icon class="cursor-pointer">chat_bubble_outline</mat-icon>
-
-        <div class="flex items-center gap-2">
-          <div class="hidden md:block text-sm">
-            <div class="font-medium">Linda Adora</div>
-            <div class="text-gray-500">Admin</div>
-          </div>
-          <img src="https://randomuser.me/api/portraits/women/44.jpg" class="w-10 h-10 rounded-full" alt="User">
-
-        </div>
-      </div>
-    </header>
-
-    <!-- Router outlet for table -->
-    <main class="flex-1 min-h-0 overflow-auto" style="padding: 1em 2em;">
-      <router-outlet></router-outlet>
-    </main>
+<nav
+  id="sidebar"
+  class="w-64 bg-white border-r border-neutral-200 flex flex-col transition-all duration-300 h-full"
+>
+  <div
+    id="sidebar-header"
+    class="flex items-center h-16 px-6 border-b border-neutral-200 shrink-0"
+  >
+    <img src="/assets/favicon.svg" width="50px" alt="logo">
+    <span class="ml-3 text-lg font-bold text-neutral-800">HMC</span>
   </div>
-</div>
+
+  <div
+    id="employee-sidebar-menu"
+    class="flex-grow p-4 overflow-y-auto"
+  >
+    <ul class="space-y-1">
+      <!-- Catalog -->
+      <li>
+        <button
+          type="button"
+          (click)="toggleCatalog()"
+          [class.bg-neutral-100]="isActive('/layout/tests')"
+          class="flex items-center justify-between w-full px-4 py-2.5 text-sm font-medium text-neutral-700 hover:bg-neutral-100 rounded-lg transition"
+        >
+          <span class="flex items-center">
+            <mat-icon class="mr-3 text-[20px]">category</mat-icon>
+            Catalog
+          </span>
+          <mat-icon class="text-[18px] transition-transform duration-200" [class.rotate-180]="isCatalogOpen">expand_more</mat-icon>
+        </button>
+
+        <div class="ml-4 overflow-hidden transition-all duration-300" [class.max-h-0]="!isCatalogOpen" [class.max-h-96]="isCatalogOpen">
+          <ul class="mt-1 space-y-1">
+            <li>
+              <a
+                routerLink="/layout/tests/categories"
+                routerLinkActive="bg-neutral-100 text-primary"
+                [routerLinkActiveOptions]="{ exact: true }"
+                class="flex items-center px-4 py-2 text-sm font-medium text-neutral-600 hover:bg-neutral-100 rounded-lg transition"
+              >
+                <mat-icon class="mr-3 text-[18px]">label</mat-icon>
+                Categories
+              </a>
+            </li>
+            <li>
+              <a
+                routerLink="/layout/tests"
+                routerLinkActive="bg-neutral-100 text-primary"
+                [routerLinkActiveOptions]="{ exact: true }"
+                class="flex items-center px-4 py-2 text-sm font-medium text-neutral-600 hover:bg-neutral-100 rounded-lg transition"
+              >
+                <mat-icon class="mr-3 text-[18px]">inventory_2</mat-icon>
+                Products
+              </a>
+            </li>
+            <li>
+              <a
+                routerLink="/layout/orders"
+                routerLinkActive="bg-neutral-100 text-primary"
+                [routerLinkActiveOptions]="{ exact: true }"
+                class="flex items-center px-4 py-2 text-sm font-medium text-neutral-600 hover:bg-neutral-100 rounded-lg transition"
+              >
+                <mat-icon class="mr-3 text-[18px]">payments</mat-icon>
+                Pricing
+              </a>
+            </li>
+            <li>
+              <a
+                routerLink="/layout/reports"
+                routerLinkActive="bg-neutral-100 text-primary"
+                [routerLinkActiveOptions]="{ exact: true }"
+                class="flex items-center px-4 py-2 text-sm font-medium text-neutral-600 hover:bg-neutral-100 rounded-lg transition"
+              >
+                <mat-icon class="mr-3 text-[18px]">library_books</mat-icon>
+                Catalogs
+              </a>
+            </li>
+          </ul>
+        </div>
+      </li>
+
+      <!-- Inventory -->
+      <li>
+        <button
+          type="button"
+          (click)="toggleInventory()"
+          class="flex items-center justify-between w-full px-4 py-2.5 text-sm font-medium text-neutral-700 hover:bg-neutral-100 rounded-lg transition"
+        >
+          <span class="flex items-center">
+            <mat-icon class="mr-3 text-[20px]">warehouse</mat-icon>
+            Inventory
+          </span>
+          <mat-icon class="text-[18px] transition-transform duration-200" [class.rotate-180]="isInventoryOpen">expand_more</mat-icon>
+        </button>
+        <div class="ml-4 overflow-hidden transition-all duration-300" [class.max-h-0]="!isInventoryOpen" [class.max-h-56]="isInventoryOpen">
+          <ul class="mt-1 space-y-1">
+            <li>
+              <a
+                routerLink="/layout/orders"
+                routerLinkActive="bg-neutral-100 text-primary"
+                [routerLinkActiveOptions]="{ exact: true }"
+                class="flex items-center px-4 py-2 text-sm font-medium text-neutral-600 hover:bg-neutral-100 rounded-lg transition"
+              >
+                <mat-icon class="mr-3 text-[18px]">add_box</mat-icon>
+                Add Stock
+              </a>
+            </li>
+          </ul>
+        </div>
+      </li>
+
+      <!-- Marketing -->
+      <li>
+        <button
+          type="button"
+          (click)="toggleMarketing()"
+          class="flex items-center justify-between w-full px-4 py-2.5 text-sm font-medium text-neutral-700 hover:bg-neutral-100 rounded-lg transition"
+        >
+          <span class="flex items-center">
+            <mat-icon class="mr-3 text-[20px]">campaign</mat-icon>
+            Marketing
+          </span>
+          <mat-icon class="text-[18px] transition-transform duration-200" [class.rotate-180]="isMarketingOpen">expand_more</mat-icon>
+        </button>
+        <div class="ml-4 overflow-hidden transition-all duration-300" [class.max-h-0]="!isMarketingOpen" [class.max-h-56]="isMarketingOpen">
+          <ul class="mt-1 space-y-1">
+            <li>
+              <a
+                routerLink="/layout/reports"
+                routerLinkActive="bg-neutral-100 text-primary"
+                [routerLinkActiveOptions]="{ exact: true }"
+                class="flex items-center px-4 py-2 text-sm font-medium text-neutral-600 hover:bg-neutral-100 rounded-lg transition"
+              >
+                <mat-icon class="mr-3 text-[18px]">local_offer</mat-icon>
+                Promotion
+              </a>
+            </li>
+          </ul>
+        </div>
+      </li>
+    </ul>
+  </div>
+  <div id="sidebar-footer" class="p-4 border-t border-neutral-200 space-y-1">
+    <a
+      href="#"
+      class="flex items-center px-4 py-2.5 text-sm font-medium text-neutral-600 hover:bg-neutral-100 rounded-lg"
+    >
+      <mat-icon class="w-5 mr-3 text-[20px]">settings</mat-icon>
+      Settings
+    </a>
+    <button
+      type="button"
+      class="w-full flex items-center px-4 py-2.5 text-sm font-medium text-red-600 hover:bg-red-50 rounded-lg"
+    >
+      <mat-icon class="w-5 mr-3 text-[20px]">logout</mat-icon>
+      Logout
+    </button>
+  </div>
+</nav>

@@ -1,6 +1,7 @@
 import { Component, HostListener, OnInit, ViewEncapsulation } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatTableDataSource } from '@angular/material/table';
+import { TableAction, TableColumn } from '../../../shared/components/table/table.component';
 
 interface Category {
   id: number;
@@ -8,6 +9,7 @@ interface Category {
   description: string;
   isActive: boolean;
 }
+
 
 @Component({
   selector: 'app-categories',
@@ -24,7 +26,38 @@ export class CategoriesComponent implements OnInit {
   currentPage: number = 1;
   itemsPerPage: number = 10;
   statuses: string[] = ['Pending', 'Confirmed', 'Sample Collected', 'Cancelled'];
+
+    tableColumns: TableColumn[] = [
+      { key: 'name', label: 'index', align: 'left', type: 'text' },
+      { key: 'category', label: 'name', align: 'left', type: 'text' },
+      { key: 'description', label: 'Description', align: 'left', type: 'text' },
+      { key: 'price', label: 'status', align: 'right', type: 'status' },
+    ];
   
+    tableActions: TableAction[] = [
+        {
+          label: 'Edit',
+          icon: 'edit',
+          action: 'edit',
+          colorClass: 'text-blue-600 hover:text-blue-900 hover:bg-blue-100',
+          tooltip: 'Edit Test'
+        },
+        {
+          label: 'Delete',
+          icon: 'delete',
+          action: 'delete',
+          colorClass: 'text-red-600 hover:text-red-900 hover:bg-red-100',
+          tooltip: 'Delete Test'
+        },
+        {
+          label: 'Toggle Status',
+          icon: (row: Category) => (row.isActive ? 'toggle_on' : 'toggle_off'),
+          action: 'toggleStatus',
+          colorClass: 'text-gray-600 hover:text-gray-900 hover:bg-gray-100',
+          tooltip: (row: Category) => (row.isActive ? 'Deactivate Test' : 'Activate Test')
+        }
+      ];
+      
   // Dummy data
   categories: Category[] = [
     { id: 1, name: 'Blood Tests', description: 'Various blood related tests', isActive: true },
@@ -37,28 +70,7 @@ export class CategoriesComponent implements OnInit {
   constructor(private dialog: MatDialog) {}
 
   ngOnInit(): void {
-    this.updateIsMobile();
     this.dataSource.data = this.categories;
-  }
-
-  @HostListener('window:resize')
-  onResize() {
-    this.updateIsMobile();
-  }
-
-  private updateIsMobile() {
-    this.isMobile = window.innerWidth <= 768;
-    if (this.isMobile) {
-      this.viewMode = 'card';
-    }
-  }
-
-  setViewMode(mode: 'table' | 'card') {
-    if (this.isMobile) {
-      this.viewMode = 'card';
-      return;
-    }
-    this.viewMode = mode;
   }
 
   trackByCategoryId(_index: number, c: Category) {

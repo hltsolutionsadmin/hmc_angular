@@ -9,7 +9,7 @@ import { HealthcareSectionComponent } from './Components/healthcare-section/heal
 import { ReviewsComponent } from './Components/reviews/reviews.component';
 import { ReachUsComponent } from './Components/reach-us/reach-us.component';
 import { FooterComponent } from './Components/footer/footer.component';
-import { AppRoutingModule } from "../app-routing.module";
+import { LandingPageRoutingModule } from './landing-page-routing.module';
 
 
 
@@ -27,7 +27,7 @@ import { AppRoutingModule } from "../app-routing.module";
   imports: [
     CommonModule,
     MatIconModule,
-    AppRoutingModule
+    LandingPageRoutingModule
 ]
 })
 export class LandingPageModule { }

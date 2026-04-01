@@ -1,0 +1,28 @@
+<div class="rounded-3xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+  <div class="p-6 sm:p-8">
+    <div class="flex items-start gap-4">
+      <div class="w-12 h-12 rounded-2xl bg-emerald-50 border border-emerald-200 grid place-content-center shrink-0">
+        <mat-icon class="text-emerald-700">check_circle</mat-icon>
+      </div>
+      <div class="min-w-0">
+        <p class="text-xl font-extrabold text-slate-900">Booking confirmed</p>
+        <p class="mt-1 text-sm text-slate-600">
+          Your booking ID is <span class="font-extrabold text-slate-900">{{ id }}</span>.
+        </p>
+        <p *ngIf="booking?.etaText" class="mt-2 text-sm text-emerald-700 font-semibold">{{ booking?.etaText }}</p>
+      </div>
+    </div>
+
+    <div class="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <a routerLink="/layout/orders" class="rounded-2xl px-5 py-3 bg-indigo-700 hover:bg-indigo-800 text-white font-extrabold inline-flex items-center justify-center gap-2 transition">
+        Track booking
+        <mat-icon class="text-[18px]">arrow_forward</mat-icon>
+      </a>
+      <a routerLink="/layout/home" class="rounded-2xl px-5 py-3 bg-slate-900 hover:bg-slate-800 text-white font-extrabold inline-flex items-center justify-center gap-2 transition">
+        Continue shopping
+        <mat-icon class="text-[18px]">storefront</mat-icon>
+      </a>
+    </div>
+  </div>
+</div>
+

@@ -1,0 +1,4 @@
+<select class="ui-select" [value]="value" (change)="onChange($any($event.target).value)">
+  <option [value]="''">{{ placeholder }}</option>
+  <option *ngFor="let o of options" [value]="o.value">{{ o.label }}</option>
+</select>

@@ -5,6 +5,8 @@ import { ReportsRoutingModule } from './reports-routing.module';
 import { ReportsListComponent } from './reports-list/reports-list.component';
 import { MatIconModule } from '@angular/material/icon';
 
+import { SharedModule } from '../../shared/shared.module';
+
 @NgModule({
   declarations: [
     ReportsListComponent
@@ -13,6 +15,7 @@ import { MatIconModule } from '@angular/material/icon';
     CommonModule,
     ReportsRoutingModule,
     FormsModule,
+    SharedModule,
     MatIconModule
   ]
 })

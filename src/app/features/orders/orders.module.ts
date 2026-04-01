@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { OrdersRoutingModule } from './orders-routing.module';
 import { OrdersListComponent } from './orders-list/orders-list.component';
 import { OrderDetailsComponent } from './order-details/order-details.component';
+import { OrderTrackingComponent } from './order-tracking/order-tracking.component';
 import { MatTableModule } from '@angular/material/table';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
@@ -18,16 +19,20 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatCardModule } from '@angular/material/card';
 
+import { SharedModule } from '../../shared/shared.module';
+
 
 @NgModule({
   declarations: [
     OrdersListComponent,
-    OrderDetailsComponent
+    OrderDetailsComponent,
+    OrderTrackingComponent
   ],
   imports: [
     CommonModule,
     OrdersRoutingModule,
     FormsModule,
+    SharedModule,
     MatTableModule,
     MatDialogModule,
     MatButtonModule,

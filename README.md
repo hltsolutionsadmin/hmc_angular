@@ -2,6 +2,10 @@
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 18.2.21.
 
+## Node version
+
+- Use Node `20.11.1` (see `.nvmrc`). Angular 18 does not support Node 24+ and `ng build` may fail with `spawn EPERM` on unsupported/locked-down environments.
+
 ## Development server
 
 Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.

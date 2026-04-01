@@ -1,0 +1,17 @@
+<section class="space-y-4">
+  <app-section-title
+    title="Popular health packages"
+    subtitle="Best value combos for routine and specialized wellness."
+    actionLabel="Browse all"
+    actionLink="/layout/tests"
+  ></app-section-title>
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+    <app-package-card
+      *ngFor="let p of packages"
+      [pkg]="p"
+      (add)="add.emit($event)"
+    ></app-package-card>
+  </div>
+</section>
+
