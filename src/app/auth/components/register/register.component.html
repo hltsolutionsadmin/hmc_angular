@@ -57,12 +57,7 @@
       </div>
 
       <div class="rounded-2xl border border-slate-200 bg-white/80 backdrop-blur shadow-xl p-6 sm:p-8">
-        <div *ngIf="errorMessage" class="mb-4 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
-          {{ errorMessage }}
-        </div>
-        <div *ngIf="infoMessage" class="mb-4 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
-          {{ infoMessage }}
-        </div>
+    
 
         <!-- DETAILS -->
         <form *ngIf="step === 'details'" [formGroup]="registerForm" (ngSubmit)="onRegister()" class="space-y-5">
@@ -194,6 +189,12 @@
                 Passwords do not match.
               </p>
             </div>
+                <div *ngIf="errorMessage" class="mb-4 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
+          {{ errorMessage }}
+        </div>
+        <div *ngIf="infoMessage" class="mb-4 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
+          {{ infoMessage }}
+        </div>
           </div>
 
           <button class="primary-btn" type="submit" [disabled]="loadingRegister">
@@ -231,6 +232,12 @@
               [attr.aria-label]="'OTP digit ' + (i + 1)"
             />
           </div>
+              <div *ngIf="errorMessage" class="mb-4 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
+          {{ errorMessage }}
+        </div>
+        <div *ngIf="infoMessage" class="mb-4 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
+          {{ infoMessage }}
+        </div>
 
           <div class="flex flex-col sm:flex-row gap-3">
             <button class="primary-btn" type="submit" [disabled]="loadingVerify">

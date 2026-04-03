@@ -13,6 +13,25 @@ export class SectionService {
   private readonly catalog = inject(CatalogService);
   private readonly baseUrl = `${environment.apiBaseUrl}`;
 
+  getStoreTests(page: number, size: number): Observable<StoreTest[]> {
+    const params = new HttpParams()
+      .set('storeId', environment.storeId)
+      .set('page', page)
+      .set('size', size);
+
+    return this.http
+      .get<ProductSearchResponse>(`${this.baseUrl}/api/inventory/store`, { params })
+      .pipe(
+        map((response) => response.content),
+        map((items) =>
+          items
+            .filter((item) => item.product)
+            .map((item) => this.mapProductToStoreTest(item.product!))
+        ),
+        catchError(() => of(this.catalog.getAllTests()))
+      );
+  }
+
   getFeaturedTests(page: number, size: number): Observable<StoreTest[]> {
     const params = new HttpParams()
       .set('storeId', environment.storeId)
@@ -22,14 +41,13 @@ export class SectionService {
     return this.http
       .get<ProductSearchResponse>(`${this.baseUrl}/api/inventory/store`, { params })
       .pipe(
-        map(response => response.content),
-        map(items =>
+        map((response) => response.content),
+        map((items) =>
           items
-            .filter(item => item.product)
-            .map(item => this.mapProductToStoreTest(item.product!))
+            .filter((item) => item.product)
+            .map((item) => this.mapProductToStoreTest(item.product!))
         ),
-        // ← Fall back to rich mock data when the API is unavailable
-        catchError(() => of(this.catalog.getFeaturedTests())),
+        catchError(() => of(this.catalog.getFeaturedTests()))
       );
   }
 

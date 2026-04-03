@@ -7,17 +7,17 @@ import { CheckoutPaymentComponent } from './steps/checkout-payment/checkout-paym
 import { CheckoutSuccessComponent } from './steps/checkout-success/checkout-success.component';
 
 const routes: Routes = [
-  {
-    path: '',
-    component: CheckoutShellComponent,
-    children: [
-      { path: '', redirectTo: 'address', pathMatch: 'full' },
-      { path: 'address', component: CheckoutAddressComponent },
-      { path: 'patient', component: CheckoutPatientComponent },
-      { path: 'payment', component: CheckoutPaymentComponent },
-      { path: 'success/:id', component: CheckoutSuccessComponent }
-    ]
-  }
+  // {
+  //   path: '',
+  //   component: CheckoutShellComponent,
+  //   children: [
+  //     { path: '', redirectTo: 'address', pathMatch: 'full' },
+  //     { path: 'address', component: CheckoutAddressComponent },
+  //     { path: 'patient', component: CheckoutPatientComponent },
+  //     { path: 'payment', component: CheckoutPaymentComponent },
+  //     { path: 'success/:id', component: CheckoutSuccessComponent }
+  //   ]
+  // }
 ];
 
 @NgModule({

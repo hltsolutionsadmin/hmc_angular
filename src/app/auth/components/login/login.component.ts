@@ -125,7 +125,7 @@ export class LoginComponent implements OnInit, OnDestroy {
         // Restore any saved booking state and redirect to intended URL
         this.bookingFlowState.restoreFromSession();
         const returnUrl = consumeReturnUrl();
-        this.router.navigateByUrl(returnUrl ?? '/layout/home');
+        this.router.navigateByUrl(returnUrl ?? '/layout/tests');
       },
       error: (error) => {
         this.loading = false;

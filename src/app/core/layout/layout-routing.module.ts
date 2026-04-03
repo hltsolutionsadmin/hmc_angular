@@ -6,7 +6,7 @@ import{LayoutComponentComponent}from'./layout-component/layout-component.compone
 const
 routes:Routes=[
 {path:'',component:LayoutComponentComponent,canActivate:[authGuard],children:[
-{path:'',redirectTo:'home',pathMatch:'full'},
+{path:'',redirectTo:'tests',pathMatch:'full'},
 {path:'',loadChildren:()=>import('../../features/pages/pages.module').then((m)=>m.PagesModule)}
 ]}
 ];

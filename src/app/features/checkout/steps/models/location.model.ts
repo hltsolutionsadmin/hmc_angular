@@ -29,6 +29,9 @@ export interface PagedResponse<T> {
 }
 
 export interface CreateUserAddressRequest {
+  name?: string;
+  addressType?: 'HOME' | 'WORK' | 'OTHERS' | string;
+  mobileNumber?: string;
   addressLine1: string;
   addressLine2?: string;
   stateId: string;
@@ -36,6 +39,6 @@ export interface CreateUserAddressRequest {
   postalCode: string;
   country: string;
   fullText: string;
-  firstName: string;
-  lastName: string;
+  firstName?: string;
+  lastName?: string;
 }

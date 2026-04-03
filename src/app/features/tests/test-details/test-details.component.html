@@ -1,112 +1,201 @@
-<div *ngIf="test" class="space-y-6">
-  <div class="flex items-center gap-3">
-    <a routerLink="/layout/tests" class="inline-flex items-center gap-2 text-sm font-bold text-slate-700 hover:text-indigo-700">
+<div *ngIf="test as t" class="hmc-test-details space-y-6">
+
+  <!-- Breadcrumb / Back -->
+  <div class="flex items-center gap-2 text-sm text-slate-500">
+    <button type="button" class="inline-flex items-center gap-1.5 font-semibold hover:text-slate-700 transition" (click)="goBack()">
       <mat-icon class="text-[18px]">arrow_back</mat-icon>
-      Back to tests
-    </a>
-    <span class="text-slate-300">/</span>
-    <span class="text-sm font-semibold text-slate-600">{{ test.categoryTitle }}</span>
+      Home
+    </button>
+    <mat-icon class="text-[18px] text-slate-300">chevron_right</mat-icon>
+    <span class="truncate">{{ t.name }}</span>
   </div>
 
-  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-    <!-- Main -->
-    <div class="lg:col-span-2 space-y-4">
-      <div class="rounded-3xl border border-slate-200 bg-white shadow-sm p-6">
-        <div class="flex items-start gap-4">
-          <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-50 to-emerald-50 border border-slate-200 grid place-content-center shrink-0">
-            <mat-icon class="text-indigo-700">biotech</mat-icon>
-          </div>
-          <div class="min-w-0">
-            <p class="text-2xl font-extrabold text-slate-900 leading-snug">{{ test.name }}</p>
-            <p class="mt-2 text-sm text-slate-600">{{ test.description }}</p>
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
 
-            <div class="mt-4 flex flex-wrap items-center gap-2">
-              <span class="text-[11px] px-2 py-1 rounded-full bg-slate-50 border border-slate-200 text-slate-700">{{ test.reportTime }}</span>
-              <span *ngIf="test.fastingRequired" class="text-[11px] px-2 py-1 rounded-full bg-amber-50 border border-amber-200 text-amber-700">Fasting</span>
-              <span *ngIf="test.parametersCount" class="text-[11px] px-2 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700">{{ test.parametersCount }} parameters</span>
-              <span *ngIf="test.rating" class="text-[11px] px-2 py-1 rounded-full bg-white border border-slate-200 text-slate-700 inline-flex items-center gap-1">
-                <mat-icon class="text-[16px] text-amber-500">star</mat-icon>
-                {{ test.rating }}
-              </span>
-            </div>
+    <!-- Main column -->
+    <div class="lg:col-span-2 space-y-6">
+      <div class="rounded-3xl border border-slate-200 bg-white shadow-sm p-6">
+
+        <p class="text-[11px] font-extrabold text-slate-400 uppercase tracking-wider">Test details</p>
+        <h1 class="mt-2 text-2xl sm:text-2xl font-extrabold text-slate-900 leading-tight">
+          {{ t.name }}
+        </h1>
+
+        <div class="mt-4 flex flex-wrap items-center gap-2">
+          <span class="text-sm text-slate-600">Also referred as</span>
+          <span class="inline-flex items-center px-3 py-1 rounded-2xl bg-slate-50 border border-slate-200 text-slate-700 text-sm font-semibold">
+            {{ t.categoryTitle }}
+          </span>
+        </div>
+
+        <div class="mt-6 h-px bg-slate-100"></div>
+
+        <!-- Quick stats (like screenshot) -->
+        <div class="mt-5 flex flex-wrap gap-6 text-slate-700">
+          <div class="flex items-center gap-2">
+            <mat-icon class="text-[20px] text-blue-600">trending_up</mat-icon>
+            <span class="font-semibold">134,686+ booked recently</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <mat-icon class="text-[20px] text-fuchsia-500">wc</mat-icon>
+            <span class="font-semibold">For men &amp; women</span>
           </div>
         </div>
+
+        <!-- Info cards -->
+        <div class="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div class="rounded-2xl bg-slate-50 border border-slate-200 p-4">
+            <p class="text-xs font-extrabold text-slate-500">Earliest reports in</p>
+            <div class="mt-2 flex items-center gap-2">
+              <mat-icon class="text-[20px] text-emerald-600">schedule</mat-icon>
+              <p class="text-lg font-extrabold text-slate-900">{{ reportHoursText }}</p>
+            </div>
+          </div>
+
+          <div class="rounded-2xl bg-slate-50 border border-slate-200 p-4 flex items-center justify-between gap-3">
+            <div>
+              <p class="text-xs font-extrabold text-slate-500">Contains</p>
+              <div class="mt-2 flex items-center gap-2">
+                <mat-icon class="text-[20px] text-blue-600">science</mat-icon>
+                <p class="text-lg font-extrabold text-slate-900">{{ containsText }}</p>
+              </div>
+            </div>
+            <button type="button" class="w-10 h-10 rounded-full bg-white border border-slate-200 grid place-content-center hover:bg-slate-50 transition" aria-label="Scroll to inclusions"
+              (click)="$event.preventDefault(); scrollToIncludes()">
+              <mat-icon class="text-slate-700">chevron_right</mat-icon>
+            </button>
+          </div>
+        </div>
+
+        <p class="mt-6 text-sm text-slate-600 leading-relaxed">
+          {{ t.description }}
+        </p>
+
+        <div class="mt-5 flex flex-wrap gap-2">
+          <span class="inline-flex items-center gap-1 text-[11px] px-2.5 py-1 rounded-full bg-blue-50 border border-blue-100 text-blue-700 font-bold">
+            <mat-icon class="text-[14px]">verified</mat-icon> NABL
+          </span>
+          <span class="inline-flex items-center gap-1 text-[11px] px-2.5 py-1 rounded-full bg-emerald-50 border border-emerald-100 text-emerald-700 font-bold">
+            <mat-icon class="text-[14px]">home</mat-icon> Home collection
+          </span>
+          <span *ngIf="t.fastingRequired" class="inline-flex items-center gap-1 text-[11px] px-2.5 py-1 rounded-full bg-amber-50 border border-amber-100 text-amber-700 font-bold">
+            <mat-icon class="text-[14px]">no_food</mat-icon> Fasting required
+          </span>
+        </div>
+
       </div>
 
-      <div class="rounded-3xl border border-slate-200 bg-white shadow-sm p-6">
-        <p class="text-sm font-extrabold text-slate-900">What’s included</p>
+      <!-- Includes -->
+      <div id="includes" class="rounded-3xl border border-slate-200 bg-white shadow-sm p-6">
+        <p class="text-lg font-extrabold text-slate-900">What’s included</p>
+        <p class="mt-1 text-sm text-slate-500">A quick look at the parameters covered in this test.</p>
+
         <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div *ngFor="let x of (test.included || [])" class="flex items-start gap-2 text-sm text-slate-700">
+          <div *ngFor="let x of (t.included || [])" class="flex items-start gap-2 text-sm text-slate-700">
             <mat-icon class="text-[18px] text-emerald-600">check_circle</mat-icon>
             <span>{{ x }}</span>
           </div>
-          <p *ngIf="!(test.included?.length)" class="text-sm text-slate-600">Included parameters will be shown here.</p>
+          <p *ngIf="!(t.included?.length)" class="text-sm text-slate-600">Included parameters will be shown here.</p>
         </div>
       </div>
 
+      <!-- Preparation -->
       <div class="rounded-3xl border border-slate-200 bg-white shadow-sm p-6">
-        <p class="text-sm font-extrabold text-slate-900">Preparation</p>
-        <p class="mt-2 text-sm text-slate-600">
-          {{ test.preparation || (test.fastingRequired ? 'Fasting may be required. Please follow lab guidance during booking.' : 'No special preparation required for most patients.') }}
+        <p class="text-lg font-extrabold text-slate-900">Preparation</p>
+        <p class="mt-2 text-sm text-slate-600 leading-relaxed">
+          {{ t.preparation || (t.fastingRequired ? 'Fasting may be required. Please follow lab guidance during booking.' : 'No special preparation required for most patients.') }}
         </p>
       </div>
 
+      <!-- FAQ (friendly + animated via details) -->
+      <div class="rounded-3xl border border-slate-200 bg-white shadow-sm p-6">
+        <p class="text-lg font-extrabold text-slate-900">Frequently asked questions</p>
+        <div class="mt-4 grid gap-2">
+          <details class="group rounded-2xl border border-slate-200 bg-slate-50 p-4">
+            <summary class="cursor-pointer list-none flex items-center justify-between gap-3">
+              <span class="font-bold text-slate-800">When will I get the report?</span>
+              <mat-icon class="text-slate-500 group-open:rotate-180 transition-transform">expand_more</mat-icon>
+            </summary>
+            <p class="mt-3 text-sm text-slate-600 leading-relaxed">
+              Reports are typically available within {{ reportHoursText }} after sample collection.
+            </p>
+          </details>
+          <details class="group rounded-2xl border border-slate-200 bg-slate-50 p-4">
+            <summary class="cursor-pointer list-none flex items-center justify-between gap-3">
+              <span class="font-bold text-slate-800">Do I need fasting?</span>
+              <mat-icon class="text-slate-500 group-open:rotate-180 transition-transform">expand_more</mat-icon>
+            </summary>
+            <p class="mt-3 text-sm text-slate-600 leading-relaxed">
+              {{ t.fastingRequired ? 'Yes. Fasting is recommended for accurate results.' : 'No fasting is required for this test in most cases.' }}
+            </p>
+          </details>
+        </div>
+      </div>
+
+      <!-- Related -->
       <div *ngIf="related.length" class="space-y-4">
         <app-section-title title="Related tests" subtitle="More options in the same category."></app-section-title>
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          <app-test-card *ngFor="let t of related" [test]="t" (add)="addRelatedToCart($event)" (view)="viewRelated($event)"></app-test-card>
+          <app-test-card *ngFor="let rt of related" [test]="rt" (add)="addRelatedToCart($event)" (view)="viewRelated($event)"></app-test-card>
         </div>
       </div>
     </div>
 
-    <!-- Sidebar -->
-    <aside class="space-y-4">
-      <div class="rounded-3xl border border-slate-200 bg-white shadow-sm p-6 sticky top-24">
-        <p class="text-sm font-extrabold text-slate-900">Price</p>
-        <div class="mt-3 flex items-end gap-2">
-          <p class="text-3xl font-extrabold text-slate-900">₹{{ test.discountPrice ?? test.price }}</p>
-          <p *ngIf="test.discountPrice" class="text-sm text-slate-400 line-through">₹{{ test.price }}</p>
+    <!-- Price column (sticky like screenshot) -->
+    <aside class="space-y-4 lg:sticky lg:top-24">
+      <div class="rounded-3xl border border-slate-200 bg-white shadow-sm p-6">
+        <p class="text-lg font-extrabold text-slate-900">Package price:</p>
+
+        <div class="mt-3 flex flex-wrap items-baseline gap-x-2 gap-y-1">
+          <span class="text-4xl font-extrabold text-slate-900">₹{{ t.discountPrice ?? t.price }}</span>
+          <span *ngIf="t.discountPrice && t.discountPrice < t.price" class="text-lg text-slate-400 line-through">₹{{ t.price }}</span>
+          <span *ngIf="discountPercent(t) !== null" class="text-lg font-extrabold text-emerald-700">
+            {{ discountPercent(t) }}% off
+          </span>
         </div>
 
-        <div class="mt-4 grid gap-2 text-sm text-slate-700">
-          <div class="flex items-center gap-2"><mat-icon class="text-[18px] text-emerald-600">verified</mat-icon> Trusted lab network</div>
-          <div class="flex items-center gap-2"><mat-icon class="text-[18px] text-sky-600">home</mat-icon> Home collection</div>
-          <div class="flex items-center gap-2"><mat-icon class="text-[18px] text-indigo-600">schedule</mat-icon> Reports in {{ test.reportTime }}</div>
+        <!-- Coupon-like box -->
+        <div class="mt-5 rounded-2xl border border-slate-200 overflow-hidden">
+          <div class="flex">
+            <div class="w-2 bg-emerald-600"></div>
+            <div class="flex-1 p-4">
+              <p class="font-extrabold text-slate-900">Get additional upto 15% off</p>
+              <p class="mt-1 text-sm text-slate-600">Use <span class="font-extrabold">HMC</span> at checkout</p>
+            </div>
+            <div class="w-14 border-l border-slate-200 grid place-content-center text-slate-500">
+              <mat-icon>content_copy</mat-icon>
+            </div>
+          </div>
         </div>
 
         <div class="mt-5 grid gap-3">
-          <ng-container *ngIf="(productIdsInCart$ | async) as ids">
-            <button
-              *ngIf="!ids.has(test.id); else inCart"
-              type="button"
-              class="w-full rounded-2xl px-5 py-3 bg-indigo-700 hover:bg-indigo-800 text-white font-extrabold transition disabled:opacity-60 disabled:cursor-not-allowed"
-              [disabled]="(cartLoading$ | async) === true"
-              (click)="addToCart()"
-            >
-              Add to cart
-            </button>
-
-            <ng-template #inCart>
-              <button
-                type="button"
-                disabled
-                class="w-full rounded-2xl px-5 py-3 bg-slate-100 text-slate-700 font-extrabold border border-slate-200"
-              >
-                In Cart
-              </button>
-            </ng-template>
-          </ng-container>
-          <button type="button" class="w-full rounded-2xl px-5 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold transition" (click)="bookNow()">
-            Book now
+          <button type="button" class="w-full rounded-2xl px-6 py-3.5 bg-blue-600 hover:bg-rose-600 active:scale-[0.99] disabled:bg-slate-300 disabled:cursor-not-allowed text-white font-extrabold text-base shadow-lg transition"
+            [disabled]="bookingNow"
+            (click)="bookNow()">
+            BOOK
           </button>
         </div>
+      </div>
 
-        <p class="mt-3 text-xs text-slate-500">Checkout UI is ready — connect payment & slots later.</p>
+      <!-- Mobile sticky CTA bar -->
+      <div class="lg:hidden fixed left-0 right-0 bottom-0 z-30 bg-white/90 backdrop-blur border-t border-slate-200">
+        <div class="max-w-3xl mx-auto px-4 py-3 flex items-center justify-between gap-3">
+          <div>
+            <p class="text-[11px] font-extrabold text-slate-500">PRICE</p>
+            <p class="text-lg font-extrabold text-slate-900">₹{{ t.discountPrice ?? t.price }}</p>
+          </div>
+          <button type="button" class="px-5 py-3 rounded-2xl bg-rose-500 hover:bg-rose-600 disabled:bg-slate-300 disabled:cursor-not-allowed text-white font-extrabold shadow-md transition" [disabled]="bookingNow" (click)="bookNow()">
+            Book
+          </button>
+        </div>
       </div>
     </aside>
+
   </div>
+
+  <div class="h-20 lg:hidden"></div>
 </div>
 
-<div *ngIf="!test" class="rounded-3xl border border-slate-200 bg-white shadow-sm p-8 text-center text-slate-600">
+<div *ngIf="loading" class="rounded-3xl border border-slate-200 bg-white shadow-sm p-8 text-center text-slate-600">
   Loading…
 </div>

@@ -19,6 +19,10 @@
 
   <div class="max-w-3xl mx-auto px-4 pt-5 space-y-6">
 
+    <div *ngIf="errorMessage" class="rounded-3xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-700">
+      {{ errorMessage }}
+    </div>
+
     <!-- ── Test Summary Card ── -->
     <div *ngIf="test" class="rounded-3xl border border-blue-100 bg-gradient-to-r from-blue-600 to-blue-700 text-white p-5 shadow-lg">
       <div class="flex items-start gap-4">
@@ -29,7 +33,7 @@
           <p class="font-extrabold text-lg leading-snug">{{ test.name }}</p>
           <p class="mt-1 text-sm text-blue-100">{{ test.description }}</p>
           <div class="mt-3 flex flex-wrap gap-2">
-            <span class="text-xs px-3 py-1 rounded-full bg-white/20 text-white font-semibold">
+            <span class="text-xs px-3 py-1 rounded-full flex items-center  bg-white/20 text-white font-semibold">
               <mat-icon class="text-[13px] align-middle">schedule</mat-icon>
               Report: {{ test.reportTime }}
             </span>
@@ -96,15 +100,15 @@
             class="rounded-2xl border px-3 py-3 text-sm font-bold transition flex flex-col items-center gap-0.5"
             [ngClass]="{
               'border-blue-400 bg-blue-600 text-white shadow-md': selectedSlot?.id === slot.id,
-              'border-slate-200 bg-white text-slate-800 hover:border-blue-300 hover:bg-blue-50': slot.available && selectedSlot?.id !== slot.id,
-              'border-slate-100 bg-slate-50 text-slate-300 cursor-not-allowed': !slot.available
+              'border-slate-200 bg-white text-slate-800 hover:border-blue-300 hover:bg-blue-50': slot.available && !slot.slotClosed && selectedSlot?.id !== slot.id,
+              'border-slate-100 bg-slate-50 text-slate-300 cursor-not-allowed': !slot.available || slot.slotClosed
             }"
-            [disabled]="!slot.available"
+            [disabled]="!slot.available || slot.slotClosed"
             (click)="selectSlot(slot)">
             <span>{{ slot.displayTime }}</span>
             <span class="text-[10px] font-semibold"
-              [ngClass]="selectedSlot?.id === slot.id ? 'text-blue-200' : slot.available ? 'text-emerald-500' : 'text-slate-300'">
-              {{ slot.available ? 'Available' : 'Full' }}
+              [ngClass]="selectedSlot?.id === slot.id ? 'text-blue-200' : slot.slotClosed ? 'text-rose-500' : slot.available ? 'text-emerald-500' : 'text-slate-300'">
+              {{ slot.slotClosed ? 'Booked' : slot.available ? 'Available' : 'Full' }}
             </span>
           </button>
         </div>
@@ -126,15 +130,15 @@
             class="rounded-2xl border px-3 py-3 text-sm font-bold transition flex flex-col items-center gap-0.5"
             [ngClass]="{
               'border-blue-400 bg-blue-600 text-white shadow-md': selectedSlot?.id === slot.id,
-              'border-slate-200 bg-white text-slate-800 hover:border-blue-300 hover:bg-blue-50': slot.available && selectedSlot?.id !== slot.id,
-              'border-slate-100 bg-slate-50 text-slate-300 cursor-not-allowed': !slot.available
+              'border-slate-200 bg-white text-slate-800 hover:border-blue-300 hover:bg-blue-50': slot.available && !slot.slotClosed && selectedSlot?.id !== slot.id,
+              'border-slate-100 bg-slate-50 text-slate-300 cursor-not-allowed': !slot.available || slot.slotClosed
             }"
-            [disabled]="!slot.available"
+            [disabled]="!slot.available || slot.slotClosed"
             (click)="selectSlot(slot)">
             <span>{{ slot.displayTime }}</span>
             <span class="text-[10px] font-semibold"
-              [ngClass]="selectedSlot?.id === slot.id ? 'text-blue-200' : slot.available ? 'text-emerald-500' : 'text-slate-300'">
-              {{ slot.available ? 'Available' : 'Full' }}
+              [ngClass]="selectedSlot?.id === slot.id ? 'text-blue-200' : slot.slotClosed ? 'text-rose-500' : slot.available ? 'text-emerald-500' : 'text-slate-300'">
+              {{ slot.slotClosed ? 'Booked' : slot.available ? 'Available' : 'Full' }}
             </span>
           </button>
         </div>
@@ -156,22 +160,22 @@
             class="rounded-2xl border px-3 py-3 text-sm font-bold transition flex flex-col items-center gap-0.5"
             [ngClass]="{
               'border-blue-400 bg-blue-600 text-white shadow-md': selectedSlot?.id === slot.id,
-              'border-slate-200 bg-white text-slate-800 hover:border-blue-300 hover:bg-blue-50': slot.available && selectedSlot?.id !== slot.id,
-              'border-slate-100 bg-slate-50 text-slate-300 cursor-not-allowed': !slot.available
+              'border-slate-200 bg-white text-slate-800 hover:border-blue-300 hover:bg-blue-50': slot.available && !slot.slotClosed && selectedSlot?.id !== slot.id,
+              'border-slate-100 bg-slate-50 text-slate-300 cursor-not-allowed': !slot.available || slot.slotClosed
             }"
-            [disabled]="!slot.available"
+            [disabled]="!slot.available || slot.slotClosed"
             (click)="selectSlot(slot)">
             <span>{{ slot.displayTime }}</span>
             <span class="text-[10px] font-semibold"
-              [ngClass]="selectedSlot?.id === slot.id ? 'text-blue-200' : slot.available ? 'text-emerald-500' : 'text-slate-300'">
-              {{ slot.available ? 'Available' : 'Full' }}
+              [ngClass]="selectedSlot?.id === slot.id ? 'text-blue-200' : slot.slotClosed ? 'text-rose-500' : slot.available ? 'text-emerald-500' : 'text-slate-300'">
+              {{ slot.slotClosed ? 'Booked' : slot.available ? 'Available' : 'Full' }}
             </span>
           </button>
         </div>
       </div>
 
       <!-- No slots state -->
-      <div *ngIf="slots.length === 0 && !loadingSlots"
+      <div *ngIf="visibleSlots.length === 0 && !loadingSlots"
         class="rounded-3xl border border-slate-200 bg-white p-8 text-center">
         <mat-icon class="text-slate-300 text-[48px]">event_busy</mat-icon>
         <p class="mt-2 font-extrabold text-slate-600">No slots available</p>
@@ -199,9 +203,10 @@
       <button
         type="button"
         class="shrink-0 flex items-center gap-2 rounded-2xl px-6 py-3.5 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-300 disabled:cursor-not-allowed text-white font-extrabold text-sm shadow-lg transition"
-        [disabled]="!selectedSlot"
+        [disabled]="!selectedSlot || booking"
         (click)="onBookAppointment()">
-        Book Appointment
+        <span *ngIf="!booking">Book Appointment</span>
+        <span *ngIf="booking">Adding…</span>
         <mat-icon class="text-[18px]">arrow_forward</mat-icon>
       </button>
     </div>

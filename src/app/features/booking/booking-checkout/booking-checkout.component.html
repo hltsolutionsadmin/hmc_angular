@@ -33,11 +33,11 @@
           <p class="font-extrabold text-slate-900 leading-snug">{{ state?.selectedTest?.name }}</p>
           <p class="text-xs text-slate-500 mt-1">{{ state?.selectedTest?.reportTime }}</p>
           <div class="mt-2 flex flex-wrap gap-2">
-            <span class="text-xs px-2 py-1 rounded-full bg-blue-50 border border-blue-200 text-blue-700 font-semibold">
+            <span class="text-xs px-2 py-1 flex items-center rounded-full bg-blue-50 border border-blue-200 text-blue-700 font-semibold">
               <mat-icon class="text-[12px] align-middle">calendar_today</mat-icon>
               {{ state?.selectedDate?.dayName }}, {{ state?.selectedDate?.dayNumber }} {{ state?.selectedDate?.monthName }}
             </span>
-            <span class="text-xs px-2 py-1 rounded-full bg-blue-50 border border-blue-200 text-blue-700 font-semibold">
+            <span class="text-xs px-2 py-1 flex items-center rounded-full bg-blue-50 border border-blue-200 text-blue-700 font-semibold">
               <mat-icon class="text-[12px] align-middle">schedule</mat-icon>
               {{ state?.selectedSlot?.displayTime }}
             </span>
@@ -90,11 +90,62 @@
 
     <!-- ── Patient Details Form ── -->
     <div class="rounded-3xl border border-slate-200 bg-white shadow-sm p-5">
-      <p class="text-sm font-extrabold text-slate-900 mb-4">Patient Details</p>
+      <p class="text-sm font-extrabold text-slate-900 mb-4">
+        {{ collectionType === 'home' ? 'Patient Details' : 'Lab Visit' }}
+      </p>
 
-      <form [formGroup]="form" class="space-y-4">
+      <form *ngIf="collectionType === 'home'; else labVisitTpl" [formGroup]="form" class="space-y-4">
 
-        <!-- Name -->
+
+
+        <!-- Address (Home collection only) -->
+        <div *ngIf="collectionType === 'home'" class="sm:col-span-2">
+          <div class="flex items-center justify-between gap-3 mb-2">
+            <label class="block text-xs font-bold text-slate-600">Home Address *</label>
+            <button type="button" class="text-xs font-extrabold text-blue-600 hover:underline" (click)="toggleAddAddress()">
+              {{ addingAddress ? 'Close' : 'Add new' }}
+            </button>
+          </div>
+
+          <div *ngIf="loadingAddresses" class="rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-600">
+            Loading addresses…
+          </div>
+
+          <div *ngIf="!loadingAddresses && addresses.length > 0 && !addingAddress" class="grid gap-3">
+            <label
+              *ngFor="let a of addresses"
+              class="rounded-2xl border p-4 cursor-pointer transition"
+              [ngClass]="selectedAddressId === a.address.id ? 'border-blue-400 bg-blue-50 ring-2 ring-blue-200' : 'border-slate-200 bg-white hover:bg-slate-50'"
+            >
+              <input class="hidden" type="radio" name="addr" [value]="a.address.id" [checked]="selectedAddressId === a.address.id" (change)="selectedAddressId = a.address.id" />
+              <div class="flex items-start gap-3">
+                <div class="w-10 h-10 rounded-2xl bg-blue-50 border border-blue-200 grid place-content-center shrink-0">
+                  <mat-icon class="text-blue-600 text-[20px]">location_on</mat-icon>
+                </div>
+                <div class="min-w-0 flex-1">
+                  <div class="flex items-center gap-2 flex-wrap">
+                    <p class="font-extrabold text-slate-900 text-sm">{{ a.address?.name || 'Address' }}</p>
+                    <span *ngIf="a.address?.addressType" class="text-[11px] px-2 py-0.5 rounded-full bg-slate-50 border border-slate-200 text-slate-700 font-semibold">
+                      {{ a.address.addressType }}
+                    </span>
+                  </div>
+                  <p *ngIf="a.address?.mobileNumber" class="text-xs text-slate-600 mt-1">+91 {{ a.address.mobileNumber }}</p>
+                  <p class="text-xs text-slate-600 mt-1">{{ a.address.fullText }}</p>
+                </div>
+                <mat-icon class="text-emerald-600" *ngIf="selectedAddressId === a.address.id">check_circle</mat-icon>
+              </div>
+            </label>
+          </div>
+
+          <div *ngIf="!loadingAddresses && addresses.length === 0 && !addingAddress" class="rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-700">
+            No saved addresses. Add a new address to continue.
+          </div>
+
+          <div *ngIf="addingAddress || addresses.length === 0" class="mt-3 rounded-2xl border border-slate-200 bg-white p-4">
+            <p class="text-xs font-extrabold text-slate-700 mb-3">Add new address</p>
+
+            <div [formGroup]="addressForm" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <!-- Name -->
         <div>
           <label class="block text-xs font-bold text-slate-600 mb-1.5">Full Name *</label>
           <div class="relative">
@@ -102,14 +153,14 @@
             <input formControlName="name" type="text"
               placeholder="Enter patient's full name"
               class="w-full pl-10 pr-4 py-3.5 rounded-2xl border text-sm outline-none transition"
-              [ngClass]="form.get('name')?.invalid && form.get('name')?.touched
+              [ngClass]="addressForm.get('name')?.invalid && addressForm.get('name')?.touched
                 ? 'border-red-300 bg-red-50 focus:ring-2 focus:ring-red-100'
                 : 'border-slate-200 bg-slate-50 focus:border-blue-400 focus:ring-2 focus:ring-blue-100'"
               />
           </div>
-          <p *ngIf="form.get('name')?.errors?.['required'] && form.get('name')?.touched"
+          <p *ngIf="addressForm.get('name')?.errors?.['required'] && addressForm.get('name')?.touched"
             class="text-xs text-red-500 mt-1">Name is required</p>
-          <p *ngIf="form.get('name')?.errors?.['minlength'] && form.get('name')?.touched"
+          <p *ngIf="addressForm.get('name')?.errors?.['minlength'] && addressForm.get('name')?.touched"
             class="text-xs text-red-500 mt-1">Name must be at least 2 characters</p>
         </div>
 
@@ -121,34 +172,97 @@
             <input formControlName="phone" type="tel" maxlength="10"
               placeholder="10-digit mobile number"
               class="w-full pl-12 pr-4 py-3.5 rounded-2xl border text-sm outline-none transition"
-              [ngClass]="form.get('phone')?.invalid && form.get('phone')?.touched
+              [ngClass]="addressForm.get('phone')?.invalid && addressForm.get('phone')?.touched
                 ? 'border-red-300 bg-red-50 focus:ring-2 focus:ring-red-100'
                 : 'border-slate-200 bg-slate-50 focus:border-blue-400 focus:ring-2 focus:ring-blue-100'"
               />
           </div>
-          <p *ngIf="form.get('phone')?.errors?.['required'] && form.get('phone')?.touched"
+          <p *ngIf="addressForm.get('phone')?.errors?.['required'] && addressForm.get('phone')?.touched"
             class="text-xs text-red-500 mt-1">Phone is required</p>
-          <p *ngIf="form.get('phone')?.errors?.['pattern'] && form.get('phone')?.touched"
+          <p *ngIf="addressForm.get('phone')?.errors?.['pattern'] && addressForm.get('phone')?.touched"
             class="text-xs text-red-500 mt-1">Enter a valid 10-digit Indian mobile number</p>
         </div>
+              <div class="sm:col-span-2">
+                <label class="block text-xs font-bold text-slate-600 mb-1.5">Address Type *</label>
+                <select formControlName="addressType"
+                  class="w-full px-4 py-3.5 rounded-2xl border text-sm outline-none transition"
+                  [ngClass]="addressForm.get('addressType')?.invalid && addressForm.get('addressType')?.touched
+                    ? 'border-red-300 bg-red-50 focus:ring-2 focus:ring-red-100'
+                    : 'border-slate-200 bg-slate-50 focus:border-blue-400 focus:ring-2 focus:ring-blue-100'"
+                >
+                  <option value="HOME">Home</option>
+                  <option value="WORK">Work</option>
+                  <option value="OTHERS">Others</option>
+                </select>
+              </div>
+              <div class="sm:col-span-2">
+                <label class="block text-xs font-bold text-slate-600 mb-1.5">Address Line 1 *</label>
+                <input formControlName="addressLine1" type="text"
+                  placeholder="House no., Street, Area"
+                  class="w-full px-4 py-3.5 rounded-2xl border text-sm outline-none transition"
+                  [ngClass]="addressForm.get('addressLine1')?.invalid && addressForm.get('addressLine1')?.touched
+                    ? 'border-red-300 bg-red-50 focus:ring-2 focus:ring-red-100'
+                    : 'border-slate-200 bg-slate-50 focus:border-blue-400 focus:ring-2 focus:ring-blue-100'"
+                />
+              </div>
 
-        <!-- Address -->
-        <div *ngIf="collectionType === 'home'">
-          <label class="block text-xs font-bold text-slate-600 mb-1.5">Home Address *</label>
-          <div class="relative">
-            <mat-icon class="absolute left-3 top-3.5 text-slate-400 text-[20px]">location_on</mat-icon>
-            <textarea formControlName="address" rows="3"
-              placeholder="House no., Street, Area, City, Pincode"
-              class="w-full pl-10 pr-4 py-3.5 rounded-2xl border text-sm outline-none transition resize-none"
-              [ngClass]="form.get('address')?.invalid && form.get('address')?.touched
-                ? 'border-red-300 bg-red-50 focus:ring-2 focus:ring-red-100'
-                : 'border-slate-200 bg-slate-50 focus:border-blue-400 focus:ring-2 focus:ring-blue-100'">
-            </textarea>
+              <div class="sm:col-span-2">
+                <label class="block text-xs font-bold text-slate-600 mb-1.5">Address Line 2 <span class="text-slate-400 font-normal">(optional)</span></label>
+                <input formControlName="addressLine2" type="text"
+                  placeholder="Near landmark, building name"
+                  class="w-full px-4 py-3.5 rounded-2xl border border-slate-200 bg-slate-50 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition"
+                />
+              </div>
+
+              <div>
+                <label class="block text-xs font-bold text-slate-600 mb-1.5">State *</label>
+                <select formControlName="stateId" (change)="onStateChange()"
+                  class="w-full px-4 py-3.5 rounded-2xl border text-sm outline-none transition"
+                  [ngClass]="addressForm.get('stateId')?.invalid && addressForm.get('stateId')?.touched
+                    ? 'border-red-300 bg-red-50 focus:ring-2 focus:ring-red-100'
+                    : 'border-slate-200 bg-slate-50 focus:border-blue-400 focus:ring-2 focus:ring-blue-100'"
+                >
+                  <option value="" disabled>Select state</option>
+                  <option *ngFor="let s of states" [value]="s.id">{{ s.name }}</option>
+                </select>
+              </div>
+
+              <div>
+                <label class="block text-xs font-bold text-slate-600 mb-1.5">City *</label>
+                <select formControlName="cityId"
+                  [disabled]="!addressForm.value.stateId"
+                  class="w-full px-4 py-3.5 rounded-2xl border text-sm outline-none transition"
+                  [ngClass]="addressForm.get('cityId')?.invalid && addressForm.get('cityId')?.touched
+                    ? 'border-red-300 bg-red-50 focus:ring-2 focus:ring-red-100'
+                    : 'border-slate-200 bg-slate-50 focus:border-blue-400 focus:ring-2 focus:ring-blue-100'"
+                >
+                  <option value="" disabled>Select city</option>
+                  <option *ngFor="let c of filteredCities" [value]="c.id">{{ c.name }}</option>
+                </select>
+              </div>
+
+              <div class="sm:col-span-2">
+                <label class="block text-xs font-bold text-slate-600 mb-1.5">Postal Code *</label>
+                <input formControlName="postalCode" type="text" inputmode="numeric"
+                  placeholder="Pincode"
+                  class="w-full px-4 py-3.5 rounded-2xl border text-sm outline-none transition"
+                  [ngClass]="addressForm.get('postalCode')?.invalid && addressForm.get('postalCode')?.touched
+                    ? 'border-red-300 bg-red-50 focus:ring-2 focus:ring-red-100'
+                    : 'border-slate-200 bg-slate-50 focus:border-blue-400 focus:ring-2 focus:ring-blue-100'"
+                />
+              </div>
+            </div>
+
+            <div class="mt-4 flex justify-end">
+              <button type="button"
+                class="px-5 py-2.5 rounded-2xl bg-blue-600 hover:bg-blue-700 disabled:bg-slate-300 disabled:cursor-not-allowed text-white font-extrabold text-sm shadow-sm transition"
+                [disabled]="savingAddress"
+                (click)="saveAddress()"
+              >
+                {{ savingAddress ? 'Saving…' : 'Save Address' }}
+              </button>
+            </div>
           </div>
-          <p *ngIf="form.get('address')?.errors?.['required'] && form.get('address')?.touched"
-            class="text-xs text-red-500 mt-1">Address is required</p>
-          <p *ngIf="form.get('address')?.errors?.['minlength'] && form.get('address')?.touched"
-            class="text-xs text-red-500 mt-1">Please enter a complete address</p>
         </div>
 
         <!-- Landmark -->
@@ -164,6 +278,21 @@
         </div>
 
       </form>
+
+      <ng-template #labVisitTpl>
+        <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+          <div class="flex items-start gap-3">
+            <div class="w-10 h-10 rounded-2xl bg-blue-50 border border-blue-200 grid place-content-center shrink-0">
+              <mat-icon class="text-blue-600 text-[20px]">local_hospital</mat-icon>
+            </div>
+            <div class="min-w-0">
+              <p class="font-extrabold text-slate-900 text-sm">Himaneesh Medical Centre</p>
+              <p class="text-xs text-slate-600 mt-1">Anakapalle, Andhra Pradesh</p>
+              <p class="text-xs text-slate-500 mt-2">No address or mobile number is required for a lab visit.</p>
+            </div>
+          </div>
+        </div>
+      </ng-template>
     </div>
 
     <!-- ── Error ── -->

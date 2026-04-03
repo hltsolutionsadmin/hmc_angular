@@ -29,7 +29,7 @@ export class StoreHeaderComponent implements OnInit{
   private readonly cartFacade = inject(CartFacadeService);
   readonly cartCount$ = this.cartFacade.totalUniqueItemsCount$;
   query = '';
-  locationLabel = 'Bangalore';
+  locationLabel = 'Home';
   showProfile = false;
   showDrawer = false;
   elevate = false;

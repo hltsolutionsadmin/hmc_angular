@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Booking } from '../../../shared/models/storefront';
-import { BookingService } from '../../../shared/services/booking.service';
+import { OrderAppointmentDto, OrderDto, OrdersService } from '../../../shared/services/orders.service';
 
 @Component({
   selector: 'app-orders-list',
@@ -14,10 +14,17 @@ export class OrdersListComponent implements OnInit {
   statusFilter = '';
   statuses: Booking['status'][] = ['Pending', 'Confirmed', 'Sample Collected', 'Processing', 'Report Ready', 'Completed', 'Cancelled'];
 
-  constructor(private svc: BookingService, private router: Router) {}
+  constructor(private ordersApi: OrdersService, private router: Router) {}
 
   ngOnInit(): void {
-    this.bookings = this.svc.list();
+    this.ordersApi.getMyOrders(0, 50).subscribe({
+      next: (res) => {
+        this.bookings = (res?.content ?? []).map((o) => this.mapOrderToBooking(o));
+      },
+      error: () => {
+        this.bookings = [];
+      }
+    });
   }
 
   get filtered(): Booking[] {
@@ -56,5 +63,76 @@ export class OrdersListComponent implements OnInit {
 
   track(b: Booking): void {
     this.router.navigate(['/layout/orders/track', b.id]);
+  }
+
+  private mapOrderToBooking(order: OrderDto): Booking {
+    const appt = this.pickAppointment(order);
+    return {
+      id: order.id,
+      placedOn: this.pickPlacedOn(order),
+      patientName: '—',
+      items: (order.lineItems ?? []).map((li) => ({
+        title: `${li.productName} (${li.productCode})`,
+        kind: 'test',
+      })),
+      amountPaid: Number(order.totalPrice ?? 0),
+      status: this.mapStatus(order.status),
+      etaText: 'Report ready by tomorrow',
+      appointment: appt
+        ? {
+            slotDate: appt.slotDate,
+            displayTime: this.formatTimeRange(appt.startTime, appt.endTime),
+          }
+        : undefined,
+    };
+  }
+
+  private pickPlacedOn(order: OrderDto): string {
+    return String(order.createdAt || order.updatedAt || '').trim();
+  }
+
+  private pickAppointment(order: OrderDto): OrderAppointmentDto | null {
+    const items = order.appointments ?? [];
+    if (!Array.isArray(items) || items.length === 0) return null;
+    return items[0] ?? null;
+  }
+
+  private stripSeconds(value: string): string {
+    const parts = String(value ?? '').split(':');
+    const hh = String(parts[0] ?? '00').padStart(2, '0');
+    const mm = String(parts[1] ?? '00').padStart(2, '0');
+    return `${hh}:${mm}`;
+  }
+
+  private to12h(hhmm: string): string {
+    const [h, m] = String(hhmm ?? '').split(':');
+    const hh = Number(h ?? 0);
+    const mm = Number(m ?? 0);
+    const ampm = hh >= 12 ? 'PM' : 'AM';
+    const hour12 = hh % 12 === 0 ? 12 : hh % 12;
+    return `${String(hour12).padStart(2, '0')}:${String(mm).padStart(2, '0')} ${ampm}`;
+  }
+
+  private formatTimeRange(startTime: string, endTime: string): string {
+    const start = this.stripSeconds(startTime);
+    const end = this.stripSeconds(endTime);
+    return `${this.to12h(start)} – ${this.to12h(end)}`;
+  }
+
+  formatSlotDate(dateStr: string): string {
+    const raw = String(dateStr ?? '').trim();
+    const [y, m, d] = raw.split('-').map((x) => Number(x));
+    if (!y || !m || !d) return raw;
+    const MONTH = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    return `${String(d).padStart(2, '0')} ${MONTH[m - 1] ?? ''} ${y}`.trim();
+  }
+
+  private mapStatus(raw: string): Booking['status'] {
+    const s = String(raw || '').toUpperCase();
+    if (s === 'CONFIRMED') return 'Confirmed';
+    if (s === 'PENDING') return 'Pending';
+    if (s === 'CANCELLED' || s === 'CANCELED') return 'Cancelled';
+    if (s === 'COMPLETED') return 'Completed';
+    return 'Processing';
   }
 }

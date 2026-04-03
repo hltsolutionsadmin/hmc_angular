@@ -170,11 +170,16 @@ export class CheckoutAddressComponent implements OnInit {
     for (const item of items) {
       const id = item.address?.id;
       if (!id) continue;
+
+      const rawType = (item.address?.addressType ?? '').toString().toUpperCase();
+      const label: Address['label'] =
+        rawType === 'WORK' ? 'Work' : rawType === 'OTHERS' ? 'Other' : 'Home';
+
       mapped.push({
         id,
-        label: 'Home',
-        name: item.userName ?? '',
-        phone: '',
+        label,
+        name: item.address?.name ?? '',
+        phone: item.address?.mobileNumber ?? '',
         line1: item.address.line1,
         line2: item.address.line2 ?? undefined,
         city: item.address.city,

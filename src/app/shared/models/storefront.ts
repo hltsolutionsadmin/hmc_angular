@@ -99,4 +99,8 @@ export interface Booking {
   amountPaid: number;
   status: BookingStatus;
   etaText?: string;
+  appointment?: {
+    slotDate: string;
+    displayTime: string;
+  };
 }

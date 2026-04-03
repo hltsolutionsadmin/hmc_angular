@@ -1,10 +1,25 @@
-import { Injectable } from '@angular/core';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { inject, Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
-import { delay } from 'rxjs/operators';
+import { catchError, map } from 'rxjs/operators';
 import { SlotDate, TimeSlot } from '../models/booking-flow.model';
+import { environment } from '../../../../environment/environment';
+
+interface AppointmentSlotDto {
+  id: string;
+  storeId: string;
+  productId: string;
+  slotDate: string; // yyyy-MM-dd
+  startTime: string; // HH:mm:ss
+  endTime: string; // HH:mm:ss
+  maxCapacity: number;
+  slotClosed?: boolean;
+}
 
 @Injectable({ providedIn: 'root' })
 export class SlotService {
+  private readonly http = inject(HttpClient);
+  private readonly baseUrl = environment.apicommereceUrl;
 
   getDates(): SlotDate[] {
     const dates: SlotDate[] = [];
@@ -28,41 +43,85 @@ export class SlotService {
   }
 
   getSlots(testId: string, dateStr: string): Observable<TimeSlot[]> {
-    const base: { id: string; startTime: string; endTime: string; displayTime: string }[] = [
-      { id: 's1',  startTime: '07:00', endTime: '07:30', displayTime: '07:00 AM – 07:30 AM' },
-      { id: 's2',  startTime: '07:30', endTime: '08:00', displayTime: '07:30 AM – 08:00 AM' },
-      { id: 's3',  startTime: '08:00', endTime: '08:30', displayTime: '08:00 AM – 08:30 AM' },
-      { id: 's4',  startTime: '08:30', endTime: '09:00', displayTime: '08:30 AM – 09:00 AM' },
-      { id: 's5',  startTime: '09:00', endTime: '09:30', displayTime: '09:00 AM – 09:30 AM' },
-      { id: 's6',  startTime: '09:30', endTime: '10:00', displayTime: '09:30 AM – 10:00 AM' },
-      { id: 's7',  startTime: '10:00', endTime: '10:30', displayTime: '10:00 AM – 10:30 AM' },
-      { id: 's8',  startTime: '10:30', endTime: '11:00', displayTime: '10:30 AM – 11:00 AM' },
-      { id: 's9',  startTime: '11:00', endTime: '11:30', displayTime: '11:00 AM – 11:30 AM' },
-      { id: 's10', startTime: '11:30', endTime: '12:00', displayTime: '11:30 AM – 12:00 PM' },
-      { id: 's11', startTime: '14:00', endTime: '14:30', displayTime: '02:00 PM – 02:30 PM' },
-      { id: 's12', startTime: '14:30', endTime: '15:00', displayTime: '02:30 PM – 03:00 PM' },
-      { id: 's13', startTime: '15:00', endTime: '15:30', displayTime: '03:00 PM – 03:30 PM' },
-      { id: 's14', startTime: '15:30', endTime: '16:00', displayTime: '03:30 PM – 04:00 PM' },
-      { id: 's15', startTime: '16:00', endTime: '16:30', displayTime: '04:00 PM – 04:30 PM' },
-      { id: 's16', startTime: '16:30', endTime: '17:00', displayTime: '04:30 PM – 05:00 PM' },
-      { id: 's17', startTime: '17:00', endTime: '17:30', displayTime: '05:00 PM – 05:30 PM' },
-      { id: 's18', startTime: '17:30', endTime: '18:00', displayTime: '05:30 PM – 06:00 PM' },
+    const params = new HttpParams()
+      .set('storeId', environment.storeId)
+      .set('productId', testId)
+      .set('date', dateStr);
+
+    return this.http
+      .get<AppointmentSlotDto[]>(`${this.baseUrl}/api/appointments/slots`, { params })
+      .pipe(
+        map((items) => (items ?? []).slice().sort((a, b) => a.startTime.localeCompare(b.startTime))),
+        map((items) => items.map((s) => this.mapApiSlotToTimeSlot(s))),
+        catchError(() => of(this.fallbackSlots(dateStr)))
+      );
+  }
+
+  private mapApiSlotToTimeSlot(slot: AppointmentSlotDto): TimeSlot {
+    const start = this.stripSeconds(slot.startTime);
+    const end = this.stripSeconds(slot.endTime);
+    return {
+      id: slot.id,
+      startTime: start,
+      endTime: end,
+      available: (slot.maxCapacity ?? 0) > 0,
+      slotClosed: Boolean(slot.slotClosed),
+      displayTime: `${this.to12h(start)} – ${this.to12h(end)}`
+    };
+  }
+
+  private stripSeconds(value: string): string {
+    const parts = String(value ?? '').split(':');
+    const hh = String(parts[0] ?? '00').padStart(2, '0');
+    const mm = String(parts[1] ?? '00').padStart(2, '0');
+    return `${hh}:${mm}`;
+  }
+
+  private to12h(hhmm: string): string {
+    const [h, m] = String(hhmm ?? '').split(':');
+    const hh = Number(h ?? 0);
+    const mm = Number(m ?? 0);
+    const ampm = hh >= 12 ? 'PM' : 'AM';
+    const hour12 = hh % 12 === 0 ? 12 : hh % 12;
+    return `${String(hour12).padStart(2, '0')}:${String(mm).padStart(2, '0')} ${ampm}`;
+  }
+
+  private fallbackSlots(dateStr: string): TimeSlot[] {
+    const base: { startTime: string; endTime: string }[] = [
+      { startTime: '07:00', endTime: '07:30' },
+      { startTime: '07:30', endTime: '08:00' },
+      { startTime: '08:00', endTime: '08:30' },
+      { startTime: '08:30', endTime: '09:00' },
+      { startTime: '09:00', endTime: '09:30' },
+      { startTime: '09:30', endTime: '10:00' },
+      { startTime: '10:00', endTime: '10:30' },
+      { startTime: '10:30', endTime: '11:00' },
+      { startTime: '11:00', endTime: '11:30' },
+      { startTime: '11:30', endTime: '12:00' },
+      { startTime: '14:00', endTime: '14:30' },
+      { startTime: '14:30', endTime: '15:00' },
+      { startTime: '15:00', endTime: '15:30' },
+      { startTime: '15:30', endTime: '16:00' },
+      { startTime: '16:00', endTime: '16:30' },
+      { startTime: '16:30', endTime: '17:00' },
+      { startTime: '17:00', endTime: '17:30' },
+      { startTime: '17:30', endTime: '18:00' }
     ];
 
-    // Deterministic availability per date so repeated loads are consistent
-    const seed = dateStr.split('-').reduce((acc, v) => acc + parseInt(v), 0);
-    const busyIds = new Set([
-      base[(seed + 1) % base.length].id,
-      base[(seed + 3) % base.length].id,
-      base[(seed + 5) % base.length].id,
-      base[(seed + 7) % base.length].id,
+    const seed = dateStr.split('-').reduce((acc, v) => acc + parseInt(v, 10), 0);
+    const busyIdx = new Set([
+      (seed + 1) % base.length,
+      (seed + 3) % base.length,
+      (seed + 5) % base.length,
+      (seed + 7) % base.length
     ]);
 
-    const slots: TimeSlot[] = base.map(s => ({
-      ...s,
-      available: !busyIds.has(s.id),
+    return base.map((s, idx) => ({
+      id: `fallback_${dateStr}_${idx}`,
+      startTime: s.startTime,
+      endTime: s.endTime,
+      available: !busyIdx.has(idx),
+      displayTime: `${this.to12h(s.startTime)} – ${this.to12h(s.endTime)}`
     }));
-
-    return of(slots).pipe(delay(350));
   }
 }

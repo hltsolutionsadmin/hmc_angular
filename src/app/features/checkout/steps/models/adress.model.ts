@@ -19,7 +19,10 @@ export interface UserAddressItem {
 }
 
 export interface AddressDto {
-  id?: string;
+  id: string;
+  name?: string | null;
+  addressType?: 'HOME' | 'WORK' | 'OTHERS' | string | null;
+  mobileNumber?: string | null;
   line1: string;
   line2: string | null;
   city: string;

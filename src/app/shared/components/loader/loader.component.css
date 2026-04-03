@@ -1,0 +1,127 @@
+:host {
+  display: block;
+}
+
+.hmc-loader-wrap {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #1f1f22;
+}
+
+.hmc-loader {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+}
+
+.letter {
+  font-size: 96px;
+  font-weight: 800;
+  line-height: 1;
+  font-family: "Poppins", "Inter", sans-serif;
+  letter-spacing: 2px;
+  position: relative;
+  display: inline-block;
+  color: transparent;
+  -webkit-background-clip: text;
+  background-clip: text;
+  animation: floatGlow 1.8s ease-in-out infinite;
+  filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.06));
+}
+
+/* H */
+.h {
+  background-image: linear-gradient(180deg, #1f8cff 0%, #7b3ff2 100%);
+  animation-delay: 0s;
+}
+
+/* M */
+.m {
+  background-image: linear-gradient(180deg, #ff2bd6 0%, #ffb800 100%);
+  animation-delay: 0.2s;
+}
+
+/* C */
+.c {
+  background-image: linear-gradient(180deg, #18e07a 0%, #12cfff 100%);
+  animation-delay: 0.4s;
+}
+
+/* animated loader shine */
+.letter::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    110deg,
+    transparent 0%,
+    transparent 35%,
+    rgba(255, 255, 255, 0.95) 50%,
+    transparent 65%,
+    transparent 100%
+  );
+  transform: translateX(-140%);
+  animation: shine 2s ease-in-out infinite;
+  animation-delay: inherit;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  mix-blend-mode: screen;
+  pointer-events: none;
+}
+
+@keyframes shine {
+  0% {
+    transform: translateX(-140%);
+    opacity: 0;
+  }
+
+  15% {
+    opacity: 1;
+  }
+
+  55% {
+    transform: translateX(140%);
+    opacity: 1;
+  }
+
+  100% {
+    transform: translateX(140%);
+    opacity: 0;
+  }
+}
+
+@keyframes floatGlow {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+    filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.05));
+    opacity: 0.92;
+  }
+
+  50% {
+    transform: translateY(-4px) scale(1.03);
+    filter: drop-shadow(0 0 16px rgba(255, 255, 255, 0.14));
+    opacity: 1;
+  }
+}
+
+/* responsive */
+@media (max-width: 768px) {
+  .hmc-loader {
+    gap: 10px;
+  }
+
+  .letter {
+    font-size: 64px;
+  }
+}
+
+@media (max-width: 480px) {
+  .letter {
+    font-size: 48px;
+  }
+}

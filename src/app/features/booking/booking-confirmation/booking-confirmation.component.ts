@@ -42,7 +42,7 @@ export class BookingConfirmationComponent implements OnInit {
 
   onGoHome(): void {
     this.flowState.reset();
-    this.router.navigate(['/layout/home']);
+    this.router.navigate(['/layout/tests']);
   }
 
   get formattedDate(): string {

@@ -127,7 +127,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
       },
       error: (error) => {
         this.loadingRegister = false;
-        this.errorMessage = error?.error?.message || 'Registration failed';
+        this.errorMessage = error?.error?.message || 'Email or mobile already exists.';
       }
     });
   }

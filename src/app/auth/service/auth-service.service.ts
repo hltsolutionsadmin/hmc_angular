@@ -18,7 +18,7 @@ import { environment } from '../../../environment/environment';
 export class AuthServiceService {
 
   private readonly baseUrl = `${environment.apiBaseUrl}/auth`;
-  private readonly authServiceBaseUrl = environment.authServiceBaseUrl;
+  private readonly authServiceBaseUrl = environment.apiBaseUrl;
 
   constructor(
     private http: HttpClient,

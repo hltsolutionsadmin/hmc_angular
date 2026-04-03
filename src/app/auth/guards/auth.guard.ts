@@ -10,7 +10,6 @@ export const authGuard: CanActivateFn = (route, state) => {
 
   // Public routes that never require auth
   const publicPrefixes = [
-    '/layout/home',
     '/layout/tests',
     '/layout/booking/slots', // slot browsing is public
   ];

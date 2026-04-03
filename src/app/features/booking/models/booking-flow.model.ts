@@ -5,6 +5,7 @@ export interface TimeSlot {
   startTime: string;   // "09:00"
   endTime: string;     // "09:30"
   available: boolean;
+  slotClosed?: boolean;
   displayTime: string; // "09:00 AM – 09:30 AM"
 }
 

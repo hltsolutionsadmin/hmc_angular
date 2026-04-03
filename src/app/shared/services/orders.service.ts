@@ -1,23 +1,92 @@
-import { Injectable } from '@angular/core';
-import { Order } from '../models/order';
+import { HttpClient } from '@angular/common/http';
+import { HttpParams } from '@angular/common/http';
+import { inject, Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
+import { environment } from '../../../environment/environment';
 
-@Injectable({
-  providedIn: 'root'
-})
+export interface CheckoutOrderRequest {
+  cartId: string;
+  shippingAddressId: string | null;
+  shippingMethod: string;
+  paymentMethod: string;
+  paymentMethodId: string | null;
+  couponCode: string;
+}
+
+export interface OrdersLineItemDto {
+  id: string;
+  productId: string;
+  productCode: string;
+  productName: string;
+  skuId: string | null;
+  quantity: number;
+  unitPrice: number;
+  discountPrice: number;
+  taxAmount: number;
+  totalPrice: number;
+  status: string;
+  fulfillmentStatus: string;
+  gift: boolean;
+  giftMessage: string | null;
+}
+
+export interface OrderAppointmentDto {
+  id: string;
+  slotId: string;
+  slotDate: string; // yyyy-MM-dd
+  startTime: string; // HH:mm:ss
+  endTime: string; // HH:mm:ss
+  maxCapacity: number;
+  userId: string;
+  notes: string;
+}
+
+export interface OrderDto {
+  id: string;
+  userId: string;
+  storeId: string;
+  status: string;
+  orderType: string;
+  paymentStatus: string;
+  totalPrice: number;
+  subTotal: number;
+  totalDiscount: number;
+  totalTax: number;
+  couponCode: string | null;
+  cartId: string;
+  shippingAddressId: string | null;
+  billingAddressId: string | null;
+  lineItems: OrdersLineItemDto[];
+  fulfillmentOrders: unknown;
+  appointments?: OrderAppointmentDto[];
+  version: number;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface PagedOrdersResponse {
+  content: OrderDto[];
+  totalElements: number;
+  totalPages: number;
+  number: number;
+  size: number;
+  first: boolean;
+  last: boolean;
+  numberOfElements: number;
+  empty: boolean;
+}
+
+@Injectable({ providedIn: 'root' })
 export class OrdersService {
-  private orders: Order[] = [
-    { id: 1, patientName: 'John Doe', testType: 'Complete Blood Count', date: new Date().toISOString(), status: 'Pending' },
-    { id: 2, patientName: 'Jane Smith', testType: 'Liver Function Test', date: new Date().toISOString(), status: 'Confirmed' },
-  ];
+  private readonly http = inject(HttpClient);
+  private readonly baseUrl = environment.apicommereceUrl;
 
-  getAll(): Order[] { return [...this.orders]; }
-  add(o: Omit<Order,'id'>) {
-    const id = Math.max(0, ...this.orders.map(x => x.id)) + 1;
-    this.orders.push({ id, ...o });
+  checkout(payload: CheckoutOrderRequest): Observable<unknown> {
+    return this.http.post(`${this.baseUrl}/api/orders/checkout`, payload);
   }
-  update(id: number, patch: Partial<Order>) {
-    const idx = this.orders.findIndex(x => x.id === id);
-    if (idx > -1) this.orders[idx] = { ...this.orders[idx], ...patch };
+
+  getMyOrders(page: number = 0, size: number = 20): Observable<PagedOrdersResponse> {
+    const params = new HttpParams().set('page', page).set('size', size);
+    return this.http.get<PagedOrdersResponse>(`${this.baseUrl}/api/orders/me`, { params });
   }
-  remove(id: number) { this.orders = this.orders.filter(x => x.id !== id); }
 }

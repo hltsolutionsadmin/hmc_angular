@@ -7,10 +7,10 @@
     <div class="max-w-7xl mx-auto px-4 py-3 flex items-center gap-3">
 
       <!-- Logo / back link -->
-      <a routerLink="/layout/home" class="shrink-0 flex items-center gap-2 text-slate-700 hover:text-blue-600 transition mr-2">
-        <img src="/assets/favicon.svg" alt="HMC" class="h-8 w-8 rounded-lg"/>
-        <span class="hidden sm:block font-extrabold text-sm">HMC</span>
-      </a>
+      <!-- <a routerLink="/layout/tests" class="shrink-0 flex items-center gap-2 text-slate-700 hover:text-blue-600 transition mr-2">
+        <mat-icon>home</mat-icon>
+        <span class="hidden sm:block font-extrabold text-sm">Tests</span>
+      </a> -->
 
       <!-- Search bar -->
       <div class="relative flex-1 max-w-xl">
@@ -215,7 +215,18 @@
 
 
       <!-- ── EMPTY STATE ── -->
-      <div *ngIf="!loading && filteredTests.length === 0"
+      <div *ngIf="!loading && allTests.length === 0"
+        class="bg-white rounded-2xl border border-slate-200 p-12 text-center">
+        <div class="w-16 h-16 rounded-2xl bg-slate-100 grid place-content-center mx-auto mb-4">
+          <mat-icon class="text-slate-300 text-[36px]">receipt_long</mat-icon>
+        </div>
+        <p class="font-extrabold text-slate-700 text-lg">No tests available</p>
+        <p class="text-sm text-slate-400 mt-1 max-w-xs mx-auto">
+          Please try again in some time.
+        </p>
+      </div>
+
+      <div *ngIf="!loading && allTests.length > 0 && filteredTests.length === 0"
         class="bg-white rounded-2xl border border-slate-200 p-12 text-center">
         <div class="w-16 h-16 rounded-2xl bg-slate-100 grid place-content-center mx-auto mb-4">
           <mat-icon class="text-slate-300 text-[36px]">search_off</mat-icon>
@@ -237,7 +248,8 @@
         class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
 
         <div *ngFor="let test of filteredTests; trackBy: trackById"
-          class="test-card group bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-lg hover:border-blue-200 transition-all duration-200 flex flex-col overflow-hidden cursor-default">
+          class="test-card group bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-lg hover:border-blue-200 transition-all duration-200 flex flex-col overflow-hidden cursor-pointer"
+          (click)="viewTest(test)">
 
           <div class="p-5 flex-1 flex flex-col">
 
@@ -303,8 +315,9 @@
               </div>
 
               <button type="button"
-                class="flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 active:scale-95 text-white font-extrabold text-sm shadow-sm shadow-blue-200 transition-all duration-150 shrink-0"
-                (click)="onBookNow(test)">
+                class="flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 active:scale-95 disabled:bg-slate-300 disabled:cursor-not-allowed text-white font-extrabold text-sm shadow-sm shadow-blue-200 transition-all duration-150 shrink-0"
+                [disabled]="bookingNow"
+                (click)="$event.stopPropagation(); onBookNow(test)">
                 <mat-icon class="text-[16px]">event_available</mat-icon>
                 Book Now
               </button>
