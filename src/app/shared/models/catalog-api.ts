@@ -33,11 +33,34 @@ export interface ApiProductPrice {
   price: number;
 }
 
+export interface ApiBundleItemProductRef {
+  id: string;
+  code: string;
+  name: string;
+  slug: string | null;
+  thumbnail: string | null;
+  storeId: string | null;
+}
+
+export interface ApiBundleItem {
+  id: string;
+  quantity: number;
+  product: ApiBundleItemProductRef;
+}
+
+export interface ApiBundle {
+  id: string;
+  name: string;
+  type: string;
+  items: ApiBundleItem[];
+}
+
 export interface ApiProduct {
   id: string;
   code: string;
   name: string;
   shortDescription: string | null;
+  slug?: string | null;
   description: string | null;
   thumbnail: string | null;
   productType: string;
@@ -51,6 +74,7 @@ export interface ApiProduct {
   storeId: string | null;
   price: ApiProductPrice | null;
   categories: ApiCategory[] | null;
+  bundle?: ApiBundle | null;
   createdDate: string | null;
   updatedDate: string | null;
 }

@@ -24,6 +24,7 @@ export interface StoreTest {
   name: string;
   categoryId: string;
   categoryTitle: string;
+  productYpe?: string;
   description: string;
   price: number;
   discountPrice?: number;

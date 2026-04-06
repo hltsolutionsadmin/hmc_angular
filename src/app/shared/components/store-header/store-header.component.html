@@ -73,11 +73,11 @@
             <p class="text-sm font-extrabold text-slate-900">Welcome back</p>
             <p class="text-xs text-slate-600">Your health, our priority</p>
           </div>
-          <a routerLink="/layout/profile"
+          <!-- <a routerLink="/layout/profile"
             class="flex items-center gap-3 px-4 py-3 text-sm text-slate-700 hover:bg-slate-50">
             <mat-icon class="text-[20px] text-indigo-700">account_circle</mat-icon>
             My Account
-          </a>
+          </a> -->
           <a routerLink="/layout/orders"
             class="flex items-center gap-3 px-4 py-3 text-sm text-slate-700 hover:bg-slate-50">
             <mat-icon class="text-[20px] text-emerald-700">receipt_long</mat-icon>
@@ -126,29 +126,17 @@
 
     <div class="mt-5 grid gap-2 text-sm">
       <a routerLink="/layout/tests" class="flex items-center gap-3 px-3 py-3 rounded-2xl hover:bg-slate-50">
-        <mat-icon class="text-indigo-700">storefront</mat-icon> Browse tests
-      </a>
-      <a routerLink="/layout/tests" class="flex items-center gap-3 px-3 py-3 rounded-2xl hover:bg-slate-50">
         <mat-icon class="text-emerald-700">storefront</mat-icon> Browse tests
       </a>
       <a routerLink="/layout/offers" class="flex items-center gap-3 px-3 py-3 rounded-2xl hover:bg-slate-50">
         <mat-icon class="text-amber-600">local_offer</mat-icon> Offers
       </a>
-      <a routerLink="/layout/cart" class="flex items-center gap-3 px-3 py-3 rounded-2xl hover:bg-slate-50">
-        <mat-icon class="text-indigo-700">shopping_cart</mat-icon>
-        Cart
-
-        <span *ngIf="(cartCount$ | async) as count"
-          class="ml-auto text-[11px] px-2 py-1 rounded-full bg-rose-600 text-white font-extrabold">
-          {{ count }}
-        </span>
-      </a>
       <a routerLink="/layout/orders" class="flex items-center gap-3 px-3 py-3 rounded-2xl hover:bg-slate-50">
         <mat-icon class="text-emerald-700">receipt_long</mat-icon> My bookings
       </a>
-      <a routerLink="/layout/profile" class="flex items-center gap-3 px-3 py-3 rounded-2xl hover:bg-slate-50">
+      <!-- <a routerLink="/layout/profile" class="flex items-center gap-3 px-3 py-3 rounded-2xl hover:bg-slate-50">
         <mat-icon class="text-indigo-700">account_circle</mat-icon> My account
-      </a>
+      </a> -->
     </div>
   </div>
 </div>

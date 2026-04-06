@@ -86,7 +86,7 @@
       </div>
 
       <!-- Includes -->
-      <div id="includes" class="rounded-3xl border border-slate-200 bg-white shadow-sm p-6">
+      <div id="includes" *ngIf="t.productYpe === 'BUNDLE' ? (t.included?.length) : true" class="rounded-3xl border border-slate-200 bg-white shadow-sm p-6">
         <p class="text-lg font-extrabold text-slate-900">What’s included</p>
         <p class="mt-1 text-sm text-slate-500">A quick look at the parameters covered in this test.</p>
 
@@ -95,7 +95,7 @@
             <mat-icon class="text-[18px] text-emerald-600">check_circle</mat-icon>
             <span>{{ x }}</span>
           </div>
-          <p *ngIf="!(t.included?.length)" class="text-sm text-slate-600">Included parameters will be shown here.</p>
+          <p *ngIf="!(t.included?.length) && t.productYpe !== 'BUNDLE'" class="text-sm text-slate-600">Included parameters will be shown here.</p>
         </div>
       </div>
 
@@ -132,13 +132,7 @@
         </div>
       </div>
 
-      <!-- Related -->
-      <div *ngIf="related.length" class="space-y-4">
-        <app-section-title title="Related tests" subtitle="More options in the same category."></app-section-title>
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          <app-test-card *ngFor="let rt of related" [test]="rt" (add)="addRelatedToCart($event)" (view)="viewRelated($event)"></app-test-card>
-        </div>
-      </div>
+      <!-- Related (removed) -->
     </div>
 
     <!-- Price column (sticky like screenshot) -->

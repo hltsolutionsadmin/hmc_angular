@@ -1,13 +1,13 @@
-import { Component, OnInit, HostListener } from '@angular/core';
+import { Component, OnDestroy, OnInit, HostListener } from '@angular/core';
 import { Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { StoreCategory, StoreTest } from '../../../shared/models/storefront';
-import { ApiCategory } from '../../../shared/models/catalog-api';
+import { ApiCategory, ApiProduct } from '../../../shared/models/catalog-api';
 import { CatalogApiService } from '../../../shared/services/catalog-api.service';
 import { BookingFlowStateService } from '../../booking/services/booking-flow-state.service';
 import { SectionService } from '../../home/sections/section.service';
 import { environment } from '../../../../environment/environment';
-import { forkJoin, of } from 'rxjs';
+import { Subscription, forkJoin, of } from 'rxjs';
 import { catchError, finalize, switchMap, map } from 'rxjs/operators';
 import { CartService } from '../../cart/service/cart.service';
 
@@ -18,9 +18,14 @@ export type SortOption = 'popular' | 'price_low' | 'price_high';
   templateUrl: './tests-list.component.html',
   styleUrl: './tests-list.component.css',
 })
-export class TestsListComponent implements OnInit {
+export class TestsListComponent implements OnInit, OnDestroy {
+  readonly packagesCategoryId = '__packages__';
+
   categories: StoreCategory[] = [];
   allTests: StoreTest[] = [];
+  /** Products/tests loaded from backend for selected category */
+  categoryApiTests: StoreTest[] | null = null;
+  packagesApiTests: StoreTest[] | null = null;
   filteredTests: StoreTest[] = [];
 
   selectedCategoryId = '';
@@ -33,6 +38,8 @@ export class TestsListComponent implements OnInit {
   mobileSidebarOpen = false;
 
   bookingNow = false;
+  private categoryLoadSub?: Subscription;
+  private packagesLoadSub?: Subscription;
 
   /** Close sidebar when screen grows to desktop */
   @HostListener('window:resize', ['$event'])
@@ -74,6 +81,7 @@ export class TestsListComponent implements OnInit {
         this.categories = categories ?? [];
         this.allTests = tests ?? [];
         this.applyFilters();
+        this.loadPackages(false);
       });
   }
 
@@ -81,7 +89,55 @@ export class TestsListComponent implements OnInit {
   selectCategory(id: string): void {
     this.selectedCategoryId = id;
     this.mobileSidebarOpen = false;
-    this.applyFilters();
+
+    this.categoryLoadSub?.unsubscribe();
+
+    if (!id) {
+      this.categoryApiTests = null;
+      this.applyFilters();
+      return;
+    }
+
+    if (id === this.packagesCategoryId) {
+      if (this.packagesApiTests) {
+        this.applyFilters();
+        return;
+      }
+      this.loading = true;
+      this.loadError = '';
+      this.filteredTests = [];
+      this.loadPackages(true);
+      return;
+    }
+
+    this.loading = true;
+    this.loadError = '';
+    this.categoryApiTests = null;
+    this.filteredTests = [];
+
+    this.categoryLoadSub = this.catalogApi
+      .getProductsByCategoryId({
+        categoryId: id,
+        storeId: environment.storeId,
+        inventoryProducts: true,
+      })
+      .pipe(
+        map((products) => (products ?? []).map((p) => this.mapApiProductToStoreTest(p, id))),
+        catchError(() => {
+          this.loadError = 'No tests available right now.';
+          return of([] as StoreTest[]);
+        }),
+        finalize(() => (this.loading = false)),
+      )
+      .subscribe((tests) => {
+        this.categoryApiTests = tests;
+        this.applyFilters();
+      });
+  }
+
+  ngOnDestroy(): void {
+    this.categoryLoadSub?.unsubscribe();
+    this.packagesLoadSub?.unsubscribe();
   }
 
   onSearch(value: string): void {
@@ -100,7 +156,12 @@ export class TestsListComponent implements OnInit {
   }
 
   private applyFilters(): void {
-    let result = [...this.allTests];
+    const source = this.selectedCategoryId
+      ? (this.selectedCategoryId === this.packagesCategoryId
+          ? (this.packagesApiTests ?? [])
+          : (this.categoryApiTests ?? []))
+      : this.allTests;
+    let result = [...source];
 
     if (this.selectedCategoryId) {
       result = result.filter(t => t.categoryId === this.selectedCategoryId);
@@ -155,15 +216,25 @@ export class TestsListComponent implements OnInit {
 
   countForCategory(id: string): number {
     if (!id) return this.allTests.length;
+    if (id === this.packagesCategoryId) return this.packagesApiTests?.length ?? 0;
+    if (this.selectedCategoryId === id && this.categoryApiTests) return this.categoryApiTests.length;
     return this.allTests.filter(t => t.categoryId === id).length;
   }
 
   selectedCategoryName(): string {
     if (!this.selectedCategoryId) return 'All Tests';
+    if (this.selectedCategoryId === this.packagesCategoryId) return 'Packages';
     return this.categories.find(c => c.id === this.selectedCategoryId)?.name ?? '';
   }
 
+  activeSourceCount(): number {
+    if (!this.selectedCategoryId) return this.allTests.length;
+    if (this.selectedCategoryId === this.packagesCategoryId) return this.packagesApiTests?.length ?? 0;
+    return this.categoryApiTests?.length ?? 0;
+  }
+
   categoryIcon(id: string): string {
+    if (id === this.packagesCategoryId) return 'inventory_2';
     const key = this.categoryKeyFromId(id).toLowerCase();
     if (key.includes('blood')) return 'bloodtype';
     if (key.includes('full')) return 'health_and_safety';
@@ -177,6 +248,7 @@ export class TestsListComponent implements OnInit {
   }
 
   getCategoryBg(id: string): string {
+    if (id === this.packagesCategoryId) return 'bg-indigo-50';
     const key = this.categoryKeyFromId(id).toLowerCase();
     if (key.includes('blood')) return 'bg-red-50';
     if (key.includes('full')) return 'bg-emerald-50';
@@ -190,6 +262,7 @@ export class TestsListComponent implements OnInit {
   }
 
   getCategoryColor(id: string): string {
+    if (id === this.packagesCategoryId) return 'text-indigo-600';
     const key = this.categoryKeyFromId(id).toLowerCase();
     if (key.includes('blood')) return 'text-red-600';
     if (key.includes('full')) return 'text-emerald-600';
@@ -203,6 +276,7 @@ export class TestsListComponent implements OnInit {
   }
 
   getCategoryBadge(id: string): string {
+    if (id === this.packagesCategoryId) return 'bg-indigo-100 text-indigo-700';
     const key = this.categoryKeyFromId(id).toLowerCase();
     if (key.includes('blood')) return 'bg-red-100 text-red-700';
     if (key.includes('full')) return 'bg-emerald-100 text-emerald-700';
@@ -241,8 +315,91 @@ export class TestsListComponent implements OnInit {
     };
   }
 
+  private mapApiProductToStoreTest(product: ApiProduct, selectedCategoryId: string): StoreTest {
+    const matchingCategory =
+      (product.categories ?? []).find((c) => c.id === selectedCategoryId) ??
+      (product.categories ?? [])[0] ??
+      null;
+
+    const categoryId = matchingCategory?.id ?? selectedCategoryId;
+    const categoryTitle =
+      this.categories.find((c) => c.id === categoryId)?.name ??
+      matchingCategory?.name ??
+      '';
+
+    return {
+      id: product.id,
+      name: product.name,
+      categoryId,
+      categoryTitle,
+      productYpe: product.productType,
+      description: product.description ?? product.shortDescription ?? '',
+      price: product.price?.price ?? 0,
+      discountPrice: undefined,
+      rating: undefined,
+      trustBadges: undefined,
+      reportTime: '—',
+      fastingRequired: false,
+      parametersCount: undefined,
+    };
+  }
+
   private categoryKeyFromId(categoryId: string): string {
+    if (categoryId === this.packagesCategoryId) return 'packages';
     const cat = this.categories.find((c) => c.id === categoryId);
     return cat?.code || categoryId;
+  }
+
+  private loadPackages(showLoader: boolean): void {
+    this.packagesLoadSub?.unsubscribe();
+
+    if (showLoader) {
+      this.loading = true;
+      this.loadError = '';
+    }
+
+    this.packagesLoadSub = this.catalogApi
+      .getBundlesByStoreId({ storeId: environment.storeId, inventoryStock: false })
+      .pipe(
+        map((items) => (items ?? []).filter((p) => p.active)),
+        map((items) => items.map((p) => this.mapApiBundleProductToStoreTest(p))),
+        catchError(() => {
+          if (showLoader) this.loadError = 'No packages available right now.';
+          return of([] as StoreTest[]);
+        }),
+        finalize(() => {
+          if (showLoader) this.loading = false;
+        }),
+      )
+      .subscribe((packages) => {
+        this.packagesApiTests = packages;
+        if (this.selectedCategoryId === this.packagesCategoryId) {
+          this.applyFilters();
+        }
+      });
+  }
+
+  private mapApiBundleProductToStoreTest(product: ApiProduct): StoreTest {
+    const included =
+      (product.bundle?.items ?? [])
+        .map((i) => i?.product?.name)
+        .filter((x): x is string => Boolean(x && String(x).trim()));
+
+    return {
+      id: product.id,
+      name: product.name,
+      categoryId: this.packagesCategoryId,
+      categoryTitle: 'Packages',
+      productYpe: product.productType,
+      description: product.description ?? product.shortDescription ?? '',
+      price: product.price?.price ?? 0,
+      discountPrice: undefined,
+      rating: undefined,
+      trustBadges: undefined,
+      reportTime: '—',
+      fastingRequired: false,
+      parametersCount: included.length ? String(included.length) : undefined,
+      included: included.length ? included : undefined,
+    };
   }
 }

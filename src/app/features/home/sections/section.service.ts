@@ -59,6 +59,7 @@ export class SectionService {
       name: product.name + ' ' + `(${product.code})`,
       categoryId: primaryCategory?.id ?? '',
       categoryTitle: primaryCategory?.name ?? 'General',
+      productYpe: product.productType == 'BUNDLE' ? 'PACKAGE' : '',
       description:
         product.shortDescription ??
         product.description ??

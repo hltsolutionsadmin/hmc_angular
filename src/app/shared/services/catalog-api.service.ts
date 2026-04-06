@@ -34,5 +34,31 @@ export class CatalogApiService {
       { params }
     );
   }
-}
 
+  getProductsByCategoryId(opts: {
+    categoryId: string;
+    storeId: string;
+    inventoryProducts?: boolean;
+  }) {
+    const params = new HttpParams()
+      .set('storeId', opts.storeId)
+      .set('inventoryProducts', String(opts.inventoryProducts ?? true));
+
+    return this.http.get<ApiProduct[]>(
+      `${environment.apiBaseUrl}/api/categories/${opts.categoryId}/products`,
+      { params }
+    );
+  }
+
+  getBundlesByStoreId(opts: { storeId: string; inventoryStock?: boolean }) {
+    const params = new HttpParams().set(
+      'inventoryStock',
+      String(opts.inventoryStock ?? false)
+    );
+
+    return this.http.get<ApiProduct[]>(
+      `${environment.apiBaseUrl}/api/products/stores/${opts.storeId}/bundles`,
+      { params }
+    );
+  }
+}

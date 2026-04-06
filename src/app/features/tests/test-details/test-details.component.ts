@@ -4,6 +4,8 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { Subject, of } from 'rxjs';
 import { catchError, finalize, switchMap, takeUntil } from 'rxjs/operators';
 import { StoreTest } from '../../../shared/models/storefront';
+import { ApiProduct } from '../../../shared/models/catalog-api';
+import { CatalogApiService } from '../../../shared/services/catalog-api.service';
 import { CatalogService } from '../../../shared/services/catalog.service';
 import { BookingFlowStateService } from '../../booking/services/booking-flow-state.service';
 import { CartFacadeService } from '../../cart/service/cart-facade.service';
@@ -36,6 +38,7 @@ export class TestDetailsComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private router: Router,
     private snackBar: MatSnackBar,
+    private catalogApi: CatalogApiService,
     private catalog: CatalogService,
     private sections: SectionService,
     private bookingState: BookingFlowStateService,
@@ -64,14 +67,32 @@ export class TestDetailsComponent implements OnInit, OnDestroy {
       .getStoreTests(0, 500)
       .pipe(
         catchError(() => of(this.catalog.getAllTests())),
+        switchMap((tests) => {
+          const all = tests ?? [];
+          const foundTest = all.find((t) => t.id === id) ?? null;
+          if (foundTest) {
+            return of({ item: foundTest as StoreTest, all, kind: 'test' as const });
+          }
+
+          return this.catalogApi
+            .getBundlesByStoreId({ storeId: environment.storeId, inventoryStock: false })
+            .pipe(
+              catchError(() => of([] as ApiProduct[])),
+              switchMap((bundles) => {
+                const foundBundle = (bundles ?? []).find((b) => b.id === id) ?? null;
+                return of({
+                  item: foundBundle ? this.mapApiBundleProductToStoreTest(foundBundle) : null,
+                  all,
+                  kind: 'bundle' as const,
+                });
+              }),
+            );
+        }),
         finalize(() => (this.loading = false)),
         takeUntil(this.destroy$),
       )
-      .subscribe((tests) => {
-        const all = tests ?? [];
-        const foundTest = all.find((t) => t.id === id) ?? null;
-
-        if (!foundTest) {
+      .subscribe(({ item, all, kind }) => {
+        if (!item) {
           this.snackBar.open('Test not found', 'Close', {
             duration: 3000,
             panelClass: ['error-snackbar']
@@ -80,13 +101,14 @@ export class TestDetailsComponent implements OnInit, OnDestroy {
           return;
         }
 
-        this.test = foundTest;
-        this.related = all
-          .filter((t) => t.categoryId === foundTest.categoryId && t.id !== foundTest.id)
-          .slice(0, 3);
+        this.test = item;
+        this.related =
+          kind === 'test'
+            ? all.filter((t) => t.categoryId === item.categoryId && t.id !== item.id).slice(0, 3)
+            : [];
 
-        this.reportHoursText = this.computeReportHours(foundTest.reportTime);
-        this.containsText = this.computeContains(foundTest);
+        this.reportHoursText = this.computeReportHours(item.reportTime);
+        this.containsText = this.computeContains(item);
       });
   }
 
@@ -176,5 +198,29 @@ export class TestDetailsComponent implements OnInit, OnDestroy {
     if (digits) return `${digits} tests`;
 
     return 'Multiple tests';
+  }
+
+  private mapApiBundleProductToStoreTest(product: ApiProduct): StoreTest {
+    const included =
+      (product.bundle?.items ?? [])
+        .map((i) => i?.product?.name)
+        .filter((x): x is string => Boolean(x && String(x).trim()));
+
+    return {
+      id: product.id,
+      name: product.name,
+      categoryId: '__packages__',
+      categoryTitle: 'Packages',
+      productYpe: product.productType,
+      description: product.description ?? product.shortDescription ?? '',
+      price: product.price?.price ?? 0,
+      discountPrice: undefined,
+      rating: undefined,
+      trustBadges: undefined,
+      reportTime: '—',
+      fastingRequired: false,
+      parametersCount: included.length ? String(included.length) : undefined,
+      included: included.length ? included : undefined,
+    };
   }
 }
