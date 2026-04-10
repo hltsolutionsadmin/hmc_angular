@@ -5,7 +5,6 @@ import { RouterModule } from '@angular/router';
 
 import { TestsRoutingModule } from './tests-routing.module';
 import { TestsListComponent } from './tests-list/tests-list.component';
-import { CategoriesComponent } from './categories/categories.component';
 import { TestDetailsComponent } from './test-details/test-details.component';
 
 import { MatIconModule } from '@angular/material/icon';
@@ -18,7 +17,6 @@ import { SharedModule } from '../../shared/shared.module';
 @NgModule({
   declarations: [
     TestsListComponent,
-    CategoriesComponent,
     TestDetailsComponent,
   ],
   imports: [

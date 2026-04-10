@@ -11,6 +11,7 @@ export class TokenStorageService {
   private readonly REFRESH_TOKEN_KEY = 'refresh_token';
   private readonly EXPIRES_IN_KEY = 'expires_in';
   private readonly TOKEN_TYPE_KEY = 'token_type';
+  private readonly DEVICE_ID_KEY = 'device_id';
 
   setTokens(tokens: {
     accessToken: string;
@@ -36,11 +37,20 @@ export class TokenStorageService {
     return localStorage.getItem(this.TOKEN_TYPE_KEY);
   }
 
+  setDeviceId(deviceId: string): void {
+    localStorage.setItem(this.DEVICE_ID_KEY, deviceId);
+  }
+
+  getDeviceId(): string | null {
+    return localStorage.getItem(this.DEVICE_ID_KEY);
+  }
+
   clear(): void {
     localStorage.removeItem(this.ACCESS_TOKEN_KEY);
     localStorage.removeItem(this.REFRESH_TOKEN_KEY);
     localStorage.removeItem(this.EXPIRES_IN_KEY);
     localStorage.removeItem(this.TOKEN_TYPE_KEY);
+    localStorage.removeItem(this.DEVICE_ID_KEY);
   }
 
   isLoggedIn(): boolean {

@@ -52,7 +52,7 @@
             </div>
           </div>
 
-          <div class="rounded-2xl bg-slate-50 border border-slate-200 p-4 flex items-center justify-between gap-3">
+          <div *ngIf="t.isBundle" class="rounded-2xl bg-slate-50 border border-slate-200 p-4 flex items-center justify-between gap-3">
             <div>
               <p class="text-xs font-extrabold text-slate-500">Contains</p>
               <div class="mt-2 flex items-center gap-2">
@@ -60,8 +60,9 @@
                 <p class="text-lg font-extrabold text-slate-900">{{ containsText }}</p>
               </div>
             </div>
-            <button type="button" class="w-10 h-10 rounded-full bg-white border border-slate-200 grid place-content-center hover:bg-slate-50 transition" aria-label="Scroll to inclusions"
-              (click)="$event.preventDefault(); scrollToIncludes()">
+            <button type="button" class="w-10 h-10 rounded-full bg-white border border-slate-200 grid place-content-center hover:bg-slate-50 transition"
+              aria-label="Scroll to bundle items"
+              (click)="$event.preventDefault(); scrollToBundleItems()">
               <mat-icon class="text-slate-700">chevron_right</mat-icon>
             </button>
           </div>
@@ -85,26 +86,18 @@
 
       </div>
 
-      <!-- Includes -->
-      <div id="includes" *ngIf="t.productYpe === 'BUNDLE' ? (t.included?.length) : true" class="rounded-3xl border border-slate-200 bg-white shadow-sm p-6">
-        <p class="text-lg font-extrabold text-slate-900">What’s included</p>
-        <p class="mt-1 text-sm text-slate-500">A quick look at the parameters covered in this test.</p>
+      <!-- Bundle items -->
+      <div id="bundle-items" *ngIf="t.isBundle" class="rounded-3xl border border-slate-200 bg-white shadow-sm p-6">
+        <p class="text-lg font-extrabold text-slate-900">Tests included</p>
+        <p class="mt-1 text-sm text-slate-500">All tests available in this bundle.</p>
 
         <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div *ngFor="let x of (t.included || [])" class="flex items-start gap-2 text-sm text-slate-700">
             <mat-icon class="text-[18px] text-emerald-600">check_circle</mat-icon>
             <span>{{ x }}</span>
           </div>
-          <p *ngIf="!(t.included?.length) && t.productYpe !== 'BUNDLE'" class="text-sm text-slate-600">Included parameters will be shown here.</p>
+          <p *ngIf="!(t.included?.length)" class="text-sm text-slate-600">No items found in this bundle.</p>
         </div>
-      </div>
-
-      <!-- Preparation -->
-      <div class="rounded-3xl border border-slate-200 bg-white shadow-sm p-6">
-        <p class="text-lg font-extrabold text-slate-900">Preparation</p>
-        <p class="mt-2 text-sm text-slate-600 leading-relaxed">
-          {{ t.preparation || (t.fastingRequired ? 'Fasting may be required. Please follow lab guidance during booking.' : 'No special preparation required for most patients.') }}
-        </p>
       </div>
 
       <!-- FAQ (friendly + animated via details) -->
@@ -149,18 +142,21 @@
         </div>
 
         <!-- Coupon-like box -->
-        <div class="mt-5 rounded-2xl border border-slate-200 overflow-hidden">
+        <button type="button"
+          class="mt-5 w-full rounded-2xl border border-slate-200 overflow-hidden text-left hover:bg-slate-50 transition"
+          (click)="copyHelpline()"
+          aria-label="Copy helpline number">
           <div class="flex">
-            <div class="w-2 bg-emerald-600"></div>
+            <div class="w-2 bg-indigo-600"></div>
             <div class="flex-1 p-4">
-              <p class="font-extrabold text-slate-900">Get additional upto 15% off</p>
-              <p class="mt-1 text-sm text-slate-600">Use <span class="font-extrabold">HMC</span> at checkout</p>
+              <p class="font-extrabold text-slate-900">Helpline</p>
+              <p class="mt-1 text-sm text-slate-600">Call us at <span class="font-extrabold">{{ helplineNumber }}</span></p>
             </div>
             <div class="w-14 border-l border-slate-200 grid place-content-center text-slate-500">
               <mat-icon>content_copy</mat-icon>
             </div>
           </div>
-        </div>
+        </button>
 
         <div class="mt-5 grid gap-3">
           <button type="button" class="w-full rounded-2xl px-6 py-3.5 bg-blue-600 hover:bg-rose-600 active:scale-[0.99] disabled:bg-slate-300 disabled:cursor-not-allowed text-white font-extrabold text-base shadow-lg transition"

@@ -5,12 +5,11 @@ import { BookingFlowStateService } from '../services/booking-flow-state.service'
 import { BookingFlowState } from '../models/booking-flow.model';
 import { forkJoin } from 'rxjs';
 import { finalize } from 'rxjs/operators';
-import { StepsService } from '../../checkout/steps/services/steps.service';
-import { UserAddressItem } from '../../checkout/steps/models/adress.model';
-import { CityDto, CreateUserAddressRequest, StateDto } from '../../checkout/steps/models/location.model';
-import { CartService } from '../../cart/service/cart.service';
 import { environment } from '../../../../environment/environment';
-import { CheckoutOrderRequest, OrdersService } from '../../../shared/services/orders.service';
+import { CartService } from '../../../shared/services/cart/cart.service';
+import { CityDto, CreateUserAddressRequest, StateDto, UserAddressItem } from '../../../shared/models/address.model';
+import { AddressService } from '../../../shared/services/address/address.service';
+import { CheckoutOrderRequest, OrdersService } from '../../../shared/services/orders/orders.service';
 
 @Component({
   selector: 'app-booking-checkout',
@@ -39,7 +38,7 @@ export class BookingCheckoutComponent implements OnInit {
     private fb: FormBuilder,
     private router: Router,
     private flowState: BookingFlowStateService,
-    private steps: StepsService,
+    private steps: AddressService,
     private cartApi: CartService,
     private ordersApi: OrdersService,
   ) {}

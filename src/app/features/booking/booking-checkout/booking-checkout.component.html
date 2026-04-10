@@ -30,23 +30,23 @@
           <mat-icon class="text-blue-600 text-[22px]">biotech</mat-icon>
         </div>
         <div class="flex-1 min-w-0">
-          <p class="font-extrabold text-slate-900 leading-snug">{{ state?.selectedTest?.name }}</p>
-          <p class="text-xs text-slate-500 mt-1">{{ state?.selectedTest?.reportTime }}</p>
+          <p class="font-extrabold text-slate-900 leading-snug">{{ state.selectedTest?.name }}</p>
+          <p class="text-xs text-slate-500 mt-1">{{ state.selectedTest?.reportTime }}</p>
           <div class="mt-2 flex flex-wrap gap-2">
             <span class="text-xs px-2 py-1 flex items-center rounded-full bg-blue-50 border border-blue-200 text-blue-700 font-semibold">
               <mat-icon class="text-[12px] align-middle">calendar_today</mat-icon>
-              {{ state?.selectedDate?.dayName }}, {{ state?.selectedDate?.dayNumber }} {{ state?.selectedDate?.monthName }}
+              {{ state.selectedDate?.dayName }}, {{ state.selectedDate?.dayNumber }} {{ state.selectedDate?.monthName }}
             </span>
             <span class="text-xs px-2 py-1 flex items-center rounded-full bg-blue-50 border border-blue-200 text-blue-700 font-semibold">
               <mat-icon class="text-[12px] align-middle">schedule</mat-icon>
-              {{ state?.selectedSlot?.displayTime }}
+              {{ state.selectedSlot?.displayTime }}
             </span>
           </div>
         </div>
         <div class="text-right shrink-0">
           <p class="text-lg font-extrabold text-slate-900">₹{{ priceToShow }}</p>
-          <p *ngIf="state?.selectedTest?.discountPrice" class="text-xs text-slate-400 line-through">
-            ₹{{ state?.selectedTest?.price }}
+          <p *ngIf="state.selectedTest?.discountPrice" class="text-xs text-slate-400 line-through">
+            ₹{{ state.selectedTest?.price }}
           </p>
         </div>
       </div>
@@ -124,7 +124,7 @@
                 </div>
                 <div class="min-w-0 flex-1">
                   <div class="flex items-center gap-2 flex-wrap">
-                    <p class="font-extrabold text-slate-900 text-sm">{{ a.address?.name || 'Address' }}</p>
+                    <p class="font-extrabold text-slate-900 text-sm">{{ a.address.name || 'Address' }}</p>
                     <span *ngIf="a.address?.addressType" class="text-[11px] px-2 py-0.5 rounded-full bg-slate-50 border border-slate-200 text-slate-700 font-semibold">
                       {{ a.address.addressType }}
                     </span>

@@ -7,7 +7,7 @@ routes:Routes=[
 {path:'tests',loadChildren:()=>import('../tests/tests.module').then((m)=>m.TestsModule)},
 {path:'booking',loadChildren:()=>import('../booking/booking.module').then((m)=>m.BookingModule)},
 // {path:'cart',loadChildren:()=>import('../cart/cart.module').then((m)=>m.CartModule)},
-{path:'checkout',loadChildren:()=>import('../checkout/checkout.module').then((m)=>m.CheckoutModule)},
+// {path:'checkout',loadChildren:()=>import('../checkout/checkout.module').then((m)=>m.CheckoutModule)},
 {path:'orders',loadChildren:()=>import('../orders/orders.module').then((m)=>m.OrdersModule)},
 // {path:'reports',loadChildren:()=>import('../reports/reports.module').then((m)=>m.ReportsModule)},
 {path:'offers',loadChildren:()=>import('../offers/offers.module').then((m)=>m.OffersModule)},

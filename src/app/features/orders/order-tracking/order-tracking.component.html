@@ -1,40 +1,140 @@
-<div *ngIf="booking" class="space-y-6">
-  <div class="flex items-center gap-3">
-    <a routerLink="/layout/orders" class="inline-flex items-center gap-2 text-sm font-bold text-slate-700 hover:text-indigo-700">
+<div class="space-y-6">
+  <div class="flex items-center justify-between gap-3" [@fadeUp]>
+    <button type="button" class="inline-flex items-center gap-2 text-sm font-extrabold text-slate-700 hover:text-indigo-700" (click)="back()">
       <mat-icon class="text-[18px]">arrow_back</mat-icon>
       Back to bookings
-    </a>
+    </button>
+
+    <button type="button" class="inline-flex items-center gap-2 text-sm font-extrabold text-slate-700 hover:text-indigo-700" (click)="loadTracking()">
+      <mat-icon class="text-[18px]">refresh</mat-icon>
+      Refresh
+    </button>
   </div>
 
-  <div class="rounded-3xl border border-slate-200 bg-white shadow-sm p-6">
-    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-      <div>
-        <p class="text-[11px] font-extrabold text-slate-500">BOOKING ID</p>
-        <p class="text-xl font-extrabold text-slate-900">{{ booking.id }}</p>
-        <p class="mt-1 text-sm text-slate-600">{{ booking.patientName }} • {{ booking.placedOn }}</p>
+  <div class="rounded-3xl border border-slate-200 bg-white shadow-sm overflow-hidden" [@fadeUp]>
+    <div class="p-6">
+      <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+        <div class="min-w-0">
+          <p class="text-[11px] font-extrabold text-slate-500">BOOKING ID</p>
+          <p class="text-xl sm:text-2xl font-extrabold text-slate-900 break-all">{{ id }}</p>
+          <p *ngIf="booking?.placedOn" class="mt-1 text-sm text-slate-600">Placed on {{ booking?.placedOn }}</p>
+        </div>
+        <div class="flex items-center gap-3">
+          <div *ngIf="booking" class="text-right">
+            <p class="text-[11px] font-extrabold text-slate-500">PAID</p>
+            <p class="text-xl font-extrabold text-slate-900">₹{{ booking.amountPaid }}</p>
+          </div>
+          <span *ngIf="booking"
+            class="text-[11px] px-3 py-2 rounded-full border font-extrabold"
+            [ngClass]="booking.status === 'Completed' ? 'bg-emerald-50 border-emerald-200 text-emerald-800' : 'bg-slate-50 border-slate-200 text-slate-700'">
+            {{ booking.status }}
+          </span>
+        </div>
       </div>
-      <span class="text-[11px] px-3 py-2 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 font-extrabold">
-        {{ booking.status }}
-      </span>
+
+      <div *ngIf="booking?.appointment as appt" class="mt-5 grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+          <div class="flex items-center gap-2">
+            <mat-icon class="text-[18px] text-slate-500">calendar_today</mat-icon>
+            <p class="text-xs font-extrabold text-slate-700">Appointment date</p>
+          </div>
+          <p class="mt-2 text-sm font-extrabold text-slate-900">{{ formatSlotDate(appt.slotDate) }}</p>
+        </div>
+        <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+          <div class="flex items-center gap-2">
+            <mat-icon class="text-[18px] text-slate-500">schedule</mat-icon>
+            <p class="text-xs font-extrabold text-slate-700">Appointment time</p>
+          </div>
+          <p class="mt-2 text-sm font-extrabold text-slate-900">{{ appt.displayTime }}</p>
+        </div>
+      </div>
+
+      <ng-container *ngIf="booking?.items as items">
+        <div *ngIf="items.length" class="mt-5 rounded-2xl border border-slate-200 bg-white p-4">
+          <p class="text-xs font-extrabold text-slate-700">Items</p>
+          <ul class="mt-2 grid gap-1 text-sm text-slate-700">
+            <li *ngFor="let it of items">• {{ it.title }}</li>
+          </ul>
+        </div>
+      </ng-container>
     </div>
 
-    <div class="mt-6 grid gap-3">
-      <div *ngFor="let s of steps" class="flex items-start gap-3">
-        <div
-          class="w-11 h-11 rounded-2xl border grid place-content-center shrink-0"
-          [ngClass]="isDone(s.key) ? 'bg-emerald-50 border-emerald-200' : 'bg-slate-50 border-slate-200'"
-        >
-          <mat-icon [ngClass]="isDone(s.key) ? 'text-emerald-700' : 'text-slate-400'">{{ s.icon }}</mat-icon>
+    <div class="h-1 bg-gradient-to-r from-emerald-500 via-sky-500 to-indigo-600"></div>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
+    <div class="lg:col-span-1" [@fadeUp]>
+      <div class="rounded-3xl border border-slate-200 bg-white shadow-sm p-6">
+        <div class="flex items-center gap-2">
+          <mat-icon class="text-indigo-700">timeline</mat-icon>
+          <p class="text-sm font-extrabold text-slate-900">Latest update</p>
         </div>
-        <div class="min-w-0 flex-1 pt-1">
-          <p class="font-extrabold" [ngClass]="isDone(s.key) ? 'text-slate-900' : 'text-slate-500'">{{ s.label }}</p>
-          <p class="text-sm" [ngClass]="isDone(s.key) ? 'text-slate-600' : 'text-slate-400'">
-            {{ isDone(s.key) ? 'In progress / done' : 'Pending' }}
+
+        <div *ngIf="loading" class="mt-4 grid gap-3">
+          <div class="h-6 rounded-xl bg-slate-100 animate-pulse"></div>
+          <div class="h-4 rounded-xl bg-slate-100 animate-pulse w-3/4"></div>
+          <div class="h-4 rounded-xl bg-slate-100 animate-pulse w-2/3"></div>
+        </div>
+
+        <div *ngIf="!loading && errorMessage" class="mt-4 rounded-2xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-700 font-semibold">
+          {{ errorMessage }}
+        </div>
+
+        <div *ngIf="!loading && !errorMessage && latestTracking" class="mt-4">
+          <span class="inline-flex items-center gap-2 rounded-full bg-emerald-50 border border-emerald-200 px-3 py-2 text-[11px] font-extrabold text-emerald-800">
+            <mat-icon class="text-[16px]">check_circle</mat-icon>
+            {{ formatTrackingStatus(latestTracking.event.status) }}
+          </span>
+          <p class="mt-3 text-sm text-slate-700 font-semibold">{{ formatDateTime(latestTracking.event.eventTimestamp) }}</p>
+          <p *ngIf="latestTracking.event.description" class="mt-2 text-sm text-slate-700">
+            {{ latestTracking.event.description }}
           </p>
         </div>
-        <mat-icon *ngIf="isDone(s.key)" class="text-emerald-600">check_circle</mat-icon>
+
+        <div *ngIf="!loading && !errorMessage && !latestTracking" class="mt-4 text-sm text-slate-600">
+          No tracking updates available yet.
+        </div>
+      </div>
+    </div>
+
+    <div class="lg:col-span-2" [@fadeUp]>
+      <div class="rounded-3xl border border-slate-200 bg-white shadow-sm p-6">
+        <div class="flex items-center justify-between gap-3">
+          <div class="flex items-center gap-2">
+            <mat-icon class="text-emerald-700">local_shipping</mat-icon>
+            <p class="text-sm font-extrabold text-slate-900">Tracking timeline</p>
+          </div>
+          <p class="text-xs text-slate-500 font-semibold" *ngIf="trackingTimeline.length">{{ trackingTimeline.length }} updates</p>
+        </div>
+
+        <div *ngIf="loading" class="mt-4 grid gap-3">
+          <div class="h-12 rounded-2xl bg-slate-100 animate-pulse"></div>
+          <div class="h-12 rounded-2xl bg-slate-100 animate-pulse"></div>
+          <div class="h-12 rounded-2xl bg-slate-100 animate-pulse"></div>
+        </div>
+
+        <div *ngIf="!loading && !trackingTimeline.length" class="mt-4 rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-600">
+          Tracking events will appear here once fulfillment starts.
+        </div>
+
+        <div *ngIf="!loading && trackingTimeline.length" class="mt-5 grid gap-3" [@listFade]>
+          <div *ngFor="let t of trackingTimeline; let i = index" class="relative rounded-2xl border border-slate-200 bg-white p-4 overflow-hidden">
+            <div class="absolute left-0 top-0 bottom-0 w-1" [ngClass]="i === 0 ? 'bg-emerald-500' : 'bg-slate-200'"></div>
+
+            <div class="flex items-start justify-between gap-3">
+              <div class="min-w-0">
+                <p class="text-sm font-extrabold text-slate-900">{{ formatTrackingStatus(t.event.status) }}</p>
+                <p class="mt-1 text-xs text-slate-500 font-semibold">{{ formatDateTime(t.event.eventTimestamp) }}</p>
+              </div>
+              <span *ngIf="i === 0" class="text-[10px] px-2 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 font-extrabold">LATEST</span>
+            </div>
+
+            <p *ngIf="t.event.description" class="mt-2 text-sm text-slate-700">
+              {{ t.event.description }}
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 </div>
-

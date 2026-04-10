@@ -1,4 +1,4 @@
-import { StoreTest } from '../../../shared/models/storefront';
+import { StoreTest } from '../../../shared/models/storefront.model';
 
 export interface TimeSlot {
   id: string;

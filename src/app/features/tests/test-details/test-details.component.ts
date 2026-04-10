@@ -3,15 +3,15 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Subject, of } from 'rxjs';
 import { catchError, finalize, switchMap, takeUntil } from 'rxjs/operators';
-import { StoreTest } from '../../../shared/models/storefront';
-import { ApiProduct } from '../../../shared/models/catalog-api';
-import { CatalogApiService } from '../../../shared/services/catalog-api.service';
-import { CatalogService } from '../../../shared/services/catalog.service';
+import { StoreTest } from '../../../shared/models/storefront.model';
+import { ApiProduct } from '../../../shared/models/catalog-api.model';
+import { CatalogService } from '../../../shared/services/catalog/catalog.service';
 import { BookingFlowStateService } from '../../booking/services/booking-flow-state.service';
-import { CartFacadeService } from '../../cart/service/cart-facade.service';
-import { SectionService } from '../../home/sections/section.service';
-import { CartService } from '../../cart/service/cart.service';
 import { environment } from '../../../../environment/environment';
+import { CartFacadeService } from '../../../shared/services/cart/cart-facade.service';
+import { CartService } from '../../../shared/services/cart/cart.service';
+import { ProductsService } from '../../../shared/services/products/products.service';
+import { CatalogApiService } from '../../../shared/services/catalog/catalog-api.service';
 
 @Component({
   selector: 'app-test-details',
@@ -26,6 +26,7 @@ export class TestDetailsComponent implements OnInit, OnDestroy {
   reportHoursText = '24 hours';
   containsText = '';
   bookingNow = false;
+  readonly helplineNumber = '8309948791';
 
   private readonly destroy$ = new Subject<void>();
 
@@ -40,7 +41,7 @@ export class TestDetailsComponent implements OnInit, OnDestroy {
     private snackBar: MatSnackBar,
     private catalogApi: CatalogApiService,
     private catalog: CatalogService,
-    private sections: SectionService,
+    private sections: ProductsService,
     private bookingState: BookingFlowStateService,
     private cartApi: CartService,
   ) { }
@@ -156,12 +157,47 @@ export class TestDetailsComponent implements OnInit, OnDestroy {
     this.router.navigate(['/layout/tests']);
   }
 
-  scrollToIncludes(): void {
+  scrollToBundleItems(): void {
     try {
       if (typeof document === 'undefined') return;
-      document.getElementById('includes')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      document.getElementById('bundle-items')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     } catch {
       // ignore
+    }
+  }
+
+  copyHelpline(): void {
+    const value = this.helplineNumber;
+
+    try {
+      if (typeof navigator !== 'undefined' && navigator.clipboard?.writeText) {
+        navigator.clipboard
+          .writeText(value)
+          .then(() => this.snackBar.open('Helpline number copied', 'Close', { duration: 1500 }))
+          .catch(() => this.fallbackCopy(value));
+        return;
+      }
+    } catch {
+      // ignore
+    }
+
+    this.fallbackCopy(value);
+  }
+
+  private fallbackCopy(value: string): void {
+    try {
+      const el = document.createElement('textarea');
+      el.value = value;
+      el.setAttribute('readonly', '');
+      el.style.position = 'absolute';
+      el.style.left = '-9999px';
+      document.body.appendChild(el);
+      el.select();
+      document.execCommand('copy');
+      document.body.removeChild(el);
+      this.snackBar.open('Helpline number copied', 'Close', { duration: 1500 });
+    } catch {
+      this.snackBar.open('Unable to copy number', 'Close', { duration: 1500 });
     }
   }
 
@@ -190,6 +226,11 @@ export class TestDetailsComponent implements OnInit, OnDestroy {
   }
 
   private computeContains(test: StoreTest): string {
+    if (test.isBundle) {
+      const count = (test.included ?? []).length;
+      if (count > 0) return `${count} tests`;
+    }
+
     const fromIncluded = (test.included ?? []).length;
     if (fromIncluded > 0) return `${fromIncluded} tests`;
 
@@ -203,7 +244,13 @@ export class TestDetailsComponent implements OnInit, OnDestroy {
   private mapApiBundleProductToStoreTest(product: ApiProduct): StoreTest {
     const included =
       (product.bundle?.items ?? [])
-        .map((i) => i?.product?.name)
+        .map((i) => {
+          const name = i?.product?.name;
+          const qty = Number(i?.quantity ?? 1);
+          if (!name) return null;
+          if (Number.isFinite(qty) && qty > 1) return `${name} x${qty}`;
+          return name;
+        })
         .filter((x): x is string => Boolean(x && String(x).trim()));
 
     return {
@@ -212,6 +259,7 @@ export class TestDetailsComponent implements OnInit, OnDestroy {
       categoryId: '__packages__',
       categoryTitle: 'Packages',
       productYpe: product.productType,
+      isBundle: product.bundle != null,
       description: product.description ?? product.shortDescription ?? '',
       price: product.price?.price ?? 0,
       discountPrice: undefined,
