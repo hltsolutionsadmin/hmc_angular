@@ -12,7 +12,7 @@
         <img src="../../../../assets/favicon.svg" alt="" class="w-8 h-8" rounded-2xl>
       </div>
       <div class="hidden sm:block leading-tight">
-        <p class="font-extrabold text-slate-900">HMC Store</p>
+        <p class="font-extrabold text-slate-900">Himaneesh Medical Centre</p>
         <p class="text-[11px] text-slate-500 -mt-0.5">Book diagnostic tests</p>
       </div>
     </a>
@@ -63,6 +63,11 @@
             class="w-9 h-9 rounded-2xl bg-gradient-to-br from-slate-100 to-indigo-50 border border-slate-200 grid place-content-center">
             <mat-icon class="text-indigo-700">person</mat-icon>
           </div>
+          <ng-container *ngIf="(currentUser$ | async) as user">
+            <span class="hidden sm:inline text-sm font-semibold text-slate-700 max-w-[160px] truncate">
+              {{ user.firstName }} {{ user.lastName }}
+            </span>
+          </ng-container>
           <mat-icon class="hidden sm:inline text-slate-400">expand_more</mat-icon>
         </button>
 
@@ -70,7 +75,7 @@
           class="absolute right-0 mt-2 w-56 rounded-2xl border border-slate-200 bg-white shadow-lg overflow-hidden"
           [@menuFade]>
           <div class="px-4 py-3 bg-slate-50">
-            <p class="text-sm font-extrabold text-slate-900">Welcome back</p>
+            <p class="text-sm font-extrabold text-slate-900" *ngIf="(currentUser$ | async) as user">Welcome back {{ user.firstName }} {{ user.lastName }}</p>
             <p class="text-xs text-slate-600">Your health, our priority</p>
           </div>
           <!-- <a routerLink="/layout/profile"
@@ -83,7 +88,7 @@
             <mat-icon class="text-[20px] text-emerald-700">receipt_long</mat-icon>
             My Bookings
           </a>
-          <a routerLink="/login" class="flex items-center gap-3 px-4 py-3 text-sm text-rose-700 hover:bg-rose-50">
+          <a class="flex items-center gap-3 px-4 py-3 text-sm text-rose-700 hover:bg-rose-50" (click)="logout()">
             <mat-icon class="text-[20px]">logout</mat-icon>
             Logout
           </a>
@@ -102,10 +107,10 @@
       <div class="flex items-center gap-2">
         <div
           class="w-10 h-10 rounded-2xl bg-gradient-to-br from-emerald-500 to-indigo-600 grid place-content-center shadow-sm">
-          <mat-icon class="text-white">medical_services</mat-icon>
+          <img src="../../../../assets/favicon.svg" alt="no logo" style="border-radius: 50%;">
         </div>
         <div class="leading-tight">
-          <p class="font-extrabold text-slate-900">Clinic Store</p>
+          <p class="font-extrabold text-slate-900">HMC</p>
           <p class="text-[11px] text-slate-500 -mt-0.5">Book diagnostic tests</p>
         </div>
       </div>

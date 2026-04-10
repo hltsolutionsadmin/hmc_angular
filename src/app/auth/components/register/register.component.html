@@ -136,11 +136,15 @@
                 class="rounded-none rounded-e-xl bg-white border text-slate-900 block flex-1 min-w-0 w-full text-sm p-3.5"
                 [ngClass]="getInputState('mobile')"
                 placeholder="8309948792"
+                maxlength="10"
+                (keypress)="allowNumbersOnly($event)"
+                (paste)="onPasteNumbersOnly($event)"
               />
             </div>
-            <p *ngIf="registerForm.get('mobile')?.invalid && registerForm.get('mobile')?.touched" class="text-rose-600 text-xs mt-1">
-              Enter a 10-digit mobile number.
+            <p *ngIf="registerForm.get('mobile')?.touched" class="text-rose-600 text-xs mt-1">
+              Modile Number is required.
             </p>
+            <p *ngIf="registerForm.get('mobile')?.errors?.['minlength']" class="text-rose-600 text-xs mt-1">Enter a valid 10 digit mobile number.</p>
           </div>
 
           <div class="grid grid-cols-1 sm:grid-cols-1 gap-4">
@@ -165,6 +169,7 @@
               <p *ngIf="registerForm.get('password')?.invalid && registerForm.get('password')?.touched" class="text-rose-600 text-xs mt-1">
                 Password is required.
               </p>
+              <p *ngIf="registerForm.get('password')?.errors?.['pattern']" class="text-rose-600 text-xs mt-1">Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character.</p>
             </div>
 
             <div>

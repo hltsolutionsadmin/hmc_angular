@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { Booking } from '../../../shared/models/storefront';
-import { OrderAppointmentDto, OrderDto, OrdersService } from '../../../shared/services/orders.service';
+import { Booking } from '../../../shared/models/storefront.model';
+import { OrderAppointmentDto, OrderDto, OrdersService } from '../../../shared/services/orders/orders.service';
 
 @Component({
   selector: 'app-orders-list',

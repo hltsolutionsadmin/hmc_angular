@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { StoreTest } from '../../../shared/models/storefront';
+import { StoreTest } from '../../../shared/models/storefront.model';
 import { BookingFlowState, PatientDetails, SlotDate, TimeSlot } from '../models/booking-flow.model';
 
 const SESSION_KEY = 'hmc_booking_flow';

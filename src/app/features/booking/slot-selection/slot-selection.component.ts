@@ -3,14 +3,14 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { of, Subject } from 'rxjs';
 import { catchError, map, takeUntil } from 'rxjs/operators';
 
-import { CatalogService } from '../../../shared/services/catalog.service';
-import { SectionService } from '../../home/sections/section.service';
+import { CatalogService } from '../../../shared/services/catalog/catalog.service';
 import { BookingFlowStateService } from '../services/booking-flow-state.service';
 import { SlotService } from '../services/slot.service';
 import { SlotDate, TimeSlot } from '../models/booking-flow.model';
-import { StoreTest } from '../../../shared/models/storefront';
-import { CartService } from '../../cart/service/cart.service';
+import { StoreTest } from '../../../shared/models/storefront.model';
 import { environment } from '../../../../environment/environment';
+import { CartService } from '../../../shared/services/cart/cart.service';
+import { ProductsService } from '../../../shared/services/products/products.service';
 
 @Component({
   selector: 'app-slot-selection',
@@ -34,7 +34,7 @@ export class SlotSelectionComponent implements OnInit, OnDestroy {
     private slotService: SlotService,
     private flowState: BookingFlowStateService,
     private catalog: CatalogService,
-    private sections: SectionService,
+    private sections: ProductsService,
     private cartApi: CartService,
   ) {}
 

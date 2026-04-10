@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import { CheckoutStateService } from '../../checkout/services/checkout-state.service';
 
 @Component({
   selector: 'app-profile-page',
@@ -11,6 +10,5 @@ export class ProfilePageComponent {
   mobile = '9999999999';
   email = 'user@clinic.com';
 
-  constructor(public checkoutState: CheckoutStateService) {}
 }
 

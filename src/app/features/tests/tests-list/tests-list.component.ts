@@ -1,15 +1,15 @@
 import { Component, OnDestroy, OnInit, HostListener } from '@angular/core';
 import { Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { StoreCategory, StoreTest } from '../../../shared/models/storefront';
-import { ApiCategory, ApiProduct } from '../../../shared/models/catalog-api';
-import { CatalogApiService } from '../../../shared/services/catalog-api.service';
+import { StoreCategory, StoreTest } from '../../../shared/models/storefront.model';
+import { ApiCategory, ApiProduct } from '../../../shared/models/catalog-api.model';
 import { BookingFlowStateService } from '../../booking/services/booking-flow-state.service';
-import { SectionService } from '../../home/sections/section.service';
 import { environment } from '../../../../environment/environment';
 import { Subscription, forkJoin, of } from 'rxjs';
 import { catchError, finalize, switchMap, map } from 'rxjs/operators';
-import { CartService } from '../../cart/service/cart.service';
+import { CartService } from '../../../shared/services/cart/cart.service';
+import { ProductsService } from '../../../shared/services/products/products.service';
+import { CatalogApiService } from '../../../shared/services/catalog/catalog-api.service';
 
 export type SortOption = 'popular' | 'price_low' | 'price_high';
 
@@ -49,7 +49,7 @@ export class TestsListComponent implements OnInit, OnDestroy {
 
   constructor(
     private catalogApi: CatalogApiService,
-    private sections: SectionService,
+    private sections: ProductsService,
     private router: Router,
     private bookingState: BookingFlowStateService,
     private cartApi: CartService,
@@ -327,12 +327,24 @@ export class TestsListComponent implements OnInit, OnDestroy {
       matchingCategory?.name ??
       '';
 
+    const included =
+      (product.bundle?.items ?? [])
+        .map((i) => {
+          const name = i?.product?.name;
+          const qty = Number(i?.quantity ?? 1);
+          if (!name) return null;
+          if (Number.isFinite(qty) && qty > 1) return `${name} x${qty}`;
+          return name;
+        })
+        .filter((x): x is string => Boolean(x && String(x).trim()));
+
     return {
       id: product.id,
       name: product.name,
       categoryId,
       categoryTitle,
       productYpe: product.productType,
+      isBundle: product.bundle != null,
       description: product.description ?? product.shortDescription ?? '',
       price: product.price?.price ?? 0,
       discountPrice: undefined,
@@ -341,6 +353,7 @@ export class TestsListComponent implements OnInit, OnDestroy {
       reportTime: '—',
       fastingRequired: false,
       parametersCount: undefined,
+      included: included.length ? included : undefined,
     };
   }
 
@@ -359,7 +372,7 @@ export class TestsListComponent implements OnInit, OnDestroy {
     }
 
     this.packagesLoadSub = this.catalogApi
-      .getBundlesByStoreId({ storeId: environment.storeId, inventoryStock: false })
+      .getBundlesByStoreId({ storeId: environment.storeId, inventoryStock: true })
       .pipe(
         map((items) => (items ?? []).filter((p) => p.active)),
         map((items) => items.map((p) => this.mapApiBundleProductToStoreTest(p))),
@@ -382,7 +395,13 @@ export class TestsListComponent implements OnInit, OnDestroy {
   private mapApiBundleProductToStoreTest(product: ApiProduct): StoreTest {
     const included =
       (product.bundle?.items ?? [])
-        .map((i) => i?.product?.name)
+        .map((i) => {
+          const name = i?.product?.name;
+          const qty = Number(i?.quantity ?? 1);
+          if (!name) return null;
+          if (Number.isFinite(qty) && qty > 1) return `${name} x${qty}`;
+          return name;
+        })
         .filter((x): x is string => Boolean(x && String(x).trim()));
 
     return {
@@ -391,6 +410,7 @@ export class TestsListComponent implements OnInit, OnDestroy {
       categoryId: this.packagesCategoryId,
       categoryTitle: 'Packages',
       productYpe: product.productType,
+      isBundle: product.bundle != null,
       description: product.description ?? product.shortDescription ?? '',
       price: product.price?.price ?? 0,
       discountPrice: undefined,

@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { StoreOffer } from '../../models/storefront';
+import { StoreOffer } from '../../models/storefront.model';
 
 @Component({
   selector: 'app-offer-card',

@@ -96,6 +96,11 @@ export class LoginComponent implements OnInit, OnDestroy {
       this.infoMessage = 'Account verified. Please login.';
     }
 
+    const reason = this.activatedRoute.snapshot.queryParamMap.get('reason');
+    if (reason === 'session_expired') {
+      this.errorMessage = 'Session expired. Please login again.';
+    }
+
     // Rotate quotes every 6s
     interval(6000)
       .pipe(takeUntil(this.destroy$))

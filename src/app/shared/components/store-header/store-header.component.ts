@@ -2,7 +2,8 @@ import { animate, style, transition, trigger } from '@angular/animations';
 import { Component, HostListener, inject, OnInit } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { filter } from 'rxjs';
-import { CartFacadeService } from '../../../features/cart/service/cart-facade.service';
+import { TokenStorageService } from '../../../auth/service/token-storage.service';
+import { CurrentUserService } from '../../../auth/service/current-user.service';
 
 @Component({
   selector: 'app-store-header',
@@ -26,15 +27,17 @@ import { CartFacadeService } from '../../../features/cart/service/cart-facade.se
   ]
 })
 export class StoreHeaderComponent implements OnInit{
-  private readonly cartFacade = inject(CartFacadeService);
-  readonly cartCount$ = this.cartFacade.totalUniqueItemsCount$;
+  // private readonly cartFacade = inject(CartFacadeService);
+  // readonly cartCount$ = this.cartFacade.totalUniqueItemsCount$;
+  private readonly currentUserService = inject(CurrentUserService);
   query = '';
   locationLabel = 'Home';
   showProfile = false;
   showDrawer = false;
   elevate = false;
+  readonly currentUser$ = this.currentUserService.currentUser$;
 
-  constructor(private router: Router) {
+  constructor(private router: Router, private storageService: TokenStorageService) {
     this.router.events.pipe(filter((e) => e instanceof NavigationEnd)).subscribe(() => {
       this.showProfile = false;
       this.showDrawer = false;
@@ -47,7 +50,7 @@ export class StoreHeaderComponent implements OnInit{
   }
 
   ngOnInit(): void {
-    this.cartFacade.loadCart();
+    // this.cartFacade.loadCart();
   }
   
   toggleProfile(): void {
@@ -66,6 +69,12 @@ export class StoreHeaderComponent implements OnInit{
   onSearch(): void {
     const q = this.query.trim();
     this.router.navigate(['/layout/tests'], { queryParams: q ? { q } : {} });
+  }
+
+  logout() {
+    this.storageService.clear();
+    this.currentUserService.clear();
+    this.router.navigate(['/login']);
   }
 }
 

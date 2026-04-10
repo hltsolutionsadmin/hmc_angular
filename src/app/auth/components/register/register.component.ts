@@ -1,8 +1,8 @@
 import { trigger, transition, style, animate } from '@angular/animations';
 import { Component, ElementRef, OnDestroy, OnInit, QueryList, ViewChildren } from '@angular/core';
-import { AbstractControl, FormArray, FormBuilder, FormGroup, ValidationErrors, Validators } from '@angular/forms';
+import { AbstractControl, FormArray, FormBuilder, FormGroup, MaxLengthValidator, ValidationErrors, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { interval, Subject, takeUntil } from 'rxjs';
+import { interval, max, Subject, takeUntil } from 'rxjs';
 import { AuthServiceService } from '../../service/auth-service.service';
 
 function matchFields(field: string, confirmField: string) {
@@ -74,8 +74,8 @@ export class RegisterComponent implements OnInit, OnDestroy {
         firstName: ['', [Validators.required, Validators.minLength(2)]],
         lastName: ['', [Validators.required, Validators.minLength(1)]],
         email: ['', [Validators.required, Validators.email]],
-        mobile: ['', [Validators.required, Validators.pattern(/^\d{10}$/)]],
-        password: ['', [Validators.required, Validators.minLength(6)]],
+        mobile: ['', [Validators.required, Validators.minLength(10),Validators.maxLength(10), Validators.pattern(/^\d{10}$/)]],
+        password: ['', [Validators.required, Validators.minLength(8),Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/)]],
         confirmPassword: ['', [Validators.required]]
       },
       { validators: [matchFields('password', 'confirmPassword')] }
@@ -294,4 +294,20 @@ export class RegisterComponent implements OnInit, OnDestroy {
   private getOtpValue(): string {
     return this.otpDigits.controls.map((c) => String(c.value ?? '')).join('');
   }
+
+  allowNumbersOnly(event: KeyboardEvent): void {
+  const key = event.key;
+
+  if (!/^\d$/.test(key)) {
+    event.preventDefault();
+  }
+}
+
+onPasteNumbersOnly(event: ClipboardEvent): void {
+  const pastedText = event.clipboardData?.getData('text') || '';
+
+  if (!/^\d+$/.test(pastedText)) {
+    event.preventDefault();
+  }
+}
 }

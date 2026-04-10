@@ -34,6 +34,9 @@ export class AuthServiceService {
     return this.http.post<LoginResponse>(`${this.baseUrl}/login`, payload, { headers }).pipe(
       tap((response) => {
         this.tokenStorage.setTokens(response);
+        if (payload.deviceId) {
+          this.tokenStorage.setDeviceId(payload.deviceId);
+        }
       })
     );
   }

@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
-import { CatalogService } from '../../../shared/services/catalog.service';
-import { StoreOffer } from '../../../shared/models/storefront';
+import { CatalogService } from '../../../shared/services/catalog/catalog.service';
+import { StoreOffer } from '../../../shared/models/storefront.model';
 
 @Component({
   selector: 'app-offers-page',
