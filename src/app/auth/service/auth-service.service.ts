@@ -4,9 +4,11 @@ import { TokenStorageService } from './token-storage.service';
 import {
   LoginRequest,
   LoginResponse,
+  OtpLoginRequest,
   RegisterRequest,
   RegisterResponse,
   ResendOtpRequest,
+  SendOtpRequest,
   VerifyOtpRequest
 } from '../models/auth.model';
 import { Observable, tap } from 'rxjs';
@@ -32,6 +34,31 @@ export class AuthServiceService {
     });
 
     return this.http.post<LoginResponse>(`${this.baseUrl}/login`, payload, { headers }).pipe(
+      tap((response) => {
+        this.tokenStorage.setTokens(response);
+        if (payload.deviceId) {
+          this.tokenStorage.setDeviceId(payload.deviceId);
+        }
+      })
+    );
+  }
+
+  sendOtp(payload: SendOtpRequest): Observable<unknown> {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'X-Skillrat-Tenant': 'default'
+    });
+
+    return this.http.post(`${this.baseUrl}/otp/send`, payload, { headers });
+  }
+
+  loginWithOtp(payload: OtpLoginRequest): Observable<LoginResponse> {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'X-Skillrat-Tenant': 'default'
+    });
+
+    return this.http.post<LoginResponse>(`${this.baseUrl}/otp/login`, payload, { headers }).pipe(
       tap((response) => {
         this.tokenStorage.setTokens(response);
         if (payload.deviceId) {

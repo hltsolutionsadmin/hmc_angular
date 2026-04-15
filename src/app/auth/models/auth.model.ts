@@ -11,6 +11,16 @@ export interface LoginResponse {
   tokenType: string;
 }
 
+export interface SendOtpRequest {
+  primaryContact: string;
+}
+
+export interface OtpLoginRequest {
+  primaryContact: string;
+  otp: string;
+  deviceId: string;
+}
+
 export interface RegisterRequest {
   firstName: string;
   lastName: string;
