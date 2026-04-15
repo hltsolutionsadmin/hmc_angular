@@ -69,3 +69,8 @@ input {
 .cssbuttons-io-button:active .icon {
   transform: scale(0.95);
 }
+
+.cssbuttons-io-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}

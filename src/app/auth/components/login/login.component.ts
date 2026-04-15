@@ -1,11 +1,12 @@
 import { trigger, transition, style, animate } from '@angular/animations';
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { interval, Subject, takeUntil } from 'rxjs';
 import { AuthServiceService } from '../../service/auth-service.service';
 import { consumeReturnUrl } from '../../guards/auth.guard';
 import { BookingFlowStateService } from '../../../features/booking/services/booking-flow-state.service';
+import { TokenStorageService } from '../../service/token-storage.service';
 
 interface Quote {
   text: string;
@@ -62,8 +63,11 @@ export class LoginComponent implements OnInit, OnDestroy {
   loginForm!: FormGroup;
   private destroy$ = new Subject<void>();
   loading = false;
+  sendingOtp = false;
+  mobileLocked = false;
   errorMessage = '';
   infoMessage = '';
+  readonly otpLength = 6;
 
   quotes: Quote[] = [
     { text: 'Your health, our priority.', author: 'Dr. A. Sharma' },
@@ -77,24 +81,18 @@ export class LoginComponent implements OnInit, OnDestroy {
   constructor(
     private fb: FormBuilder,
     private authService: AuthServiceService,
+    private tokenStorage: TokenStorageService,
     private router: Router,
     private activatedRoute: ActivatedRoute,
     private bookingFlowState: BookingFlowStateService,
   ) {}
 
   ngOnInit(): void {
-    // Initialize reactive form
     this.loginForm = this.fb.group({
-      username: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required]],
-      deviceId: ['693a0ebb-d0eb-43a3-bc84-78c3596bf57dfvd0', [Validators.required]]
+      primaryContact: ['', [Validators.required, Validators.pattern(/^\d{10}$/)]],
+      otp: this.fb.array(this.buildOtpControls()),
+      deviceId: [this.getOrCreateDeviceId(), [Validators.required]]
     });
-
-    const email = this.activatedRoute.snapshot.queryParamMap.get('email');
-    if (email) {
-      this.loginForm.patchValue({ username: email });
-      this.infoMessage = 'Account verified. Please login.';
-    }
 
     const reason = this.activatedRoute.snapshot.queryParamMap.get('reason');
     if (reason === 'session_expired') {
@@ -124,7 +122,11 @@ export class LoginComponent implements OnInit, OnDestroy {
     this.errorMessage = '';
     this.infoMessage = '';
 
-    this.authService.login(this.loginForm.getRawValue() as any).subscribe({
+    const primaryContact = String(this.loginForm.get('primaryContact')?.value ?? '');
+    const otp = this.getOtpValue();
+    const deviceId = String(this.loginForm.get('deviceId')?.value ?? '');
+
+    this.authService.loginWithOtp({ primaryContact, otp, deviceId }).subscribe({
       next: () => {
         this.loading = false;
         // Restore any saved booking state and redirect to intended URL
@@ -157,9 +159,144 @@ export class LoginComponent implements OnInit, OnDestroy {
     return 'border-gray-300 text-gray-500';
   }
 
+  getOtpInputState(index: number): string {
+    const control = this.otpArray.at(index);
+    if (!control) return 'border-gray-300';
+
+    if (control.invalid && (control.dirty || control.touched)) return 'border-red-500';
+    if (control.valid) return 'border-green-500';
+    return 'border-gray-300';
+  }
+
   shouldShakeControl(control: AbstractControl | null): string | null {
     if (control && control.invalid && control.touched) return 'shake';
     return null;
+  }
+
+  onMobileInput(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const prev = String(this.loginForm.get('primaryContact')?.value ?? '');
+    const normalized = (input.value ?? '').replace(/\D/g, '').slice(0, 10);
+    if (normalized !== input.value) input.value = normalized;
+    this.loginForm.get('primaryContact')?.setValue(normalized);
+
+    if (!this.mobileLocked && prev !== normalized) {
+      this.clearOtp();
+    }
+  }
+
+  onSendOtpOrEdit(): void {
+    if (this.mobileLocked) {
+      this.mobileLocked = false;
+      this.infoMessage = '';
+      this.errorMessage = '';
+      this.clearOtp();
+      return;
+    }
+
+    const mobileControl = this.loginForm.get('primaryContact');
+    if (!mobileControl) return;
+
+    mobileControl.markAsTouched();
+    if (mobileControl.invalid) return;
+
+    this.sendingOtp = true;
+    this.mobileLocked = true;
+    this.infoMessage = '';
+    this.errorMessage = '';
+
+    const primaryContact = String(mobileControl.value ?? '');
+    this.authService.sendOtp({ primaryContact }).subscribe({
+      next: () => {
+        this.sendingOtp = false;
+        this.infoMessage = 'OTP sent to your mobile number.';
+        setTimeout(() => this.focusOtp(0), 0);
+      },
+      error: (error) => {
+        this.sendingOtp = false;
+        this.mobileLocked = false;
+        this.errorMessage = error?.error?.message || 'Failed to send OTP';
+      }
+    });
+  }
+
+  onOtpInput(index: number, event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const digit = (input.value ?? '').replace(/\D/g, '').slice(-1);
+
+    this.otpArray.at(index)?.setValue(digit);
+    input.value = digit;
+
+    if (digit && index < this.otpLength - 1) {
+      this.focusOtp(index + 1);
+    }
+  }
+
+  onOtpKeydown(index: number, event: KeyboardEvent): void {
+    const input = event.target as HTMLInputElement;
+
+    if (event.key === 'Backspace' && !input.value && index > 0) {
+      this.focusOtp(index - 1);
+      return;
+    }
+
+    if (event.key === 'ArrowLeft' && index > 0) {
+      event.preventDefault();
+      this.focusOtp(index - 1);
+      return;
+    }
+
+    if (event.key === 'ArrowRight' && index < this.otpLength - 1) {
+      event.preventDefault();
+      this.focusOtp(index + 1);
+    }
+  }
+
+  onOtpPaste(event: ClipboardEvent): void {
+    const pasted = event.clipboardData?.getData('text') ?? '';
+    const digits = pasted.replace(/\D/g, '').slice(0, this.otpLength);
+    if (!digits) return;
+
+    event.preventDefault();
+    digits.split('').forEach((d, i) => this.otpArray.at(i)?.setValue(d));
+    this.focusOtp(Math.min(digits.length, this.otpLength - 1));
+  }
+
+  get otpArray(): FormArray {
+    return this.loginForm.get('otp') as FormArray;
+  }
+
+  private focusOtp(index: number): void {
+    const el = document.getElementById(`otp-${index}`) as HTMLInputElement | null;
+    el?.focus();
+    el?.select();
+  }
+
+  private buildOtpControls(): FormControl[] {
+    return Array.from({ length: this.otpLength }, () =>
+      this.fb.control('', [Validators.required, Validators.pattern(/^\d$/)])
+    ) as FormControl[];
+  }
+
+  private getOtpValue(): string {
+    return this.otpArray.controls.map((c) => String(c.value ?? '')).join('');
+  }
+
+  private clearOtp(): void {
+    this.otpArray.controls.forEach((c) => c.setValue(''));
+    this.otpArray.markAsPristine();
+    this.otpArray.markAsUntouched();
+  }
+
+  private getOrCreateDeviceId(): string {
+    const existing = this.tokenStorage.getDeviceId();
+    if (existing) return existing;
+
+    const created =
+      (globalThis as any)?.crypto?.randomUUID?.() ?? `device-${Math.random().toString(16).slice(2)}-${Date.now()}`;
+
+    this.tokenStorage.setDeviceId(created);
+    return created;
   }
 
 }

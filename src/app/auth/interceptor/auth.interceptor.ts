@@ -159,6 +159,8 @@ function isAuthExcludedUrl(url: string): boolean {
     normalized.includes('/auth/login') ||
     normalized.includes('/auth/register') ||
     normalized.includes('/auth/refresh') ||
+    normalized.includes('/auth/otp/send') ||
+    normalized.includes('/auth/otp/login') ||
     normalized.includes('/api/auth/verify-otp') ||
     normalized.includes('/api/auth/resend-otp')
   );
